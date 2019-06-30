@@ -38,7 +38,7 @@ namespace Sample.Tests
         }
 
         /// <summary>
-        /// Specify the test data property with an attribute. 
+        /// Specify the test data property with an attribute. This method will get executed for each SampleData object in the list
         /// </summary>
         [Theory, MemberData(nameof(TestData))]       
         public void Test1(SampleData sampleData)
