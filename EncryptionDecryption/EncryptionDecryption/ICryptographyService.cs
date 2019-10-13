@@ -1,8 +1,7 @@
 ﻿namespace EncryptionDecryption
 {
-    public interface ICryptographyService
+    public interface ICryptographyService : IOneWayEncryptionService
     {
-        string Encrypt(string text);
         string Decrypt(string text);
     }
 }

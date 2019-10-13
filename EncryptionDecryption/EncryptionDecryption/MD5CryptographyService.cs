@@ -4,14 +4,9 @@ using System.Text;
 
 namespace EncryptionDecryption
 {
-    public class MD5CryptographyService : ICryptographyService
+    public class MD5CryptographyService : IOneWayEncryptionService
     {
         #region Implementation
-
-        public string Decrypt(string text)
-        {
-            throw new NotImplementedException("MD5 only provides one way encryption");
-        }
 
         public string Encrypt(string text)
         {

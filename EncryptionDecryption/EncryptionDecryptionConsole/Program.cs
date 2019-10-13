@@ -1,5 +1,4 @@
 ﻿using EncryptionDecryptionConsole;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -12,13 +11,11 @@ namespace EncryptionDecryption
     {
         private const string PlainText = "Test";
 
+        private static IOneWayEncryptionService OneWayEncrpytionService { get; set; }
         private static ICryptographyService CryptographyService { get; set; }
 
         private static void Main(string[] args)
         {
-            var asdasd = new Credentials { Username = "Bob", Password = "Password123" };
-            var json = JsonConvert.SerializeObject(asdasd);
-
             RunAsync().Wait();
 
             Console.ReadLine();
@@ -28,12 +25,12 @@ namespace EncryptionDecryption
         {
             Console.WriteLine($"Plain Text: {PlainText}");
 
-            CryptographyService = new MD5CryptographyService();
-            var hash = CryptographyService.Encrypt(PlainText);
+            OneWayEncrpytionService = new MD5CryptographyService();
+            var hash = OneWayEncrpytionService.Encrypt(PlainText);
             Console.WriteLine($"MD5 Hashed: {hash}");
 
-            CryptographyService = new HashCryptographyService(new SHA1Managed());
-            hash = CryptographyService.Encrypt(PlainText);
+            OneWayEncrpytionService = new HashCryptographyService(new SHA1Managed());
+            hash = OneWayEncrpytionService.Encrypt(PlainText);
             Console.WriteLine($"SHA1 Hashed: {hash}");
 
             var symmetricAlgorithmCryptographyService =

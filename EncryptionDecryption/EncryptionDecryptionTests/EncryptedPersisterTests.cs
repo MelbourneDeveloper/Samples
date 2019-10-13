@@ -14,6 +14,7 @@ namespace EncryptionDecryptionTests
         private const string EncryptedText = "f4e9a35aa90ba645474e53271ee6cff4e0cb1379f10ae6a784eb5f00ce6666d06d9c0562dabb3758975006fd8aa7b7e3";
         #endregion
 
+        #region Tests
         [Test]
         public async Task TestSaveAsync()
         {
@@ -46,5 +47,6 @@ namespace EncryptionDecryptionTests
             Assert.AreEqual(Username, credentials.Username);
             Assert.AreEqual(Password, credentials.Password);
         }
+        #endregion
     }
 }

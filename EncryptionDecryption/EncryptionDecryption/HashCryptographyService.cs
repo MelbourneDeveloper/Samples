@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EncryptionDecryption
 {
-    public class HashCryptographyService : ICryptographyService
+    public class HashCryptographyService : IOneWayEncryptionService
     {
         #region Constructor
 
@@ -22,11 +22,6 @@ namespace EncryptionDecryption
         #endregion
 
         #region Implementation
-
-        public string Decrypt(string text)
-        {
-            throw new NotImplementedException("Hash algorithms only provide one way encryption");
-        }
 
         public string Encrypt(string text)
         {

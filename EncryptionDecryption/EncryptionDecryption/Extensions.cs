@@ -12,7 +12,7 @@ namespace EncryptionDecryption
             for (var i = 0; i < hex.Length; i += byteCount)
             {
                 sb.Add(Convert.ToByte(hex.Substring(i, byteCount), 8 * byteCount));
-            };
+            }
 
             return sb.ToArray();
         }
