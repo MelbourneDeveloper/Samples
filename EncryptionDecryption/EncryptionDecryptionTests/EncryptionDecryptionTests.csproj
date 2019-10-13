@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\EncryptionDecryptionConsole\Credentials.cs" Link="Credentials.cs" />
+    <Compile Include="..\EncryptionDecryptionConsole\EncryptedPersister.cs" Link="EncryptedPersister.cs" />
+    <Compile Include="..\EncryptionDecryptionConsole\IIOService.cs" Link="IIOService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.13.0" />
+    <PackageReference Include="nunit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EncryptionDecryption\EncryptionDecryption.csproj" />
+  </ItemGroup>
+
+</Project>
