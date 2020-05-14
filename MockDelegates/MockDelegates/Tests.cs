@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MockDelegates
@@ -137,5 +138,38 @@ namespace MockDelegates
             mockFileIO.Verify(f => f.WriteData(It.Is<byte[]>(a => a.SequenceEqual(new byte[] { 32, 32 }))));
         }
 
+
+        [TestMethod]
+        public void TestIocContainerWithFactoryInjection()
+        {
+            var adders = new Dictionary<string, IAdder> { { "simple", new Adder() } };
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<CreateInstance<IAdder>>
+                (
+                (serviceProvider) => (name) => adders[name]
+                );
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var adderFactory = serviceProvider.GetService<CreateInstance<IAdder>>();
+            var adder = adderFactory("simple");
+            var result = adder.Add(1, 1);
+            Assert.AreEqual(2, result);
+        }
+
+
+        [TestMethod]
+        public void TestIocContainerWithFactoryInjection2()
+        {
+            var adders = new Dictionary<string, IAdder> { { "simple", new Adder() } };
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<CreateInstance<IAdder>>
+                (
+                (serviceProvider) => (name) => adders[name]
+                );
+            serviceCollection.AddSingleton<SimpleFactoryInterfaceCalculator>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var simpleFactoryInterfaceCalculator = serviceProvider.GetService<SimpleFactoryInterfaceCalculator>();
+            var result = simpleFactoryInterfaceCalculator.Add(1, 1);
+            Assert.AreEqual(2, result);
+        }
     }
 }
