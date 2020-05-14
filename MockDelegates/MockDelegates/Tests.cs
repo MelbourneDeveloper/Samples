@@ -1,10 +1,11 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace MockDelegates
 {
     [TestClass]
-    public class Tests
+    public partial class Tests
     {
         [TestMethod]
         public void TestInterface()
@@ -62,6 +63,48 @@ namespace MockDelegates
 
             //Verify that the opreation occurred
             adderMock.Verify(a => a(It.IsAny<string>(), It.IsAny<string>()));
+        }
+
+
+
+        [TestMethod]
+        public void TestIocContainer()
+        {
+            var serviceCollection = new ServiceCollection();
+
+            //Wire up the interface implementation
+            serviceCollection.AddSingleton<IAdder,Adder>();
+
+            //Wire up the delegate implementation
+            serviceCollection.AddSingleton<Add>((a, b) => a + b);
+
+            //Wire up the generic delegate implementation
+            serviceCollection.AddSingleton<Add<string>>((a, b) => a + b);
+
+            //Register the three classes
+            serviceCollection.AddSingleton<SimpleDelegateCalculator>();
+            serviceCollection.AddSingleton<SimpleInterfaceCalculator>();
+            serviceCollection.AddSingleton<StringConcatenator>();
+
+            //Get instances of the objects
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var simpleInterfaceCalculator = serviceProvider.GetService<SimpleInterfaceCalculator>();
+            var simpleDelegateCalculator = serviceProvider.GetService<SimpleDelegateCalculator>();
+            var stringConcatenator = serviceProvider.GetService<StringConcatenator>();
+
+            //Verify
+
+            var a = 1;
+            var b = 1;
+
+            var result = simpleInterfaceCalculator.Add(a, b);
+            Assert.AreEqual(2, result);
+
+            result = simpleDelegateCalculator.Add(a, b);
+            Assert.AreEqual(2, result);
+
+            var stringResult = stringConcatenator.ConcatenateString(" ", " ");
+            Assert.AreEqual("  ", stringResult);
         }
     }
 }
