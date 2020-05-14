@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Linq;
 
 namespace MockDelegates
 {
@@ -73,7 +74,7 @@ namespace MockDelegates
             var serviceCollection = new ServiceCollection();
 
             //Wire up the interface implementation
-            serviceCollection.AddSingleton<IAdder,Adder>();
+            serviceCollection.AddSingleton<IAdder, Adder>();
 
             //Wire up the delegate implementation
             serviceCollection.AddSingleton<Add>((a, b) => a + b);
@@ -106,5 +107,36 @@ namespace MockDelegates
             var stringResult = stringConcatenator.ConcatenateString(" ", " ");
             Assert.AreEqual("  ", stringResult);
         }
+
+
+        [TestMethod]
+        public void TestIocContainerWithDependencies()
+        {
+            var serviceCollection = new ServiceCollection();
+
+            var mockFileIO = new Mock<IFileIO>();
+
+            //Wire up mock dependency
+            serviceCollection.AddSingleton(mockFileIO.Object);
+
+            //Register the class
+            serviceCollection.AddSingleton<StringConcatenatorWithDependencies>();
+
+            //Wire up the generic delegate implementation
+            serviceCollection.AddSingleton(s => s.GetRequiredService<Add<string>>());
+
+            //Get instances of the objects
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var stringConcatenator = serviceProvider.GetService<StringConcatenatorWithDependencies>();
+
+            //Verify
+
+            var stringResult = stringConcatenator.ConcatenateString(" ", " ");
+            Assert.AreEqual("  ", stringResult);
+
+            //Verify that the file was written to
+            mockFileIO.Verify(f => f.WriteData(It.Is<byte[]>(a => a.SequenceEqual(new byte[] { 32, 32 }))));
+        }
+
     }
 }
