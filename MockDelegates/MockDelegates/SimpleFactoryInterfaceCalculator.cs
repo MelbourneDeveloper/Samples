@@ -2,7 +2,7 @@
 {
     public class SimpleFactoryInterfaceCalculator
     {
-        IAdder _adder;
+        private readonly IAdder _adder;
 
         public SimpleFactoryInterfaceCalculator(CreateInstance<IAdder> createAdder)
         {

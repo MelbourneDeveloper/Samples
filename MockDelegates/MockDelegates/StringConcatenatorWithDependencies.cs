@@ -4,18 +4,18 @@ namespace MockDelegates
 {
     public class StringConcatenatorWithDependencies 
     {
-        IFileIO _fileIO;
+        private readonly IFileIo _fileIo;
 
-        public StringConcatenatorWithDependencies(IFileIO fileIO)
+        public StringConcatenatorWithDependencies(IFileIo fileIo)
         {
-            _fileIO = fileIO;
+            _fileIo = fileIo;
         }
 
         public string ConcatenateString(string a, string b)
         {
             var returnValue = a + b;
             var data = Encoding.UTF8.GetBytes(returnValue);
-            _fileIO.WriteData(data);
+            _fileIo.WriteData(data);
             return returnValue;
         }
     }

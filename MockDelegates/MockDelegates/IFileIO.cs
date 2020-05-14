@@ -1,8 +1,9 @@
-﻿namespace MockDelegates
+﻿// ReSharper disable UnusedMember.Global
+namespace MockDelegates
 {
-    public interface IFileIO
+    public interface IFileIo
     {
         void WriteData(byte[] data);
-        byte[] ReaderData();
+        byte[] ReadData();
     }
 }

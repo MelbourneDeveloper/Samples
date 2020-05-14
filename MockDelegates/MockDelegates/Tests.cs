@@ -15,7 +15,7 @@ namespace MockDelegates
             //Mock the interface
             var adderMock = new Mock<IAdder>();
 
-            //Specifiy behavior of Add method
+            //Specify behavior of Add method
             adderMock.Setup(a => a.Add(It.IsAny<int>(), It.IsAny<int>())).Returns(2);
 
             //Inject mock in to class
@@ -24,7 +24,7 @@ namespace MockDelegates
             //Perform the operation
             simpleInterfaceCalculator.Add(1, 1);
 
-            //Verify that the opreation occurred
+            //Verify that the operation occurred
             adderMock.Verify(a => a.Add(It.IsAny<int>(), It.IsAny<int>()));
         }
 
@@ -34,7 +34,7 @@ namespace MockDelegates
             //Mock the delegate
             var adderMock = new Mock<Add>();
 
-            //Specifiy behavior of delegate
+            //Specify behavior of delegate
             adderMock.Setup(a => a(It.IsAny<int>(), It.IsAny<int>())).Returns(2);
 
             //Inject mock in to class
@@ -43,7 +43,7 @@ namespace MockDelegates
             //Perform the operation
             simpleInterfaceCalculator.Add(1, 1);
 
-            //Verify that the opreation occurred
+            //Verify that the operation occurred
             adderMock.Verify(a => a(It.IsAny<int>(), It.IsAny<int>()));
         }
 
@@ -54,7 +54,7 @@ namespace MockDelegates
             //Mock the delegate
             var adderMock = new Mock<Add<string>>();
 
-            //Specifiy behavior of delegate
+            //Specify behavior of delegate
             adderMock.Setup(a => a(It.IsAny<string>(), It.IsAny<string>())).Returns("  ");
 
             //Inject mock in to class
@@ -63,7 +63,7 @@ namespace MockDelegates
             //Perform the operation
             simpleInterfaceCalculator.ConcatenateString(" ", " ");
 
-            //Verify that the opreation occurred
+            //Verify that the operation occurred
             adderMock.Verify(a => a(It.IsAny<string>(), It.IsAny<string>()));
         }
 
@@ -96,8 +96,8 @@ namespace MockDelegates
 
             //Verify
 
-            var a = 1;
-            var b = 1;
+            const int a = 1;
+            const int b = 1;
 
             var result = simpleInterfaceCalculator.Add(a, b);
             Assert.AreEqual(2, result);
@@ -114,10 +114,10 @@ namespace MockDelegates
         {
             var serviceCollection = new ServiceCollection();
 
-            var mockFileIO = new Mock<IFileIO>();
+            var mockFileIo = new Mock<IFileIo>();
 
             //Wire up mock dependency
-            serviceCollection.AddSingleton(mockFileIO.Object);
+            serviceCollection.AddSingleton(mockFileIo.Object);
 
             //Register the class
             serviceCollection.AddSingleton<StringConcatenatorWithDependencies>();
@@ -135,7 +135,7 @@ namespace MockDelegates
             Assert.AreEqual("  ", stringResult);
 
             //Verify that the file was written to
-            mockFileIO.Verify(f => f.WriteData(It.Is<byte[]>(a => a.SequenceEqual(new byte[] { 32, 32 }))));
+            mockFileIo.Verify(f => f.WriteData(It.Is<byte[]>(a => a.SequenceEqual(new byte[] { 32, 32 }))));
         }
 
 
@@ -144,10 +144,7 @@ namespace MockDelegates
         {
             var adders = new Dictionary<string, IAdder> { { "simple", new Adder() } };
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<CreateInstance<IAdder>>
-                (
-                (serviceProvider) => (name) => adders[name]
-                );
+            serviceCollection.AddSingleton<CreateInstance<IAdder>>(provider => name => adders[name]);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var adderFactory = serviceProvider.GetService<CreateInstance<IAdder>>();
             var adder = adderFactory("simple");
@@ -161,10 +158,7 @@ namespace MockDelegates
         {
             var adders = new Dictionary<string, IAdder> { { "simple", new Adder() } };
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<CreateInstance<IAdder>>
-                (
-                (serviceProvider) => (name) => adders[name]
-                );
+            serviceCollection.AddSingleton<CreateInstance<IAdder>>(provider => name => adders[name]);
             serviceCollection.AddSingleton<SimpleFactoryInterfaceCalculator>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var simpleFactoryInterfaceCalculator = serviceProvider.GetService<SimpleFactoryInterfaceCalculator>();

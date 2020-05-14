@@ -2,7 +2,7 @@
 {
     public class SimpleInterfaceCalculator
     {
-        IAdder _adder;
+        private readonly IAdder _adder;
 
         public SimpleInterfaceCalculator(IAdder adder)
         {

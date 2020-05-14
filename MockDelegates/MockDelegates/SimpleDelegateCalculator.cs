@@ -2,7 +2,7 @@
 {
     public class SimpleDelegateCalculator
     {
-        Add _add;
+        private readonly Add _add;
 
         public SimpleDelegateCalculator(Add add)
         {

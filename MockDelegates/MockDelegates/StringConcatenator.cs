@@ -2,7 +2,7 @@
 {
     public class StringConcatenator
     {
-        Add<string> _add;
+        private readonly Add<string> _add;
 
         public StringConcatenator(Add<string> add)
         {
