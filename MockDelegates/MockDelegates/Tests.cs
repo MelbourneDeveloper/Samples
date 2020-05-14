@@ -43,5 +43,25 @@ namespace MockDelegates
             //Verify that the opreation occurred
             adderMock.Verify(a => a(It.IsAny<int>(), It.IsAny<int>()));
         }
+
+
+        [TestMethod]
+        public void TestStringConcatenation()
+        {
+            //Mock the delegate
+            var adderMock = new Mock<Add<string>>();
+
+            //Specifiy behavior of delegate
+            adderMock.Setup(a => a(It.IsAny<string>(), It.IsAny<string>())).Returns("  ");
+
+            //Inject mock in to class
+            var simpleInterfaceCalculator = new StringConcatenator(adderMock.Object);
+
+            //Perform the operation
+            simpleInterfaceCalculator.ConcatenateString(" ", " ");
+
+            //Verify that the opreation occurred
+            adderMock.Verify(a => a(It.IsAny<string>(), It.IsAny<string>()));
+        }
     }
 }
