@@ -1,4 +1,4 @@
 ﻿namespace MockDelegates
 {
-    public delegate T CreateInstance<T>(string name);   
+    public delegate T CreateInstance<out T>(string name);   
 }
