@@ -96,13 +96,13 @@ namespace MockDelegates
 
             //Verify
 
-            const int a = 1;
-            const int b = 1;
+            const int firstNumber = 1;
+            const int secondNumber = 1;
 
-            var result = simpleInterfaceCalculator.Add(a, b);
+            var result = simpleInterfaceCalculator.Add(firstNumber, secondNumber);
             Assert.AreEqual(2, result);
 
-            result = simpleDelegateCalculator.Add(a, b);
+            result = simpleDelegateCalculator.Add(firstNumber, secondNumber);
             Assert.AreEqual(2, result);
 
             var stringResult = stringConcatenator.ConcatenateString(" ", " ");
