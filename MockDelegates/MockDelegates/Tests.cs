@@ -108,7 +108,6 @@ namespace MockDelegates
             Assert.AreEqual("  ", stringResult);
         }
 
-
         [TestMethod]
         public void TestIocContainerWithDependencies()
         {
@@ -122,16 +121,16 @@ namespace MockDelegates
             //Register the class
             serviceCollection.AddSingleton<StringConcatenatorWithDependencies>();
 
-            //Wire up the generic delegate implementation
-            serviceCollection.AddSingleton(s => s.GetRequiredService<Add<string>>());
+            //Wire up the delegate implementation 
+            serviceCollection.AddSingleton<Add<string>>(s => s.GetRequiredService<StringConcatenatorWithDependencies>().ConcatenateString);
 
-            //Get instances of the objects
+            //Get instances of the service
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            var stringConcatenator = serviceProvider.GetService<StringConcatenatorWithDependencies>();
+            var add = serviceProvider.GetService<Add<string>>();
 
             //Verify
 
-            var stringResult = stringConcatenator.ConcatenateString(" ", " ");
+            var stringResult = add(" ", " ");
             Assert.AreEqual("  ", stringResult);
 
             //Verify that the file was written to
