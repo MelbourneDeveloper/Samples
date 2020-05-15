@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using StructureMap;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,6 +19,25 @@ namespace MockDelegates
 
             //Specify behavior of Add method
             adderMock.Setup(a => a.Add(It.IsAny<int>(), It.IsAny<int>())).Returns(2);
+
+            //Inject mock in to class
+            var simpleInterfaceCalculator = new SimpleInterfaceCalculator(adderMock.Object);
+
+            //Perform the operation
+            simpleInterfaceCalculator.Add(1, 1);
+
+            //Verify that the operation occurred
+            adderMock.Verify(a => a.Add(It.IsAny<int>(), It.IsAny<int>()));
+        }
+
+        [TestMethod]
+        public void TestInterfaceWithFunc()
+        {
+            //Mock the interface
+            var adderMock = new Mock<IAdder>();
+
+            //Specify behavior of Add method
+            adderMock.Setup(a => a.Add(It.IsAny<int>(), It.IsAny<int>())).Returns<int, int>((a, b) => a + b);
 
             //Inject mock in to class
             var simpleInterfaceCalculator = new SimpleInterfaceCalculator(adderMock.Object);
@@ -48,6 +68,24 @@ namespace MockDelegates
             adderMock.Verify(a => a(It.IsAny<int>(), It.IsAny<int>()));
         }
 
+        [TestMethod]
+        public void TestDelegateWithFunc()
+        {
+            //Mock the delegate
+            var adderMock = new Mock<Add>();
+
+            //Specify behavior of delegate
+            adderMock.Setup(a => a(It.IsAny<int>(), It.IsAny<int>())).Returns(new Add((a, b) => a + b));
+
+            //Inject mock in to class
+            var simpleInterfaceCalculator = new SimpleDelegateCalculator(adderMock.Object);
+
+            //Perform the operation
+            simpleInterfaceCalculator.Add(1, 1);
+
+            //Verify that the operation occurred
+            adderMock.Verify(a => a(It.IsAny<int>(), It.IsAny<int>()));
+        }
 
         [TestMethod]
         public void TestStringConcatenation()
@@ -155,7 +193,7 @@ namespace MockDelegates
                 _.For<StringConcatenatorWithDependencies>();
 
                 //Wire up the delegate implementation 
-                _.For<Add<string>>().Use<Add<string>>((c) => c.GetInstance<StringConcatenatorWithDependencies>().ConcatenateString);
+                _.For<Add<string>>().Use<Add<string>>(c => c.GetInstance<StringConcatenatorWithDependencies>().ConcatenateString);
             });
 
             //Get instance of the service
