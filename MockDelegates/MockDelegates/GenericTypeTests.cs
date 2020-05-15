@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -8,7 +9,7 @@ namespace MockDelegates
     public partial class GenericTypeTests
     {
         [TestMethod]
-        public void Test2()
+        public void Test1()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IDoer, Doer>();
