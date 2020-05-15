@@ -1,6 +1,6 @@
 ﻿namespace MockDelegates
 {
-    public partial class Tests
+    public partial class DelegateTests
     {
         public class Adder : IAdder
         {

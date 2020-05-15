@@ -9,7 +9,7 @@ using System.Linq;
 namespace MockDelegates
 {
     [TestClass]
-    public partial class Tests
+    public partial class DelegateTests
     {
         [TestMethod]
         public void TestInterface()
