@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -125,19 +126,50 @@ namespace MockDelegates
             //Wire up the delegate implementation 
             serviceCollection.AddSingleton<Add<string>>(s => s.GetRequiredService<StringConcatenatorWithDependencies>().ConcatenateString);
 
-            //Get instances of the service
+            //Get instance of the service
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var add = serviceProvider.GetService<Add<string>>();
 
-            //Verify
-
+            //Call the implementation
             var stringResult = add(" ", " ");
+
+            //Verify
             Assert.AreEqual("  ", stringResult);
 
             //Verify that the file was written to
             mockFileIo.Verify(f => f.WriteData(It.Is<byte[]>(a => a.SequenceEqual(new byte[] { 32, 32 }))));
         }
 
+        [TestMethod]
+        public void TestStructureMapContainerWithDependencies()
+        {
+            var mockFileIo = new Mock<IFileIo>();
+
+            var container = new Container(_ =>
+            {
+
+                //Wire up mock dependency
+                _.For<IFileIo>().Use(mockFileIo.Object);
+
+                //Register the class
+                _.For<StringConcatenatorWithDependencies>();
+
+                //Wire up the delegate implementation 
+                _.For<Add<string>>().Use<Add<string>>((c) => c.GetInstance<StringConcatenatorWithDependencies>().ConcatenateString);
+            });
+
+            //Get instance of the service
+            var add = container.GetInstance<Add<string>>();
+
+            //Call the implementation
+            var stringResult = add(" ", " ");
+
+            //Verify
+            Assert.AreEqual("  ", stringResult);
+
+            //Verify that the file was written to
+            mockFileIo.Verify(f => f.WriteData(It.Is<byte[]>(a => a.SequenceEqual(new byte[] { 32, 32 }))));
+        }
 
         [TestMethod]
         public void TestIocContainerWithFactoryInjection()

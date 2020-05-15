@@ -13,6 +13,7 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    <PackageReference Include="structuremap" Version="4.7.1" />
   </ItemGroup>
 
 </Project>
