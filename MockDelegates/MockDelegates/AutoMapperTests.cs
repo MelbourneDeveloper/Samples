@@ -10,30 +10,30 @@ namespace MockDelegates
         [TestMethod]
         public void TestAutomapper1()
         {
-            //Create an implementation of auto mapper IMapper
-            var config = new MapperConfiguration(
-                cfg =>
-                {
-                    cfg.CreateMap<Order, OrderDto>();
-                    cfg.CreateMap<Person, PersonDto>();
-                }
-                );
-            var mapper = config.CreateMapper();
+//Create an implementation of auto mapper IMapper
+var config = new MapperConfiguration(
+    cfg =>
+    {
+        cfg.CreateMap<Order, OrderDto>();
+        cfg.CreateMap<Person, PersonDto>();
+    }
+    );
+var mapper = config.CreateMapper();
 
-            //Register serviceas
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton(mapper);
-            serviceCollection.AddSingleton<AutoMapperWrapper>();
+//Register serviceas
+var serviceCollection = new ServiceCollection();
+serviceCollection.AddSingleton(mapper);
+serviceCollection.AddSingleton<AutoMapperWrapper>();            
+var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            //Get the injected service
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var mapperWrapper = serviceProvider.GetService<AutoMapperWrapper>();
+//Use the IoC container to construct our class and inject dependencies for us
+var mapperWrapper = serviceProvider.GetService<AutoMapperWrapper>();
 
-            //Perfom mappinmg
-            var order = new Order();
-            var person = new Person();
-            var orderDto = mapperWrapper.Map<OrderDto>(order);
-            var personDto = mapperWrapper.Map<PersonDto>(person);
+//Perfom mapping
+var order = new Order();
+var person = new Person();
+var orderDto = mapperWrapper.Map<OrderDto>(order);
+var personDto = mapperWrapper.Map<PersonDto>(person);
 
             Assert.AreEqual(order.Id, orderDto.Id);
             Assert.AreEqual(person.Id, personDto.Id);
@@ -64,7 +64,7 @@ namespace MockDelegates
             var mapPerson = serviceProvider.GetService<Map<Person>>();
             var mapOrder = serviceProvider.GetService<Map<Order>>();
 
-            //Perfom mappinmg
+            //Perfom mapping
             var order = new Order();
             var person = new Person();
             var orderDto = mapOrder(order);

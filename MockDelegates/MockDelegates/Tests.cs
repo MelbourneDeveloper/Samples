@@ -126,6 +126,7 @@ namespace MockDelegates
             serviceCollection.AddSingleton<SimpleDelegateCalculator>();
             serviceCollection.AddSingleton<SimpleInterfaceCalculator>();
             serviceCollection.AddSingleton<StringConcatenator>();
+            serviceCollection.AddSingleton(typeof(Workflow)
 
             //Get instances of the objects
             var serviceProvider = serviceCollection.BuildServiceProvider();

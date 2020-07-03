@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILoggerSamples", "ILoggerSamples\ILoggerSamples.csproj", "{AE09D116-C413-427E-B913-3F6D02523FE4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE09D116-C413-427E-B913-3F6D02523FE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE09D116-C413-427E-B913-3F6D02523FE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE09D116-C413-427E-B913-3F6D02523FE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE09D116-C413-427E-B913-3F6D02523FE4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F7C61A1A-2846-424C-91AC-8C1C0874F9E8}
+	EndGlobalSection
+EndGlobal
