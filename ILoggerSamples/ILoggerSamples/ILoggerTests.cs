@@ -3,10 +3,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ILoggerSamples
 {
@@ -74,24 +74,27 @@ namespace ILoggerSamples
         }
 
         [TestMethod]
-        public void TestSerilog()
+        public void TestConsoleLoggingWithBeginScope()
         {
-            Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            //Tell Serilog to log to the console
-            .WriteTo.Console()
-            .CreateLogger();
+            var hostBuilder = Host.CreateDefaultBuilder().
+            ConfigureLogging((builderContext, loggingBuilder) =>
+            {
+                loggingBuilder.AddConsole((options) =>
+                {
+                    //This displays arguments from the scope
+                    options.IncludeScopes = true;
+                });
+            });
 
-            //Spin up an environment...
-            var hostBuilder = Host.CreateDefaultBuilder();
-            hostBuilder.UseSerilog();
             var host = hostBuilder.Build();
-            //Get a logger
             var logger = host.Services.GetRequiredService<ILogger<LogTest>>();
-            //Log information to the console
-            logger.LogInformation("Test {count}", 0);
 
-            //Note assertion here. This is just a demo to show that the log is sent to the console. Check the test result
+            //This specifies that every time a log message is logged, the correlation id will be logged as part of it
+            using (logger.BeginScope("Correlation ID: {correlationID}", 123))
+            {
+                logger.LogInformation("Test");
+                logger.LogInformation("Test2");
+            }
         }
 
         #endregion
