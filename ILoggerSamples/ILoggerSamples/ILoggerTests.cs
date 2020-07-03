@@ -97,6 +97,27 @@ namespace ILoggerSamples
             }
         }
 
+        [TestMethod]
+        public void TestConsoleLoggingCategory()
+        {
+            var hostBuilder = Host.CreateDefaultBuilder().
+            ConfigureLogging((builderContext, loggingBuilder) =>
+            {
+                loggingBuilder.AddConsole((options) =>
+                {
+                    //This displays arguments from the scope
+                    options.IncludeScopes = true;
+                });
+            });
+
+            var host = hostBuilder.Build();
+            var loggers = host.Services.GetRequiredService<ILoggerFactory>();
+
+            var logger = loggers.CreateLogger("Category1");
+
+            logger.LogInformation("Test");
+        }
+
         #endregion
 
         #region Private Methods
