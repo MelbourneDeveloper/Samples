@@ -27,14 +27,6 @@ namespace BusinessAndDataLayers
         Task<T> InsertAsync(T item);
         Task<T> UpdateAsync(T item);
     }
-
-    public interface IPersonRepository : IRepository<Person>
-    {
-        Task DeleteAsync(Guid key);
-        Task<IAsyncEnumerable<Person>> GetAsync(IQuery query);
-        Task<Person> InsertAsync(Person item);
-        Task<Person> UpdateAsync(Person item);
-    }
     #endregion
 
     #region Extensions
@@ -72,11 +64,11 @@ namespace BusinessAndDataLayers
     /// <summary>
     /// Note: this doesn't need to implement IPersonRepository but it can. This might confuse the IoC container
     /// </summary>
-    public class PersonBusinessLayer : IPersonRepository
+    public class PersonBusinessLayer : IRepository<Person>
     {
-        IPersonRepository _dataLayer;
+        IRepository<Person> _dataLayer;
 
-        public PersonBusinessLayer(IPersonRepository dataLayer)
+        public PersonBusinessLayer(IRepository<Person> dataLayer)
         {
             _dataLayer = dataLayer;
         }
@@ -116,12 +108,9 @@ namespace BusinessAndDataLayers
 
     public class ExampleWrapper : IExampleWrapper
     {
-        /// <summary>
-        /// Which type to use here? If we use the abstract class, at least we get the benefit of the generic extensions... But, we really should use an interface....
-        /// </summary>
-        IPersonRepository _businessLayer;
+        IRepository<Person> _businessLayer;
 
-        public ExampleWrapper(IPersonRepository businessLayer)
+        public ExampleWrapper(IRepository<Person> businessLayer)
         {
             _businessLayer = businessLayer;
         }
