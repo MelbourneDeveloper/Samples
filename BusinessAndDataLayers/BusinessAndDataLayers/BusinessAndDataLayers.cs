@@ -64,33 +64,37 @@ namespace BusinessAndDataLayers
 
         public async Task DeleteAsync(Guid key)
         {
-            //Deleting business logic
+            //The comments here represent code that would be filled in. We would probably create a partial class and call the custom code in these parts from the generated code.
+
+            //But, all this just begs the question, why not just put delegates here as per the other examples?
+
+            //TODO: Deleting business logic
             await _dataLayer.DeleteAsync(key);
-            //Deleted business logic
+            //TODO: Deleted business logic
         }
 
         public async Task<IAsyncEnumerable<Person>> GetAsync(IQuery query)
         {
-            //Before get logic
+            //TODO: Before get logic
             var results = await _dataLayer.GetAsync(query);
-            //After get logic
+            //TODO: After get logic
             return results;
         }
 
         public async Task<Person> InsertAsync(Person item)
         {
-            //inserting business logic
+            //TODO: inserting business logic
             var person = await _dataLayer.InsertAsync(item);
-            //inserted business logic
+            //TODO: inserted business logic
 
             return person;
         }
 
         public async Task<Person> UpdateAsync(Person item)
         {
-            //updating business logic
+            //TODO: updating business logic
             var person = await _dataLayer.UpdateAsync(item);
-            //updated business logic
+            //TODO: updated business logic
             return person;
         }
     }
