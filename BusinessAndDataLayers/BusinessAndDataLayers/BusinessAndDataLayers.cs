@@ -48,7 +48,8 @@ namespace BusinessAndDataLayers
 
     #region Classes
     /// <summary>
-    /// Note: this doesn't need to implement IPersonRepository but it can. This might confuse the IoC container so it may be better to create a separate interface...
+    /// ***We need one of these per entity to implement the business logic. This guarantees that we need code generation***
+    /// Note: this doesn't need to implement IRepository<Person> but it can. This might confuse the IoC container so it may be better to create a separate interface...
     /// </summary>
     public class PersonBusinessLayer : IRepository<Person>
     {
@@ -68,9 +69,12 @@ namespace BusinessAndDataLayers
             //Deleted business logic
         }
 
-        public Task<IAsyncEnumerable<Person>> GetAsync(IQuery query)
+        public async Task<IAsyncEnumerable<Person>> GetAsync(IQuery query)
         {
-            return _dataLayer.GetAsync(query);
+            //Before get logic
+            var results = await _dataLayer.GetAsync(query);
+            //After get logic
+            return results;
         }
 
         public async Task<Person> InsertAsync(Person item)
@@ -87,7 +91,6 @@ namespace BusinessAndDataLayers
             //updating business logic
             var person = await _dataLayer.UpdateAsync(item);
             //updated business logic
-
             return person;
         }
     }
