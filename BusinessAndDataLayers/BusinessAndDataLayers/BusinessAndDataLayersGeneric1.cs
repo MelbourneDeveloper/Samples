@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessAndDataLayers.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,20 +17,6 @@ namespace BusinessAndDataLayersGeneric1
         Task<object> InsertAsync(object item);
         Task<object> UpdateAsync(object item);
         Task DeleteAsync(Type type, Guid key);
-    }
-
-    /// <summary>
-    /// Note IQuery could be an expresion, or have an expression as a member...
-    /// Or, it could be replaced with IQueryable
-    /// </summary>
-    public interface IQuery
-    {
-    }
-
-    public interface IExampleWrapper
-    {
-        Task<IAsyncEnumerable<Person>> GetAllPeopleAsync();
-        Task<Person> SavePersonAsync(Person person);
     }
     #endregion
 
@@ -142,8 +129,6 @@ namespace BusinessAndDataLayersGeneric1
             return updatedItem;
         }
     }
-
-    public class Person { public string Name { get; set; } }
 
     public class ExampleWrapper : IExampleWrapper
     {

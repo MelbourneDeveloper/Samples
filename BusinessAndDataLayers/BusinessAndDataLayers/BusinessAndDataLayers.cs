@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessAndDataLayers.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,20 +7,6 @@ using System.Threading.Tasks;
 namespace BusinessAndDataLayers
 {
     #region Interfaces
-    /// <summary>
-    /// Note IQuery could be an expresion, or have an expression as a member...
-    /// Or, it could be replaced with IQueryable
-    /// </summary>
-    public interface IQuery
-    {
-    }
-
-    public interface IExampleWrapper
-    {
-        Task<IAsyncEnumerable<Person>> GetAllPeopleAsync();
-        Task<Person> SavePersonAsync(Person person);
-    }
-
     public interface IRepository<T>
     {
         Task DeleteAsync(Guid key);
@@ -56,11 +43,6 @@ namespace BusinessAndDataLayers
     #endregion
 
     #region Classes
-    public class DummyQuery : IQuery
-    {
-        //TODO
-    }
-
     /// <summary>
     /// Note: this doesn't need to implement IPersonRepository but it can. This might confuse the IoC container so it may be better to create a separate interface...
     /// </summary>
@@ -105,8 +87,6 @@ namespace BusinessAndDataLayers
             return person;
         }
     }
-
-    public class Person { public string Name { get; set; } }
 
     public class ExampleWrapper : IExampleWrapper
     {
