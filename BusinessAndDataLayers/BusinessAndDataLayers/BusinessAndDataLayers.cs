@@ -62,10 +62,12 @@ namespace BusinessAndDataLayers
     }
 
     /// <summary>
-    /// Note: this doesn't need to implement IPersonRepository but it can. This might confuse the IoC container
+    /// Note: this doesn't need to implement IPersonRepository but it can. This might confuse the IoC container so it may be better to create a separate interface...
     /// </summary>
     public class PersonBusinessLayer : IRepository<Person>
     {
+        //Note we may want to create an interface as IPersonRepository in scenarios where the interface needs methods specific for Person
+
         IRepository<Person> _dataLayer;
 
         public PersonBusinessLayer(IRepository<Person> dataLayer)
