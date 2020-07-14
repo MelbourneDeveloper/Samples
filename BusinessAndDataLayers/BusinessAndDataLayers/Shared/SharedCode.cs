@@ -26,5 +26,20 @@ namespace BusinessAndDataLayers.Shared
     }
 
     public class Person { public string Name { get; set; } }
+
+    public class ExampleApp
+    {
+        IExampleWrapper _exampleWrapper;
+
+        public ExampleApp(IExampleWrapper exampleWrapper)
+        {
+            _exampleWrapper = exampleWrapper;
+        }
+
+        public Task CreateBobAsync()
+        {
+            return _exampleWrapper.SavePersonAsync(new Person { Name = "Bob" });
+        }
+    }
     #endregion
 }
