@@ -40,7 +40,7 @@ namespace BusinessAndDataLayers
     #region Extensions
     public static class RepositoryExtensions
     {
-        public static async Task<T> SaveAsync<T>(this RepositoryBase<T> repository, T item)
+        public static async Task<T> SaveAsync<T>(this IRepository<T> repository, T item)
         {
             //TODO: the query interface...
             var loadedItems = (await repository.GetAsync(new DummyQuery())).ToListAsync();
@@ -55,7 +55,7 @@ namespace BusinessAndDataLayers
             }
         }
 
-        public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this RepositoryBase<T> repository)
+        public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this IRepository<T> repository)
         {
             //TODO: the query interface...
             return await repository.GetAsync(new DummyQuery());
@@ -64,23 +64,14 @@ namespace BusinessAndDataLayers
     #endregion
 
     #region Classes
-    /// <summary>
-    /// This is a modified repository. It is not the standard DDD version of a repository
-    /// Note: Transaction is left off these methods, but a transaction will probably need to be passed around so that database calls can access the transaction. It could be IDbTransaction, or a new interface like IDbTransaction
-    /// </summary>
-    public abstract class RepositoryBase<T>
-    {
-        public abstract Task<IAsyncEnumerable<T>> GetAsync(IQuery query);
-        public abstract Task<T> InsertAsync(T item);
-        public abstract Task<T> UpdateAsync(T item);
-        public abstract Task DeleteAsync(Guid key);
-    }
-
     public class DummyQuery : IQuery
     {
         //TODO
     }
 
+    /// <summary>
+    /// Note: this doesn't need to implement IPersonRepository but it can. This might confuse the IoC container
+    /// </summary>
     public class PersonBusinessLayer : IPersonRepository
     {
         IPersonRepository _dataLayer;
@@ -128,9 +119,9 @@ namespace BusinessAndDataLayers
         /// <summary>
         /// Which type to use here? If we use the abstract class, at least we get the benefit of the generic extensions... But, we really should use an interface....
         /// </summary>
-        RepositoryBase<Person> _businessLayer;
+        IPersonRepository _businessLayer;
 
-        public ExampleWrapper(RepositoryBase<Person> businessLayer)
+        public ExampleWrapper(IPersonRepository businessLayer)
         {
             _businessLayer = businessLayer;
         }
