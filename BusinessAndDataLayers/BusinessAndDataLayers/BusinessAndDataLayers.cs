@@ -19,6 +19,22 @@ namespace BusinessAndDataLayers
         Task<IAsyncEnumerable<Person>> GetAllPeopleAsync();
         Task<Person> SavePersonAsync(Person person);
     }
+
+    public interface IRepository<T>
+    {
+        Task DeleteAsync(Guid key);
+        Task<IAsyncEnumerable<T>> GetAsync(IQuery query);
+        Task<T> InsertAsync(T item);
+        Task<T> UpdateAsync(T item);
+    }
+
+    public interface IPersonRepository : IRepository<Person>
+    {
+        Task DeleteAsync(Guid key);
+        Task<IAsyncEnumerable<Person>> GetAsync(IQuery query);
+        Task<Person> InsertAsync(Person item);
+        Task<Person> UpdateAsync(Person item);
+    }
     #endregion
 
     #region Extensions
@@ -65,11 +81,14 @@ namespace BusinessAndDataLayers
         //TODO
     }
 
-
-
-    public class PersonBusinessLayer
+    public class PersonBusinessLayer : IPersonRepository
     {
-        RepositoryBase<Person> _dataLayer;
+        IPersonRepository _dataLayer;
+
+        public PersonBusinessLayer(IPersonRepository dataLayer)
+        {
+            _dataLayer = dataLayer;
+        }
 
         public async Task DeleteAsync(Guid key)
         {
@@ -92,7 +111,7 @@ namespace BusinessAndDataLayers
             return person;
         }
 
-        public async Task<object> UpdateAsync(Person item)
+        public async Task<Person> UpdateAsync(Person item)
         {
             //updating business logic
             var person = await _dataLayer.UpdateAsync(item);
@@ -104,45 +123,44 @@ namespace BusinessAndDataLayers
 
     public class Person { public string Name { get; set; } }
 
-    /*
-       public class ExampleWrapper : IExampleWrapper
-       {
-           IRepository _businessLayer;
+    public class ExampleWrapper : IExampleWrapper
+    {
+        /// <summary>
+        /// Which type to use here? If we use the abstract class, at least we get the benefit of the generic extensions... But, we really should use an interface....
+        /// </summary>
+        RepositoryBase<Person> _businessLayer;
 
-           public ExampleWrapper(IRepository businessLayer)
-           {
-               _businessLayer = businessLayer;
-           }
+        public ExampleWrapper(RepositoryBase<Person> businessLayer)
+        {
+            _businessLayer = businessLayer;
+        }
 
-           public Task<IAsyncEnumerable<Person>> GetAllPeopleAsync()
-           {
-               return _businessLayer.GetAllAsync<Person>();
-           }
+        public Task<IAsyncEnumerable<Person>> GetAllPeopleAsync()
+        {
+            return _businessLayer.GetAsync(null);
+        }
 
-           public Task<Person> SavePersonAsync(Person person)
-           {
-               return _businessLayer.SaveAsync(person);
-           }
-       }
-
-
-       public class ExampleApp
-       {
-           IExampleWrapper _exampleWrapper;
-
-           public ExampleApp(IExampleWrapper exampleWrapper)
-           {
-               _exampleWrapper = exampleWrapper;
-           }
-
-           public Task CreateBobAsync()
-           {
-               return _exampleWrapper.SavePersonAsync(new Person { Name = "Bob" });
-           }
-       }
+        public Task<Person> SavePersonAsync(Person person)
+        {
+            //This only works with the abstract class
+            return _businessLayer.SaveAsync(person);
+        }
+    }
 
 
-       */
+    public class ExampleApp
+    {
+        IExampleWrapper _exampleWrapper;
 
+        public ExampleApp(IExampleWrapper exampleWrapper)
+        {
+            _exampleWrapper = exampleWrapper;
+        }
+
+        public Task CreateBobAsync()
+        {
+            return _exampleWrapper.SavePersonAsync(new Person { Name = "Bob" });
+        }
+    }
     #endregion
 }
