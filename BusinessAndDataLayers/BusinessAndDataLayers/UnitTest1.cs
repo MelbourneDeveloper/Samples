@@ -15,23 +15,48 @@ namespace BusinessAndDataLayers
         #region Fields
         Mock<IRepository> _mockDataLayer;
         BusinessLayer _dataLayer;
-        Person person = new Person { Name = "Bob" };
+        Person _person = new Person { Name = "Bob" };
         #endregion
 
         #region Tests
         [TestMethod]
-        public async Task TestMethod1()
+        public async Task TestUpdating()
         {
+            //Arrange
+
+            //Return 1 person
+            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQuery>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(true)));
+
             //Act
-            var savedPerson = await _dataLayer.SaveAsync(person);
+            var savedPerson = await _dataLayer.SaveAsync(_person);
 
             //Assert
 
             //Verify custom business logic
-            Assert.AreEqual("BobUpdate", savedPerson.Name);
+            Assert.AreEqual("BobUpdatingUpdated", savedPerson.Name);
 
             //Verify update was called
             _mockDataLayer.Verify(d => d.UpdateAsync(It.IsAny<Person>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task TestInserted()
+        {
+            //Arrange
+
+            //Return no people
+            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQuery>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
+
+            //Act
+            var savedPerson = await _dataLayer.SaveAsync(_person);
+
+            //Assert
+
+            //Verify custom business logic
+            Assert.AreEqual("BobInsertingInserted", savedPerson.Name);
+
+            //Verify insert was called
+            _mockDataLayer.Verify(d => d.InsertAsync(It.IsAny<Person>()), Times.Once);
         }
         #endregion
 
@@ -40,19 +65,28 @@ namespace BusinessAndDataLayers
         public void TestInitialize()
         {
             _mockDataLayer = new Mock<IRepository>();
-            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQuery>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable()));
-            _mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(person));
+            _mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_person));
+            _mockDataLayer.Setup(r => r.InsertAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_person));
 
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddSingleton<InsertingGeneric<Person>>(async (p) =>
             {
-                p.Name += "Insert";
+                p.Name += "Inserting";
             })
             .AddSingleton<UpdatingGeneric<Person>>(async (p) =>
             {
-                p.Name += "Update";
-            });
+                p.Name += "Updating";
+            })
+            .AddSingleton<UpdatedGeneric<Person>>(async (p) =>
+            {
+                p.Name += "Updated";
+            })
+            .AddSingleton<InsertedGeneric<Person>>(async (p) =>
+            {
+                p.Name += "Inserted";
+            })
+             ;
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -66,14 +100,24 @@ namespace BusinessAndDataLayers
                     var insertingDelegate = (Delegate)serviceProvider.GetRequiredService(insertingDelegateType);
                     await (Task)insertingDelegate.DynamicInvoke(new object[] { entity });
                 },
-                async (entity) => { },
+                async (entity) =>
+                {
+                    var insertingDelegateType = typeof(InsertedGeneric<>).MakeGenericType(new Type[] { entity.GetType() });
+                    var insertingDelegate = (Delegate)serviceProvider.GetRequiredService(insertingDelegateType);
+                    await (Task)insertingDelegate.DynamicInvoke(new object[] { entity });
+                },
                 async (entity) =>
                 {
                     var insertingDelegateType = typeof(UpdatingGeneric<>).MakeGenericType(new Type[] { entity.GetType() });
                     var insertingDelegate = (Delegate)serviceProvider.GetRequiredService(insertingDelegateType);
                     await (Task)insertingDelegate.DynamicInvoke(new object[] { entity });
                 },
-                async (entity) => { },
+                async (entity) =>
+                {
+                    var insertingDelegateType = typeof(UpdatedGeneric<>).MakeGenericType(new Type[] { entity.GetType() });
+                    var insertingDelegate = (Delegate)serviceProvider.GetRequiredService(insertingDelegateType);
+                    await (Task)insertingDelegate.DynamicInvoke(new object[] { entity });
+                },
                 async (type, query) => { },
                 async (items) => { });
         }

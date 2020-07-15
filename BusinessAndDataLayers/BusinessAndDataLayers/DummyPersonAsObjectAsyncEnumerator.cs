@@ -8,6 +8,11 @@ namespace BusinessAndDataLayers
     {
         private bool _isFirst = true;
 
+        public DummyPersonAsObjectAsyncEnumerator(bool returnAPerson)
+        {
+            _isFirst = returnAPerson;
+        }
+
         public object Current { get; } = new Person { Name = "Bob" };
 
         public ValueTask DisposeAsync()

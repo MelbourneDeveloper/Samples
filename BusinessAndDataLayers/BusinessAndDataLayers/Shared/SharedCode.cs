@@ -30,6 +30,11 @@ namespace BusinessAndDataLayers.Shared
     public delegate Task BeforeGet(Type type, IQuery query);
     public delegate Task AfterGet(IAsyncEnumerable<object> results);
 
+
+    public delegate Task InsertedGeneric<T>(T item);
+    public delegate Task UpdatedGeneric<T>(T item);
+    public delegate Task BeforeGetGeneric(IQuery query);
+    public delegate Task AfterGetGeneric<T>(IAsyncEnumerable<T> results);
     public delegate Task InsertingGeneric<T>(T item);
     public delegate Task UpdatingGeneric<T>(T item);
     #endregion
