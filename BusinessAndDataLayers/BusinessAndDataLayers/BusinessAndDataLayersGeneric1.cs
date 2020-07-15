@@ -146,29 +146,5 @@ namespace BusinessAndDataLayersGeneric1
             return _businessLayer.SaveAsync(person);
         }
     }
-
-    public class ExampleApp2
-    {
-        public ExampleApp2()
-        {
-            var businessLayer = new BusinessLayer(null, null, null, async (entity) =>
-            {
-                //Custom business logic goes here
-
-                //This would be the strongest argument for moving business logic to generated business layer classes
-                //In this scenario we end up having a switch on every entity type that has custom logic. It should be noted that this will still generally lead to less code 
-                //than a business layer for each entity, but there will be some performance degradation. This would be suitable for scenarios where there are not many entities with custom logic
-                switch (entity)
-                {
-                    case Person person:
-                        person.Name += "Amended";
-                        break;
-                    case string _:
-                        break;
-                }
-
-            }, null, null, null, null, null);
-        }
-    }
     #endregion
 }
