@@ -12,33 +12,52 @@ namespace BusinessAndDataLayers
     [TestClass]
     public partial class UnitTest1
     {
+        #region Fields
+        Mock<IRepository> _mockDataLayer;
+        BusinessLayer _dataLayer;
+        Person person = new Person { Name = "Bob" };
+        #endregion
+
+        #region Tests
         [TestMethod]
         public async Task TestMethod1()
         {
-            //Arrange
-            var person = new Person { Name = "Bob" };
+            //Act
+            var savedPerson = await _dataLayer.SaveAsync(person);
 
-            var mockDataLayer = new Mock<IRepository>();
+            //Assert
 
-            mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQuery>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable()));
-            mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(person));
+            //Verify custom business logic
+            Assert.AreEqual("BobUpdate", savedPerson.Name);
+
+            //Verify update was called
+            _mockDataLayer.Verify(d => d.UpdateAsync(It.IsAny<Person>()), Times.Once);
+        }
+        #endregion
+
+        #region Arrange
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            _mockDataLayer = new Mock<IRepository>();
+            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQuery>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable()));
+            _mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(person));
 
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddSingleton<InsertingGeneric<Person>>(async (p) =>
             {
                 p.Name += "Insert";
-            });
-
-            serviceCollection.AddSingleton<UpdatingGeneric<Person>>(async (p) =>
+            })
+            .AddSingleton<UpdatingGeneric<Person>>(async (p) =>
             {
                 p.Name += "Update";
             });
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            var dataLayer = new BusinessLayer(
-                mockDataLayer.Object,
+            _dataLayer = new BusinessLayer(
+                _mockDataLayer.Object,
                 async (type, key) => { },
                 async (type, key) => { },
                 async (entity) =>
@@ -57,12 +76,7 @@ namespace BusinessAndDataLayers
                 async (entity) => { },
                 async (type, query) => { },
                 async (items) => { });
-
-            //Act
-            var savedPerson = await dataLayer.SaveAsync(person);
-
-            //Assert
-            Assert.AreEqual("BobUpdate", savedPerson.Name);
         }
+        #endregion
     }
 }
