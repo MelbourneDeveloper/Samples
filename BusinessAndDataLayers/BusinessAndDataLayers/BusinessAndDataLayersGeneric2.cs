@@ -91,7 +91,7 @@ namespace BusinessAndDataLayersGeneric2
             await _beforeGet(type, query);
             //TODO: Implement data layer
             IAsyncEnumerable<object> results = null;
-            await _afterGet(results);
+            await _afterGet(type, results);
             return results;
         }
 

@@ -41,7 +41,9 @@ namespace BusinessAndDataLayersGeneric1
         public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this IRepository repository)
         {
             //TODO: the query interface...
-            return (await repository.GetAsync(typeof(T), new DummyQuery())).Cast<T>();
+            var asyncEnumerable = await repository.GetAsync(typeof(T), new DummyQuery());
+
+            return asyncEnumerable?.Cast<T>();
         }
 
         public static Task DeleteAsync<T>(this IRepository repository, Guid key)
@@ -104,7 +106,7 @@ namespace BusinessAndDataLayersGeneric1
         {
             await _beforeGet(type, query);
             var results = await _dataLayer.GetAsync(type, query);
-            await _afterGet(results);
+            await _afterGet(type, results);
             return results;
         }
 

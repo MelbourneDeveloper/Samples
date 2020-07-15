@@ -28,17 +28,17 @@ namespace BusinessAndDataLayers.Shared
     public delegate Task Updating(object item);
     public delegate Task Updated(object item);
     public delegate Task BeforeGet(Type type, IQuery query);
-    public delegate Task AfterGet(IAsyncEnumerable<object> results);
+    public delegate Task AfterGet(Type type, IAsyncEnumerable<object> results);
 
 
     public delegate Task Deleting<T>(Guid key);
     public delegate Task Deleted<T>(Guid key);
-    public delegate Task InsertedGeneric<T>(T item);
-    public delegate Task UpdatedGeneric<T>(T item);
-    public delegate Task BeforeGetGeneric(IQuery query);
-    public delegate Task AfterGetGeneric<T>(IAsyncEnumerable<T> results);
-    public delegate Task InsertingGeneric<T>(T item);
-    public delegate Task UpdatingGeneric<T>(T item);
+    public delegate Task Inserted<T>(T item);
+    public delegate Task Updated<T>(T item);
+    public delegate Task AfterGet<T>(IAsyncEnumerable<object> results);
+    public delegate Task Inserting<T>(T item);
+    public delegate Task Updating<T>(T item);
+    public delegate Task BeforeGet<T>(IQuery query);
     #endregion
 
     #region Classes
