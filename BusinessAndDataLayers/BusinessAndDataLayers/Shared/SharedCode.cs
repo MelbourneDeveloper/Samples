@@ -31,6 +31,8 @@ namespace BusinessAndDataLayers.Shared
     public delegate Task AfterGet(IAsyncEnumerable<object> results);
 
 
+    public delegate Task Deleting<T>(Guid key);
+    public delegate Task Deleted<T>(Guid key);
     public delegate Task InsertedGeneric<T>(T item);
     public delegate Task UpdatedGeneric<T>(T item);
     public delegate Task BeforeGetGeneric(IQuery query);
@@ -45,7 +47,11 @@ namespace BusinessAndDataLayers.Shared
         //TODO
     }
 
-    public class Person { public string Name { get; set; } }
+    public class Person
+    {
+        public Guid Key { get; set; }
+        public string Name { get; set; }
+    }
 
     public class ExampleApp
     {

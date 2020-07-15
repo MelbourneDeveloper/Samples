@@ -43,6 +43,12 @@ namespace BusinessAndDataLayersGeneric1
             //TODO: the query interface...
             return (await repository.GetAsync(typeof(T), new DummyQuery())).Cast<T>();
         }
+
+        public static Task DeleteAsync<T>(this IRepository repository, Guid key)
+        {
+            //TODO: the query interface...
+            return repository.DeleteAsync(typeof(T), key);
+        }
     }
     #endregion
 
