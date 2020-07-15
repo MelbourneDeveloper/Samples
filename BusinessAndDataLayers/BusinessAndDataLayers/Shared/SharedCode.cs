@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers.Shared
@@ -17,6 +18,20 @@ namespace BusinessAndDataLayers.Shared
         Task<IAsyncEnumerable<Person>> GetAllPeopleAsync();
         Task<Person> SavePersonAsync(Person person);
     }
+    #endregion
+
+    #region Delegates
+    public delegate Task Deleting(Type type, Guid key);
+    public delegate Task Deleted(Type type, Guid key);
+    public delegate Task Inserting(object item);
+    public delegate Task Inserted(object item);
+    public delegate Task Updating(object item);
+    public delegate Task Updated(object item);
+    public delegate Task BeforeGet(Type type, IQuery query);
+    public delegate Task AfterGet(IAsyncEnumerable<object> results);
+
+    public delegate Task InsertingGeneric<T>(T item);
+    public delegate Task UpdatingGeneric<T>(T item);
     #endregion
 
     #region Classes

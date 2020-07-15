@@ -21,19 +21,6 @@ namespace BusinessAndDataLayersGeneric1
     }
     #endregion
 
-    #region Delegates
-    public delegate Task Deleting(Type type, Guid key);
-    public delegate Task Deleted(Type type, Guid key);
-    public delegate Task Inserting(object item);
-    public delegate Task Inserted(object item);
-    public delegate Task Updating(object item);
-    public delegate Task Updated(object item);
-    public delegate Task BeforeGet(Type type, IQuery query);
-    public delegate Task AfterGet(IAsyncEnumerable<object> results);
-
-    public delegate Task InsertingGeneric<T>(T item);
-    #endregion
-
     #region Extensions
     public static class RepositoryExtensions
     {
