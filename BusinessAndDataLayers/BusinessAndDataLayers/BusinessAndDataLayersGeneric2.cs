@@ -1,4 +1,5 @@
 ﻿using BusinessAndDataLayers.Shared;
+using BusinessLayerLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace BusinessAndDataLayersGeneric2
         public static async Task<T> SaveAsync<T>(this IRepository repository, T item)
         {
             //TODO: the query interface...
-            var loadedItems = (await repository.GetAsync(typeof(T), new DummyQuery())).ToListAsync();
+            var loadedItems = (await repository.GetAsync(typeof(T), null)).ToListAsync();
 
             if (loadedItems.Result.Count > 0)
             {
@@ -41,7 +42,7 @@ namespace BusinessAndDataLayersGeneric2
         public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this IRepository repository)
         {
             //TODO: the query interface...
-            return (await repository.GetAsync(typeof(T), new DummyQuery())).Cast<T>();
+            return (await repository.GetAsync(typeof(T), null)).Cast<T>();
         }
     }
     #endregion
