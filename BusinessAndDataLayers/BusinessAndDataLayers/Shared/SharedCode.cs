@@ -1,5 +1,5 @@
 ﻿using BusinessLayerLib;
-using System;
+using DomainLib;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,14 +11,9 @@ namespace BusinessAndDataLayers.Shared
         Task<IAsyncEnumerable<Person>> GetAllPeopleAsync();
         Task<Person> SavePersonAsync(Person person);
     }
-    #endregion
 
-    #region Classes
-    public class Person
-    {
-        public Guid Key { get; set; }
-        public string Name { get; set; }
-    }
+#endregion
+#region Classes
 
     public class ExampleApp
     {

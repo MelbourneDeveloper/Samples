@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BusinessLayer\BusinessLayerLib.csproj" />
+    <ProjectReference Include="..\DomainLib\DomainLib.csproj" />
   </ItemGroup>
 
 </Project>
