@@ -10,7 +10,7 @@ namespace EntityFrameworkCoreGetSQL
     public class UnitTest1
     {
         [TestMethod]
-        public void TestMethod1()
+        public void LogWithCustomLogger()
         {
             var entityFrameworkSqlLogger = new EntityFrameworkSqlLogger((m) =>
             {
@@ -24,6 +24,7 @@ namespace EntityFrameworkCoreGetSQL
                     category == DbLoggerCategory.Database.Command.Name
                     && level == LogLevel.Information);
             });
+
             loggerFactory.AddProvider(new SingletonLoggerProvider(entityFrameworkSqlLogger));
 
             using (var ordersDbContext = new OrdersDbContext(loggerFactory))
@@ -34,7 +35,7 @@ namespace EntityFrameworkCoreGetSQL
         }
 
         [TestMethod]
-        public void TestMethod2()
+        public void LogWithConsoleLogger()
         {
             var loggerFactory = LoggerFactory.Create(builder =>
             {
