@@ -11,9 +11,9 @@ namespace EntityFrameworkCoreGetSQL
         public void TestMethod1()
         {
 
-            var entityFrameworkSqlLogger = new EntityFrameworkSqlLogger((m) => 
-            { 
-                Console.WriteLine(m.CommandText); 
+            var entityFrameworkSqlLogger = new EntityFrameworkSqlLogger((m) =>
+            {
+                Console.WriteLine($"SQL Query:\r\n{m.CommandText}\r\nElapsed:{m.Elapsed} millisecods\r\n\r\n");
             });
 
             using (var ordersDbContext = new OrdersDbContext(new SingletonLoggerProvider(entityFrameworkSqlLogger)))
