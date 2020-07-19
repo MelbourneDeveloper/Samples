@@ -7,8 +7,10 @@ namespace EntityFrameworkCoreGetSQL
 {
     public class OrdersDbContext : DbContext
     {
+        #region Fields
         ILoggerProvider _loggerProvider;
         ILoggerFactory _loggerFactory;
+        #endregion
 
         #region Public Properties
         public DbSet<OrderLine> OrderLines { get; set; }
