@@ -2,11 +2,18 @@
 
 namespace EntityFrameworkCoreGetSQL
 {
-    public class LoggerProvider : ILoggerProvider
+    public class SingletonLoggerProvider : ILoggerProvider
     {
+        ILogger _logger;
+
+        public SingletonLoggerProvider(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         public ILogger CreateLogger(string categoryName)
         {
-            return new Logger();
+            return _logger;
         }
 
         public void Dispose()

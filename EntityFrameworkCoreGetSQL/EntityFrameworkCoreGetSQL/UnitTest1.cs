@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
@@ -13,9 +11,12 @@ namespace EntityFrameworkCoreGetSQL
         public void TestMethod1()
         {
 
+            var entityFrameworkSqlLogger = new EntityFrameworkSqlLogger((m) => 
+            { 
+                Console.WriteLine(m.CommandText); 
+            });
 
-
-            using (var ordersDbContext = new OrdersDbContext(new LoggerProvider()))
+            using (var ordersDbContext = new OrdersDbContext(new SingletonLoggerProvider(entityFrameworkSqlLogger)))
             {
                 var orderLines = ordersDbContext.OrderLines.Where(o => o.Id == Guid.Empty).ToList();
                 orderLines = ordersDbContext.OrderLines.ToList();

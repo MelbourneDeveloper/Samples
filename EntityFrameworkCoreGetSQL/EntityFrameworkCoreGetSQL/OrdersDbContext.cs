@@ -16,10 +16,10 @@ namespace EntityFrameworkCoreGetSQL
         #endregion
 
         #region Constructor
-        public OrdersDbContext(ILoggerProvider loggerFactory) 
+        public OrdersDbContext(ILoggerProvider loggerProvider) 
         {
             _ = Database.EnsureCreated();
-            _loggerProvider = loggerFactory;
+            _loggerProvider = loggerProvider;
             _loggerFactory.AddProvider(_loggerProvider);
         }
         #endregion
@@ -30,6 +30,11 @@ namespace EntityFrameworkCoreGetSQL
             _loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder
+                        //.AddConsole((options) =>
+                        //{
+                        //    //This displays arguments from the scope
+                        //    options.IncludeScopes = true;
+                        //})
                 .AddFilter((category, level) =>
                     category == DbLoggerCategory.Database.Command.Name
                     && level == LogLevel.Information);
@@ -50,6 +55,6 @@ namespace EntityFrameworkCoreGetSQL
             base.OnConfiguring(optionsBuilder);
         }
         #endregion
-
+     
     }
 }
