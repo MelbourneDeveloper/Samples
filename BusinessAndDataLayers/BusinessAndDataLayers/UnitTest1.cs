@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
@@ -29,7 +30,7 @@ namespace BusinessAndDataLayers
             //Arrange
 
             //Return 1 person
-            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQuery>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(true)));
+            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQueryable>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(true)));
 
             //Act
             var savedPerson = await _businessLayer.SaveAsync(_bob);
@@ -49,7 +50,7 @@ namespace BusinessAndDataLayers
             //Arrange
 
             //Return no people
-            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQuery>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
+            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQueryable>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
 
             //Act
             var savedPerson = await _businessLayer.SaveAsync(_bob);
@@ -82,7 +83,7 @@ namespace BusinessAndDataLayers
             var people = await _businessLayer.GetAllAsync<Person>();
 
             //Verify insert was called
-            _mockDataLayer.Verify(d => d.GetAsync(typeof(Person), It.IsAny<IQuery>()), Times.Once);
+            _mockDataLayer.Verify(d => d.GetAsync(typeof(Person), It.IsAny<IQueryable>()), Times.Once);
 
             Assert.IsTrue(_customBefore && _customAfter);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BusinessLayerLib
@@ -46,10 +47,10 @@ namespace BusinessLayerLib
             await _deleted(type, key);
         }
 
-        public async Task<IAsyncEnumerable<object>> GetAsync(Type type, IQuery query)
+        public async Task<IAsyncEnumerable<object>> GetAsync(Type type, IQueryable queryable)
         {
-            await _beforeGet(type, query);
-            var results = await _dataLayer.GetAsync(type, query);
+            await _beforeGet(type, queryable);
+            var results = await _dataLayer.GetAsync(type, queryable);
             await _afterGet(type, results);
             return results;
         }

@@ -15,7 +15,7 @@ namespace BusinessAndDataLayersGeneric2
     /// </summary>
     public interface IRepository
     {
-        Task<IAsyncEnumerable<object>> GetAsync(Type type, IQuery query);
+        Task<IAsyncEnumerable<object>> GetAsync(Type type, IQueryable queryable);
         Task<object> InsertAsync(object item);
         Task<object> UpdateAsync(object item);
         Task DeleteAsync(Type type, Guid key);
@@ -88,9 +88,9 @@ namespace BusinessAndDataLayersGeneric2
             await _deleted(type, key);
         }
 
-        public async Task<IAsyncEnumerable<object>> GetAsync(Type type, IQuery query)
+        public async Task<IAsyncEnumerable<object>> GetAsync(Type type, IQueryable queryable)
         {
-            await _beforeGet(type, query);
+            await _beforeGet(type, queryable);
             //TODO: Implement data layer
             IAsyncEnumerable<object> results = null;
             await _afterGet(type, results);

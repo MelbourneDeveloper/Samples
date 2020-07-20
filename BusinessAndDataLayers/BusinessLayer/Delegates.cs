@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BusinessLayerLib
@@ -10,7 +11,7 @@ namespace BusinessLayerLib
     public delegate Task Inserted(object item);
     public delegate Task Updating(object item);
     public delegate Task Updated(object item);
-    public delegate Task BeforeGet(Type type, IQuery query);
+    public delegate Task BeforeGet(Type type, IQueryable queryable);
     public delegate Task AfterGet(Type type, IAsyncEnumerable<object> results);
 
 
@@ -21,6 +22,6 @@ namespace BusinessLayerLib
     public delegate Task AfterGet<T>(IAsyncEnumerable<object> results);
     public delegate Task Inserting<T>(T item);
     public delegate Task Updating<T>(T item);
-    public delegate Task BeforeGet<T>(IQuery query);
+    public delegate Task BeforeGet<T>(IQueryable queryable);
 
 }

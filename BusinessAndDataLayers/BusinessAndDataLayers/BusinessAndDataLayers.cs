@@ -16,7 +16,7 @@ namespace BusinessAndDataLayers
     public interface IRepository<T>
     {
         Task DeleteAsync(Guid key);
-        Task<IAsyncEnumerable<T>> GetAsync(IQuery query);
+        Task<IAsyncEnumerable<T>> GetAsync(IQueryable queryable);
         Task<T> InsertAsync(T item);
         Task<T> UpdateAsync(T item);
     }
@@ -75,10 +75,10 @@ namespace BusinessAndDataLayers
             //TODO: Deleted business logic
         }
 
-        public async Task<IAsyncEnumerable<Person>> GetAsync(IQuery query)
+        public async Task<IAsyncEnumerable<Person>> GetAsync(IQueryable queryable)
         {
             //TODO: Before get logic
-            var results = await _dataLayer.GetAsync(query);
+            var results = await _dataLayer.GetAsync(queryable);
             //TODO: After get logic
             return results;
         }
