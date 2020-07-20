@@ -8,7 +8,7 @@ namespace BusinessLayerLib
     #region Extensions
     public static class RepositoryExtensions
     {
-        public static async Task<T> SaveAsync<T>(this IRepository repository, T item)
+        public static async Task<T> SaveAsync<T>(this IBusinessLayer repository, T item)
         {
             //TODO: the query interface...
             var loadedItems = (await repository.GetAsync(typeof(T), null)).ToListAsync();
@@ -23,7 +23,7 @@ namespace BusinessLayerLib
             }
         }
 
-        public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this IRepository repository)
+        public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this IBusinessLayer repository)
         {
             //TODO: the query interface...
             var asyncEnumerable = await repository.GetAsync(typeof(T), null);
@@ -31,7 +31,7 @@ namespace BusinessLayerLib
             return asyncEnumerable?.Cast<T>();
         }
 
-        public static Task DeleteAsync<T>(this IRepository repository, Guid key)
+        public static Task DeleteAsync<T>(this IBusinessLayer repository, Guid key)
         {
             //TODO: the query interface...
             return repository.DeleteAsync(typeof(T), key);

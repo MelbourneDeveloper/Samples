@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace BusinessLayerLib
 {
-    public class BusinessLayer : IRepository
+    public class BusinessLayer : IBusinessLayer
     {
-        private IRepository _dataLayer;
+        private IBusinessLayer _dataLayer;
         Deleting _deleting;
         Deleted _deleted;
         Inserting _inserting;
@@ -18,7 +18,7 @@ namespace BusinessLayerLib
         AfterGet _afterGet;
 
         public BusinessLayer(
-            IRepository dataLayer,
+            IBusinessLayer dataLayer,
             Deleting deleting,
             Deleted deleted,
             Inserting inserting,

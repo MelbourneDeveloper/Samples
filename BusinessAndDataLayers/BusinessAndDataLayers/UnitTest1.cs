@@ -1,5 +1,7 @@
 using BusinessLayerLib;
 using DomainLib;
+using EntityFrameworkCoreGetSQL;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -14,7 +16,7 @@ namespace BusinessAndDataLayers
     public partial class UnitTest1
     {
         #region Fields
-        Mock<IRepository> _mockDataLayer;
+        Mock<IBusinessLayer> _mockDataLayer;
         BusinessLayer _businessLayer;
         Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
         private bool _customDeleting = false;
@@ -24,6 +26,26 @@ namespace BusinessAndDataLayers
         #endregion
 
         #region Tests
+
+        [TestMethod]
+        public async Task TestUpdating2()
+        {
+            Guid guid = Guid.NewGuid();
+            using (var ordersDbContext = new OrdersDbContext())
+            {
+                ordersDbContext.Orders.Add(new Order { Id = guid });
+                await ordersDbContext.SaveChangesAsync();
+
+                var queryableOrders = (IQueryable<Order>)ordersDbContext.Orders;
+                queryableOrders = queryableOrders.Where(o => o.Id == guid);
+                var sql = queryableOrders.ToQueryString();
+
+                var asyncEnumerable = await new EntityFrameworkDataLayer(ordersDbContext).GetAsync(typeof(Order), sql, new object[] { guid });
+
+                var returnValue = await asyncEnumerable.ToListAsync();
+            }
+        }
+
         [TestMethod]
         public async Task TestUpdating()
         {
@@ -87,13 +109,15 @@ namespace BusinessAndDataLayers
 
             Assert.IsTrue(_customBefore && _customAfter);
         }
+
+
         #endregion
 
         #region Arrange
         [TestInitialize]
         public void TestInitialize()
         {
-            _mockDataLayer = new Mock<IRepository>();
+            _mockDataLayer = new Mock<IBusinessLayer>();
             _mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
             _mockDataLayer.Setup(r => r.InsertAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
 
