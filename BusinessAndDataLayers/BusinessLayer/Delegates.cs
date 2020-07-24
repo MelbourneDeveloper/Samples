@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace BusinessLayerLib
@@ -11,7 +12,7 @@ namespace BusinessLayerLib
     public delegate Task Inserted(object item);
     public delegate Task Updating(object item);
     public delegate Task Updated(object item);
-    public delegate Task BeforeGet(Type type, IQueryable queryable);
+    public delegate Task BeforeGet(Type type, Expression predicate);
     public delegate Task AfterGet(Type type, IAsyncEnumerable<object> results);
 
 

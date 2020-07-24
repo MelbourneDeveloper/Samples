@@ -11,7 +11,7 @@ namespace BusinessLayerLib
         public static async Task<T> SaveAsync<T>(this IBusinessLayer repository, T item)
         {
             //TODO: the query interface...
-            var loadedItems = (await repository.GetAsync(typeof(T), null)).ToListAsync();
+            var loadedItems = (await repository.GetAsync<T>(null)).ToListAsync();
 
             if (loadedItems.Result.Count > 0)
             {
@@ -26,7 +26,7 @@ namespace BusinessLayerLib
         public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this IBusinessLayer repository)
         {
             //TODO: the query interface...
-            var asyncEnumerable = await repository.GetAsync(typeof(T), null);
+            var asyncEnumerable = await repository.GetAsync<T>(null);
 
             return asyncEnumerable?.Cast<T>();
         }

@@ -1,14 +1,13 @@
 ﻿using BusinessLayerLib;
-using EntityFrameworkCoreGetSQL;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
 {
-    public class EntityFrameworkDataLayer : IDataLayer
+    public class EntityFrameworkDataLayer : IBusinessLayer
     {
         DbContext _dbContext;
 
@@ -22,27 +21,16 @@ namespace BusinessAndDataLayers
             throw new NotImplementedException();
         }
 
-        public Task<IAsyncEnumerable<object>> GetAsync(Type type, string selectStatement, object[] parameters)
+        public Task<IAsyncEnumerable<object>> GetAsync<T>(Expression<Func<T, bool>> predicate)
         {
             var setMeth = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
 
-            var setMethodWithTypeArgument = setMeth.MakeGenericMethod(new Type[] { type });
+            var setMethodWithTypeArgument = setMeth.MakeGenericMethod(new Type[] { typeof(T) });
 
-            var dbSets = (DbSet<Order>)setMethodWithTypeArgument.Invoke(_dbContext, null);
+            var dbSets = setMethodWithTypeArgument.Invoke(_dbContext, null);
 
-            var fromSqlRawMethod = typeof(RelationalQueryableExtensions).GetMethod(nameof(RelationalQueryableExtensions.FromSqlRaw)).MakeGenericMethod(new Type[] { type });
 
-            var queryableOrders = fromSqlRawMethod.Invoke(null, new object[] { dbSets, selectStatement, new object[] {  } });
-
-            var toAsyncEnumerableMethod = typeof(AsyncEnumerable).GetMethod(
-                nameof(AsyncEnumerable.ToAsyncEnumerable),
-                new Type[] { typeof(IEnumerable<>).MakeGenericType(new Type[] { type }) });
-
-            var castMethod = typeof(AsyncEnumerable).GetMethod(nameof(AsyncEnumerable.Cast)).MakeGenericMethod(new Type[] { typeof(object) });
-
-            var result = (IAsyncEnumerable<object>)castMethod.Invoke(null, new object[] { queryableOrders });
-
-            return Task.FromResult(result);
+            return null;
         }
 
         public Task<object> InsertAsync(object item)

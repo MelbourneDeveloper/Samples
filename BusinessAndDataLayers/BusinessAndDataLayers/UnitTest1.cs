@@ -8,6 +8,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
@@ -36,12 +37,8 @@ namespace BusinessAndDataLayers
                 ordersDbContext.Orders.Add(new Order { Id = guid });
                 await ordersDbContext.SaveChangesAsync();
 
-                var queryableOrders = (IQueryable<Order>)ordersDbContext.Orders;
-                queryableOrders = queryableOrders.Where(o => o.Id == guid);
-                var sql = queryableOrders.ToQueryString();
-
                 //This fails because the SQL the EF says it has generated is different to what it accepts.
-                var asyncEnumerable = await new EntityFrameworkDataLayer(ordersDbContext).GetAsync(typeof(Order), sql, new object[] { guid });
+                var asyncEnumerable = await new EntityFrameworkDataLayer(ordersDbContext).GetAsync<Order>(o => o.Id == guid);
 
                 var returnValue = await asyncEnumerable.ToListAsync();
             }
@@ -53,7 +50,7 @@ namespace BusinessAndDataLayers
             //Arrange
 
             //Return 1 person
-            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQueryable>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(true)));
+            _mockDataLayer.Setup(r => r.GetAsync<Person>(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(true)));
 
             //Act
             var savedPerson = await _businessLayer.SaveAsync(_bob);
@@ -73,7 +70,7 @@ namespace BusinessAndDataLayers
             //Arrange
 
             //Return no people
-            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Type>(), It.IsAny<IQueryable>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
+            _mockDataLayer.Setup(r => r.GetAsync<Person>(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
 
             //Act
             var savedPerson = await _businessLayer.SaveAsync(_bob);
@@ -106,7 +103,7 @@ namespace BusinessAndDataLayers
             var people = await _businessLayer.GetAllAsync<Person>();
 
             //Verify insert was called
-            _mockDataLayer.Verify(d => d.GetAsync(typeof(Person), It.IsAny<IQueryable>()), Times.Once);
+            _mockDataLayer.Verify(d => d.GetAsync(It.IsAny<Expression<Func<Person, bool>>>()), Times.Once);
 
             Assert.IsTrue(_customBefore && _customAfter);
         }
