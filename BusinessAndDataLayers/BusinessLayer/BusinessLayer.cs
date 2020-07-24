@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -48,10 +47,11 @@ namespace BusinessLayerLib
             await _deleted(type, key);
         }
 
-        public async Task<IAsyncEnumerable<object>> GetAsync<T>(Expression<Func<T, bool>> predicate)
+        public async Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate)
         {
             await _beforeGet(typeof(T), predicate);
             var results = await _dataLayer.GetAsync(predicate);
+            //Note: IAsyncEnumerable doesn't have a non-generic version
             await _afterGet(typeof(T), results);
             return results;
         }

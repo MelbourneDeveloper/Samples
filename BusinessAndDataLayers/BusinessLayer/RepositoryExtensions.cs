@@ -28,7 +28,7 @@ namespace BusinessLayerLib
             //TODO: the query interface...
             var asyncEnumerable = await repository.GetAsync<T>(null);
 
-            return asyncEnumerable?.Cast<T>();
+            return asyncEnumerable;
         }
 
         public static Task DeleteAsync<T>(this IBusinessLayer repository, Guid key)

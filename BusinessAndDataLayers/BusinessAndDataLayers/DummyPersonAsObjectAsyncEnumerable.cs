@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using DomainLib;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace BusinessAndDataLayers
 {
-    public class DummyPersonAsObjectAsyncEnumerable : IAsyncEnumerable<object>
+    public class DummyPersonAsObjectAsyncEnumerable : IAsyncEnumerable<Person>
     {
         DummyPersonAsObjectAsyncEnumerator dummyPersonAsObjectAsyncEnumerator;
 
@@ -12,7 +13,7 @@ namespace BusinessAndDataLayers
             dummyPersonAsObjectAsyncEnumerator = new DummyPersonAsObjectAsyncEnumerator(returnAPerson);
         }
 
-        public IAsyncEnumerator<object> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        public IAsyncEnumerator<Person> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
             return dummyPersonAsObjectAsyncEnumerator;
         }

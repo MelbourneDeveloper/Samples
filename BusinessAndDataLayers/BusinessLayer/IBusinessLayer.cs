@@ -11,7 +11,7 @@ namespace BusinessLayerLib
     /// </summary>
     public interface IBusinessLayer
     {
-        Task<IAsyncEnumerable<object>> GetAsync<T>(Expression<Func<T, bool>> predicate);
+        Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate);
         Task<object> InsertAsync(object item);
         Task<object> UpdateAsync(object item);
         Task DeleteAsync(Type type, Guid key);

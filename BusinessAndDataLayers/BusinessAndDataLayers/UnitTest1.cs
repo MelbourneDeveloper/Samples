@@ -50,7 +50,7 @@ namespace BusinessAndDataLayers
             //Arrange
 
             //Return 1 person
-            _mockDataLayer.Setup(r => r.GetAsync<Person>(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(true)));
+            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(true)));
 
             //Act
             var savedPerson = await _businessLayer.SaveAsync(_bob);
@@ -70,7 +70,7 @@ namespace BusinessAndDataLayers
             //Arrange
 
             //Return no people
-            _mockDataLayer.Setup(r => r.GetAsync<Person>(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
+            _mockDataLayer.Setup(r => r.GetAsync<Person>(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(false)));
 
             //Act
             var savedPerson = await _businessLayer.SaveAsync(_bob);
