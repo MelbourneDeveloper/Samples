@@ -32,7 +32,7 @@ namespace BusinessAndDataLayers
 
             var fromSqlRawMethod = typeof(RelationalQueryableExtensions).GetMethod(nameof(RelationalQueryableExtensions.FromSqlRaw)).MakeGenericMethod(new Type[] { type });
 
-            var queryableOrders = fromSqlRawMethod.Invoke(null, new object[] { dbSets, selectStatement, parameters });
+            var queryableOrders = fromSqlRawMethod.Invoke(null, new object[] { dbSets, selectStatement, new object[] {  } });
 
             var toAsyncEnumerableMethod = typeof(AsyncEnumerable).GetMethod(
                 nameof(AsyncEnumerable.ToAsyncEnumerable),

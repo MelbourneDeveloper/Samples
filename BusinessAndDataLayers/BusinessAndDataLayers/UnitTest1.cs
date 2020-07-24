@@ -40,6 +40,7 @@ namespace BusinessAndDataLayers
                 queryableOrders = queryableOrders.Where(o => o.Id == guid);
                 var sql = queryableOrders.ToQueryString();
 
+                //This fails because the SQL the EF says it has generated is different to what it accepts.
                 var asyncEnumerable = await new EntityFrameworkDataLayer(ordersDbContext).GetAsync(typeof(Order), sql, new object[] { guid });
 
                 var returnValue = await asyncEnumerable.ToListAsync();
