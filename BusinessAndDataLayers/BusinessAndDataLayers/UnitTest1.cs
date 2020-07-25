@@ -15,6 +15,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using LiteDBLib;
+using ExpressionFromGraphQLLib;
+using EntityGraphQL.Schema;
 
 namespace BusinessAndDataLayers
 {
@@ -26,7 +28,7 @@ namespace BusinessAndDataLayers
         Mock<IRepository> _mockDataLayer;
         BusinessLayer _businessLayer;
         Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
-        string _id = Guid.NewGuid().ToString().Replace("-", "");
+        string _id = Guid.NewGuid().ToString().Replace("-", "*");
         private bool _customDeleting = false;
         private bool _customDeleted = false;
         private bool _customBefore = false;
@@ -45,6 +47,28 @@ namespace BusinessAndDataLayers
                 IRepository entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
                 var asyncEnumerable = await entityFrameworkDataLayer
                     .GetAsync<OrderRecord>(o => o.Id == _id);
+                var returnValue = await asyncEnumerable.ToListAsync();
+                Assert.AreEqual(1, returnValue.Count);
+            }
+        }
+
+
+        [TestMethod]
+        public async Task TestGetEntityFrameworkViaGraphQL()
+        {
+            var schema = SchemaBuilder.FromObject<OrdersDbContext>();
+
+            var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
+
+            var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
+
+            await CreateOrdersDb();
+
+            using (var ordersDbContext = new OrdersDbContext())
+            {
+                IRepository entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
+                var asyncEnumerable = await entityFrameworkDataLayer
+                    .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
             }

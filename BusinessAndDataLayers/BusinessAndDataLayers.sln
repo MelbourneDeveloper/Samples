@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoDbLayer", "RepoDbLayer\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiteDBLib", "LiteDBLib\LiteDBLib.csproj", "{0CFAEEB3-FE9E-48AC-9428-A4C6CFF42E2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionFromGraphQLLib", "ExpressionFromGraphQLLib\ExpressionFromGraphQLLib.csproj", "{F6A234FE-B973-4490-BFE0-E9A66987FD07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{0CFAEEB3-FE9E-48AC-9428-A4C6CFF42E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CFAEEB3-FE9E-48AC-9428-A4C6CFF42E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CFAEEB3-FE9E-48AC-9428-A4C6CFF42E2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6A234FE-B973-4490-BFE0-E9A66987FD07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6A234FE-B973-4490-BFE0-E9A66987FD07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6A234FE-B973-4490-BFE0-E9A66987FD07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6A234FE-B973-4490-BFE0-E9A66987FD07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
