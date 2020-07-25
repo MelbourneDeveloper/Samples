@@ -35,6 +35,7 @@ namespace BusinessAndDataLayers
         private bool _customDeleted = false;
         private bool _customBefore = false;
         private bool _customAfter = false;
+        Expression _getOrderByIdPredicate;
         #endregion
 
         #region Tests
@@ -48,7 +49,7 @@ namespace BusinessAndDataLayers
             {
                 var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
                 var asyncEnumerable = await entityFrameworkDataLayer
-                    .GetAsync(ExpresionHelpers.CreateQueryExpression<OrderRecord>(o => o.Id == _id));
+                    .GetAsync(_getOrderByIdPredicate);
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
             }
@@ -135,7 +136,7 @@ namespace BusinessAndDataLayers
             {
                 var repoDbDataLayer = new RepoDbDataLayer(connection);
                 var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync<OrderRecord>(o => o.Id == _id);
+                    .GetAsync(_getOrderByIdPredicate);
 
 
                 var returnValue = await asyncEnumerable.ToListAsync();
@@ -152,7 +153,7 @@ namespace BusinessAndDataLayers
             {
                 var repoDbDataLayer = new LiteDbDataLayer(db);
                 var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync<OrderRecord>(o => o.Id == _id);
+                    .GetAsync(_getOrderByIdPredicate);
 
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
@@ -252,12 +253,12 @@ namespace BusinessAndDataLayers
 
 
         #endregion
-
         #region Arrange
         [TestInitialize]
         public async Task TestInitialize()
         {
-            _businessLayer = GetBusinessLayer(_mockGet.Object).businessLayer;
+            _getOrderByIdPredicate = ExpresionHelpers.CreateQueryExpression<OrderRecord>(o => o.Id == _id);
+            _businessLayer = GetBusinessLayer().businessLayer;
         }
 
         private async Task CreateOrdersDb()
