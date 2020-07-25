@@ -12,8 +12,6 @@ namespace BusinessLayerLib
         Deleted _deleted;
         Inserting _inserting;
         Inserted _inserted;
-        Updating _updating;
-        Updated _updated;
         BeforeGet _beforeGet;
         AfterGet _afterGet;
 
@@ -23,8 +21,6 @@ namespace BusinessLayerLib
             Deleted deleted = null,
             Inserting inserting = null,
             Inserted inserted = null,
-            Updating updating = null,
-            Updated updated = null,
             BeforeGet beforeGet = null,
             AfterGet afterGet = null
            )
@@ -34,17 +30,16 @@ namespace BusinessLayerLib
             _deleted = deleted;
             _inserting = inserting;
             _inserted = inserted;
-            _updating = updating;
-            _updated = updated;
             _beforeGet = beforeGet;
             _afterGet = afterGet;
         }
 
-        public async Task DeleteAsync(Type type, Guid key)
+        public async Task<int> DeleteAsync(Type type, object key)
         {
             await _deleting(type, key);
-            await _dataLayer.DeleteAsync(type, key);
-            await _deleted(type, key);
+            var deleteCount = await _dataLayer.DeleteAsync(type, key);
+            await _deleted(type, key, deleteCount);
+            return deleteCount;
         }
 
         public async Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
@@ -56,20 +51,13 @@ namespace BusinessLayerLib
             return results;
         }
 
-        public async Task<object> InsertAsync(object item)
+        public async Task<object> SaveAsync(object item, bool isUpdate)
         {
-            await _inserting(item);
-            var insertedItem = await _dataLayer.InsertAsync(item);
-            await _inserted(insertedItem);
-            return insertedItem;
-        }
+            await _inserting(item, isUpdate);
+            var insertedItem = await _dataLayer.SaveAsync(item, isUpdate);
+            await _inserted(insertedItem, isUpdate);
 
-        public async Task<object> UpdateAsync(object item)
-        {
-            await _updating(item);
-            var updatedItem = await _dataLayer.UpdateAsync(item);
-            await _updated(item);
-            return updatedItem;
+            return insertedItem;
         }
     }
 }

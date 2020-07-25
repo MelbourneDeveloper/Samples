@@ -17,7 +17,7 @@ namespace BusinessAndDataLayers
             _dbContext = dbContext;
         }
 
-        public Task DeleteAsync(Type type, Guid key)
+        public Task<int> DeleteAsync(Type type, object key)
         {
             throw new NotImplementedException();
         }
@@ -35,14 +35,10 @@ namespace BusinessAndDataLayers
             return Task.FromResult(Queryable.Where(dbSets, predicate).ToAsyncEnumerable());
         }
 
-        public Task<object> InsertAsync(object item)
+        public Task<object> SaveAsync(object item, bool isUpdate)
         {
             throw new NotImplementedException();
         }
 
-        public Task<object> UpdateAsync(object item)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

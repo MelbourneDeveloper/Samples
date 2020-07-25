@@ -96,7 +96,7 @@ namespace BusinessAndDataLayers
             _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(true)));
 
             //Act
-            var savedPerson = await _businessLayer.SaveAsync(_bob);
+            var savedPerson = await _businessLayer.SaveAsync<Person>(_bob, true);
 
             //Assert
 
@@ -104,7 +104,7 @@ namespace BusinessAndDataLayers
             Assert.AreEqual("BobUpdatingUpdated", savedPerson.Name);
 
             //Verify update was called
-            _mockDataLayer.Verify(d => d.UpdateAsync(It.IsAny<Person>()), Times.Once);
+            _mockDataLayer.Verify(d => d.SaveAsync(It.IsAny<Person>(), true), Times.Once);
         }
 
         [TestMethod]
@@ -116,7 +116,7 @@ namespace BusinessAndDataLayers
             _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(false)));
 
             //Act
-            var savedPerson = await _businessLayer.SaveAsync(_bob);
+            var savedPerson = await _businessLayer.SaveAsync<Person>(_bob, false);
 
             //Assert
 
@@ -124,7 +124,7 @@ namespace BusinessAndDataLayers
             Assert.AreEqual("BobInsertingInserted", savedPerson.Name);
 
             //Verify insert was called
-            _mockDataLayer.Verify(d => d.InsertAsync(It.IsAny<Person>()), Times.Once);
+            _mockDataLayer.Verify(d => d.SaveAsync(It.IsAny<Person>(), false), Times.Once);
         }
 
         [TestMethod]
@@ -159,8 +159,8 @@ namespace BusinessAndDataLayers
         public async Task TestInitialize()
         {
             _mockDataLayer = new Mock<IRepository>();
-            _mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
-            _mockDataLayer.Setup(r => r.InsertAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
+            _mockDataLayer.Setup(r => r.SaveAsync(It.IsAny<object>(), true)).Returns(Task.FromResult<object>(_bob));
+            _mockDataLayer.Setup(r => r.SaveAsync(It.IsAny<object>(), false)).Returns(Task.FromResult<object>(_bob));
 
             _businessLayer = GetBusinessLayer(_mockDataLayer.Object).businessLayer;
 
@@ -176,21 +176,27 @@ namespace BusinessAndDataLayers
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddSingleton<Inserting<Person>>(async (p) =>
+            serviceCollection.AddSingleton<Inserting<Person>>(async (p, u) =>
             {
-                p.Name += "Inserting";
+                if (u)
+                {
+                    p.Name += "Updating";
+                }
+                else
+                {
+                    p.Name += "Inserting";
+                }
             })
-            .AddSingleton<Updating<Person>>(async (p) =>
+            .AddSingleton<Inserted<Person>>(async (p, u) =>
             {
-                p.Name += "Updating";
-            })
-            .AddSingleton<Updated<Person>>(async (p) =>
-            {
-                p.Name += "Updated";
-            })
-            .AddSingleton<Inserted<Person>>(async (p) =>
-            {
-                p.Name += "Inserted";
+                if (u)
+                {
+                    p.Name += "Updated";
+                }
+                else
+                {
+                    p.Name += "Inserted";
+                }
             })
             .AddSingleton<Deleting<Person>>(async (key) =>
             {
@@ -220,39 +226,25 @@ namespace BusinessAndDataLayers
                     if (@delegate == null) return;
                     await (Task)@delegate?.DynamicInvoke(new object[] { key });
                 },
-                async (type, key) =>
+                async (type, key, count) =>
                 {
                     var delegateType = typeof(Deleted<>).MakeGenericType(new Type[] { type });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
                     await (Task)@delegate?.DynamicInvoke(new object[] { key });
-                }, async (entity) =>
+                }, async (entity, isUpdate) =>
                 {
                     var delegateType = typeof(Inserting<>).MakeGenericType(new Type[] { entity.GetType() });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { entity });
+                    await (Task)@delegate?.DynamicInvoke(new object[] { entity, isUpdate });
                 },
-                async (entity) =>
+                async (entity, isUpdate) =>
                 {
                     var delegateType = typeof(Inserted<>).MakeGenericType(new Type[] { entity.GetType() });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { entity });
-                },
-                async (entity) =>
-                {
-                    var delegateType = typeof(Updating<>).MakeGenericType(new Type[] { entity.GetType() });
-                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
-                    if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { entity });
-                },
-                async (entity) =>
-                {
-                    var delegateType = typeof(Updated<>).MakeGenericType(new Type[] { entity.GetType() });
-                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
-                    if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { entity });
+                    await (Task)@delegate?.DynamicInvoke(new object[] { entity, isUpdate });
                 },
                 async (type, query) =>
                 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BusinessLayerLib
@@ -8,19 +7,9 @@ namespace BusinessLayerLib
     #region Extensions
     public static class RepositoryExtensions
     {
-        public static async Task<T> SaveAsync<T>(this IRepository repository, T item) where T : class
+        public static async Task<T> SaveAsync<T>(this IRepository repository, T item, bool isUpdate) where T : class
         {
-            //TODO: the query interface...
-            var loadedItems = (await repository.GetAsync<T>(null)).ToListAsync();
-
-            if (loadedItems.Result.Count > 0)
-            {
-                return (T)await repository.UpdateAsync(item);
-            }
-            else
-            {
-                return (T)await repository.InsertAsync(item);
-            }
+            return (T)await repository.SaveAsync(item, isUpdate);
         }
 
         public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this IRepository repository) where T : class

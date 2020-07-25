@@ -18,8 +18,7 @@ namespace BusinessLayerLib
         /// <param name="predicate"></param>
         /// <returns></returns>
         Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class;
-        Task<object> InsertAsync(object item);
-        Task<object> UpdateAsync(object item);
-        Task DeleteAsync(Type type, Guid key);
+        Task<object> SaveAsync(object item, bool isUpdate);
+        Task<int> DeleteAsync(Type type, object key);
     }
 }

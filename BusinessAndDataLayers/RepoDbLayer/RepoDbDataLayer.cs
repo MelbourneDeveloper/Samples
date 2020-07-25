@@ -1,7 +1,6 @@
 ﻿
 using BusinessLayerLib;
 using RepoDb;
-using RepoDb.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,7 +19,7 @@ namespace RepoDbLayer
             _dbConnection = dbConnection;
         }
 
-        public Task DeleteAsync(Type type, Guid key)
+        public Task<int> DeleteAsync(Type type, object key)
         {
             throw new NotImplementedException();
         }
@@ -31,12 +30,7 @@ namespace RepoDbLayer
         }
 
 
-        public Task<object> InsertAsync(object item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<object> UpdateAsync(object item)
+        public Task<object> SaveAsync(object item, bool isUpdate)
         {
             throw new NotImplementedException();
         }
