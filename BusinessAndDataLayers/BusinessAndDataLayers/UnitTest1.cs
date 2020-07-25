@@ -210,11 +210,6 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestInserted()
         {
-            //Arrange
-
-            //Return no people
-            _mockGet.Setup(r => r(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
-
             //Act
             var savedPerson = (Person)await _businessLayer.SaveAsync(_bob, false);
 
@@ -245,10 +240,13 @@ namespace BusinessAndDataLayers
             //Act
             var people = await _businessLayer.GetAsync<Person>(null);
 
-            //Verify insert was called
+            //Verify get was called
             _mockGet.Verify(d => d(It.IsAny<Expression<Func<Person, bool>>>()), Times.Once);
 
             Assert.IsTrue(_customBefore && _customAfter);
+
+            //This returns an empty list by default
+            Assert.AreEqual(0, (await people.ToListAsync()).Count);
         }
 
 
@@ -257,6 +255,14 @@ namespace BusinessAndDataLayers
         [TestInitialize]
         public async Task TestInitialize()
         {
+            _mockGet = new Mock<GetAsync>();
+            _mockSave = new Mock<SaveAsync>();
+            _mockDelete = new Mock<DeleteAsync>();
+
+            _mockSave.Setup(r => r(It.IsAny<object>(), true)).Returns(Task.FromResult<object>(_bob));
+            _mockSave.Setup(r => r(It.IsAny<object>(), false)).Returns(Task.FromResult<object>(_bob));
+            _mockGet.Setup(r => r(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
+
             _getOrderByIdPredicate = ExpresionHelpers.CreateQueryExpression<OrderRecord>(o => o.Id == _id);
             _businessLayer = GetBusinessLayer().businessLayer;
         }
@@ -314,13 +320,6 @@ namespace BusinessAndDataLayers
 
         private (BusinessLayer businessLayer, ServiceProvider serviceProvider) GetBusinessLayer()
         {
-            _mockGet = new Mock<GetAsync>();
-            _mockSave = new Mock<SaveAsync>();
-            _mockDelete = new Mock<DeleteAsync>();
-
-            _mockSave.Setup(r => r(It.IsAny<object>(), true)).Returns(Task.FromResult<object>(_bob));
-            _mockSave.Setup(r => r(It.IsAny<object>(), false)).Returns(Task.FromResult<object>(_bob));
-
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddSingleton<Saving<Person>>(async (p, u) =>
