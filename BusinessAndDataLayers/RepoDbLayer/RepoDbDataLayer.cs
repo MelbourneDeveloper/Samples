@@ -2,6 +2,7 @@
 using BusinessLayerLib;
 using RepoDb;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -35,12 +36,13 @@ namespace RepoDbLayer
 
             var genericMethod = methodInfo.MakeGenericMethod(new Type[] { type });
 
-            var result = genericMethod.Invoke(
+            //TODO: Casting here will degrade performance
+            var result = (IList)genericMethod.Invoke(
                 null,
-                new object[] 
-                { 
-                    _dbConnection, 
-                    predicate, 
+                new object[]
+                {
+                    _dbConnection,
+                    predicate,
                     null,
                     null,
                     null,
@@ -52,13 +54,9 @@ namespace RepoDbLayer
                     null,
                     null,
              });
+            var list = new List<object>((IEnumerable<object>)result);
 
-            throw new NotImplementedException();
-
-            //public static IEnumerable<TEntity> Query<TEntity>(this IDbConnection connection, Expression<Func<TEntity, bool>> where = null, IEnumerable<OrderField> orderBy = null, int? top = 0, string hints = null, string cacheKey = null, int cacheItemExpiration = 180, int? commandTimeout = null, IDbTransaction transaction = null, ICache cache = null, ITrace trace = null, IStatementBuilder statementBuilder = null) where TEntity : class;
-
-
-            //return Task.FromResult(_dbConnection.Query(predicate).ToAsyncEnumerable());
+            return Task.FromResult(list.ToAsyncEnumerable());
         }
 
 
