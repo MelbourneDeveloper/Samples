@@ -20,6 +20,7 @@ namespace BusinessAndDataLayers
         Mock<IBusinessLayer> _mockDataLayer;
         BusinessLayer _businessLayer;
         Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
+        Guid guid = Guid.NewGuid();
         private bool _customDeleting = false;
         private bool _customDeleted = false;
         private bool _customBefore = false;
@@ -29,20 +30,25 @@ namespace BusinessAndDataLayers
         #region Tests
 
         [TestMethod]
-        public async Task TestUpdating2()
+        public async Task TestGetEntityFramework()
         {
-            Guid guid = Guid.NewGuid();
             using (var ordersDbContext = new OrdersDbContext())
             {
-                ordersDbContext.Orders.Add(new Order { Id = guid });
-                await ordersDbContext.SaveChangesAsync();
-
-                //This fails because the SQL the EF says it has generated is different to what it accepts.
                 var asyncEnumerable = await new EntityFrameworkDataLayer(ordersDbContext).GetAsync<Order>(o => o.Id == guid);
-
                 var returnValue = await asyncEnumerable.ToListAsync();
             }
         }
+
+        //[TestMethod]
+        //public async Task TestGetRepoDb()
+        //{
+        //    using (var ordersDbContext = new OrdersDbContext())
+        //    {
+        //        var asyncEnumerable = await new EntityFrameworkDataLayer(ordersDbContext).GetAsync<Order>(o => o.Id == guid);
+        //        var returnValue = await asyncEnumerable.ToListAsync();
+        //    }
+        //}
+
 
         [TestMethod]
         public async Task TestUpdating()
@@ -113,7 +119,7 @@ namespace BusinessAndDataLayers
 
         #region Arrange
         [TestInitialize]
-        public void TestInitialize()
+        public async Task TestInitialize()
         {
             _mockDataLayer = new Mock<IBusinessLayer>();
             _mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
@@ -206,6 +212,13 @@ namespace BusinessAndDataLayers
                     await (Task)@delegate.DynamicInvoke(new object[] { items });
                 }
                 );
+
+            using (var ordersDbContext = new OrdersDbContext())
+            {
+                ordersDbContext.Orders.Add(new Order { Id = guid });
+                await ordersDbContext.SaveChangesAsync();
+            }
+
         }
         #endregion
     }
