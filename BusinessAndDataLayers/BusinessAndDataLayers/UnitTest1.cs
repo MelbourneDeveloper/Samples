@@ -10,15 +10,18 @@ using RepoDbLayer;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using LiteDBLib;
 
 namespace BusinessAndDataLayers
 {
     [TestClass]
     public partial class UnitTest1
     {
+        private const string LiteDbFileName = "MyData.db";
         #region Fields
         Mock<IRepository> _mockDataLayer;
         BusinessLayer _businessLayer;
@@ -35,6 +38,8 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestGetEntityFramework()
         {
+            await CreateOrdersDb();
+
             using (var ordersDbContext = new OrdersDbContext())
             {
                 IRepository entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
@@ -48,6 +53,8 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestGetRepoDb()
         {
+            await CreateOrdersDb();
+
             SqLiteBootstrap.Initialize();
 
             using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
@@ -63,8 +70,26 @@ namespace BusinessAndDataLayers
         }
 
         [TestMethod]
+        public async Task TestGetLiteDb()
+        {
+            SetupLiteDb();
+
+            using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
+            {
+                IRepository repoDbDataLayer = new LiteDbDataLayer(db);
+                var asyncEnumerable = await repoDbDataLayer
+                    .GetAsync<OrderRecord>(o => o.Id == _id);
+
+                var returnValue = await asyncEnumerable.ToListAsync();
+                Assert.AreEqual(1, returnValue.Count);
+            }
+        }
+
+        [TestMethod]
         public async Task TestGetWithBusinessLayer()
         {
+            await CreateOrdersDb();
+
             SqLiteBootstrap.Initialize();
 
             using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
@@ -163,13 +188,57 @@ namespace BusinessAndDataLayers
             _mockDataLayer.Setup(r => r.SaveAsync(It.IsAny<object>(), false)).Returns(Task.FromResult<object>(_bob));
 
             _businessLayer = GetBusinessLayer(_mockDataLayer.Object).businessLayer;
+        }
 
+        private async Task CreateOrdersDb()
+        {
             using (var ordersDbContext = new OrdersDbContext())
             {
                 ordersDbContext.OrderRecord.Add(new OrderRecord { Id = _id });
                 await ordersDbContext.SaveChangesAsync();
             }
+        }
 
+        private void SetupLiteDb()
+        {
+            if (File.Exists(LiteDbFileName)) File.Delete(LiteDbFileName);
+            using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
+            {
+                // Get a collection (or create, if doesn't exist)
+                var orders = db.GetCollection<OrderRecord>("OrderRecords");
+
+                // Create your new customer instance
+                var order = new OrderRecord
+                {
+                    Id = _id.ToString(),
+                    Name = "John Doe"
+                };
+
+                // Insert new customer document (Id will be auto-incremented)
+                orders.Insert(order);
+
+                // Update a document inside a collection
+                order.Name = "Jane Doe";
+
+                orders.Update(order);
+
+                // Index document using document Name property
+                orders.EnsureIndex(x => x.Name);
+
+                // Use LINQ to query documents (filter, sort, transform)
+                var results = orders.Query()
+                    .Where(x => x.Name.StartsWith("J"))
+                    .OrderBy(x => x.Name)
+                    .Select(x => new { x.Name, NameUpper = x.Name.ToUpper() })
+                    .Limit(10)
+                    .ToList();
+
+                // Let's create an index in phone numbers (using expression). It's a multikey index
+                orders.EnsureIndex(x => x.Name);
+
+                // and now we can query phones
+                var r = orders.FindOne(x => x.Name.Contains("Jane"));
+            }
         }
 
         private (BusinessLayer businessLayer, ServiceProvider serviceProvider) GetBusinessLayer(IRepository repository)
