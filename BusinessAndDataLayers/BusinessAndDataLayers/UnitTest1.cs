@@ -315,6 +315,8 @@ namespace BusinessAndDataLayers
         private (BusinessLayer businessLayer, ServiceProvider serviceProvider) GetBusinessLayer()
         {
             _mockGet = new Mock<GetAsync>();
+            _mockSave = new Mock<SaveAsync>();
+            _mockDelete = new Mock<DeleteAsync>();
 
             _mockSave.Setup(r => r(It.IsAny<object>(), true)).Returns(Task.FromResult<object>(_bob));
             _mockSave.Setup(r => r(It.IsAny<object>(), false)).Returns(Task.FromResult<object>(_bob));
