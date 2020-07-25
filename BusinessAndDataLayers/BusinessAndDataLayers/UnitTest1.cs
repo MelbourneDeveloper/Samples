@@ -23,7 +23,7 @@ namespace BusinessAndDataLayers
         Mock<IRepository> _mockDataLayer;
         BusinessLayer _businessLayer;
         Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
-        string _id = Guid.NewGuid().ToString().Replace("-","");
+        string _id = Guid.NewGuid().ToString().Replace("-", "");
         private bool _customDeleting = false;
         private bool _customDeleted = false;
         private bool _customBefore = false;
@@ -59,6 +59,30 @@ namespace BusinessAndDataLayers
 
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestGetWithBusinessLayer()
+        {
+            SqLiteBootstrap.Initialize();
+
+            using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
+            {
+                var repoDbDataLayer = new RepoDbDataLayer(connection);
+
+                var businessLayer = new BusinessLayer(
+                    repoDbDataLayer,
+                    beforeGet: async (t, e) => { _customBefore = true; },
+                    afterGet: async (t, result) => { _customAfter = true; });
+
+                var asyncEnumerable = await businessLayer
+                    .GetAsync<OrderRecord>(o => o.Id == _id);
+
+
+                var returnValue = await asyncEnumerable.ToListAsync();
+                Assert.AreEqual(1, returnValue.Count);
+                Assert.IsTrue(_customBefore && _customAfter);
             }
         }
 
@@ -138,6 +162,18 @@ namespace BusinessAndDataLayers
             _mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
             _mockDataLayer.Setup(r => r.InsertAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
 
+            _businessLayer = GetBusinessLayer(_mockDataLayer.Object).businessLayer;
+
+            using (var ordersDbContext = new OrdersDbContext())
+            {
+                ordersDbContext.OrderRecord.Add(new OrderRecord { Id = _id });
+                await ordersDbContext.SaveChangesAsync();
+            }
+
+        }
+
+        private (BusinessLayer businessLayer, ServiceProvider serviceProvider) GetBusinessLayer(IRepository repository)
+        {
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddSingleton<Inserting<Person>>(async (p) =>
@@ -175,63 +211,66 @@ namespace BusinessAndDataLayers
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            _businessLayer = new BusinessLayer(
-                _mockDataLayer.Object,
+            var businessLayer = new BusinessLayer(
+                repository,
                 async (type, key) =>
                 {
                     var delegateType = typeof(Deleting<>).MakeGenericType(new Type[] { type });
-                    var @delegate = (Delegate)serviceProvider.GetRequiredService(delegateType);
-                    await (Task)@delegate.DynamicInvoke(new object[] { key });
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate?.DynamicInvoke(new object[] { key });
                 },
                 async (type, key) =>
                 {
                     var delegateType = typeof(Deleted<>).MakeGenericType(new Type[] { type });
-                    var @delegate = (Delegate)serviceProvider.GetRequiredService(delegateType);
-                    await (Task)@delegate.DynamicInvoke(new object[] { key });
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate?.DynamicInvoke(new object[] { key });
                 }, async (entity) =>
                 {
                     var delegateType = typeof(Inserting<>).MakeGenericType(new Type[] { entity.GetType() });
-                    var @delegate = (Delegate)serviceProvider.GetRequiredService(delegateType);
-                    await (Task)@delegate.DynamicInvoke(new object[] { entity });
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate?.DynamicInvoke(new object[] { entity });
                 },
                 async (entity) =>
                 {
                     var delegateType = typeof(Inserted<>).MakeGenericType(new Type[] { entity.GetType() });
-                    var @delegate = (Delegate)serviceProvider.GetRequiredService(delegateType);
-                    await (Task)@delegate.DynamicInvoke(new object[] { entity });
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate?.DynamicInvoke(new object[] { entity });
                 },
                 async (entity) =>
                 {
                     var delegateType = typeof(Updating<>).MakeGenericType(new Type[] { entity.GetType() });
-                    var @delegate = (Delegate)serviceProvider.GetRequiredService(delegateType);
-                    await (Task)@delegate.DynamicInvoke(new object[] { entity });
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate?.DynamicInvoke(new object[] { entity });
                 },
                 async (entity) =>
                 {
                     var delegateType = typeof(Updated<>).MakeGenericType(new Type[] { entity.GetType() });
-                    var @delegate = (Delegate)serviceProvider.GetRequiredService(delegateType);
-                    await (Task)@delegate.DynamicInvoke(new object[] { entity });
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate?.DynamicInvoke(new object[] { entity });
                 },
                 async (type, query) =>
                 {
                     var delegateType = typeof(BeforeGet<>).MakeGenericType(new Type[] { type });
-                    var @delegate = (Delegate)serviceProvider.GetRequiredService(delegateType);
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
                     await (Task)@delegate.DynamicInvoke(new object[] { query });
                 },
                 async (type, items) =>
                 {
                     var delegateType = typeof(AfterGet<>).MakeGenericType(new Type[] { type });
-                    var @delegate = (Delegate)serviceProvider.GetRequiredService(delegateType);
-                    await (Task)@delegate.DynamicInvoke(new object[] { items });
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate?.DynamicInvoke(new object[] { items });
                 }
                 );
 
-            using (var ordersDbContext = new OrdersDbContext())
-            {
-                ordersDbContext.OrderRecord.Add(new OrderRecord { Id = _id });
-                await ordersDbContext.SaveChangesAsync();
-            }
-
+            return (businessLayer, serviceProvider);
         }
         #endregion
     }

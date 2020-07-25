@@ -19,14 +19,14 @@ namespace BusinessLayerLib
 
         public BusinessLayer(
             IRepository dataLayer,
-            Deleting deleting,
-            Deleted deleted,
-            Inserting inserting,
-            Inserted inserted,
-            Updating updating,
-            Updated updated,
-            BeforeGet beforeGet,
-            AfterGet afterGet
+            Deleting deleting = null,
+            Deleted deleted = null,
+            Inserting inserting = null,
+            Inserted inserted = null,
+            Updating updating = null,
+            Updated updated = null,
+            BeforeGet beforeGet = null,
+            AfterGet afterGet = null
            )
         {
             _dataLayer = dataLayer;
