@@ -176,7 +176,7 @@ namespace BusinessAndDataLayers
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddSingleton<Inserting<Person>>(async (p, u) =>
+            serviceCollection.AddSingleton<Saving<Person>>(async (p, u) =>
             {
                 if (u)
                 {
@@ -187,7 +187,7 @@ namespace BusinessAndDataLayers
                     p.Name += "Inserting";
                 }
             })
-            .AddSingleton<Inserted<Person>>(async (p, u) =>
+            .AddSingleton<Saved<Person>>(async (p, u) =>
             {
                 if (u)
                 {
@@ -234,14 +234,14 @@ namespace BusinessAndDataLayers
                     await (Task)@delegate?.DynamicInvoke(new object[] { key });
                 }, async (entity, isUpdate) =>
                 {
-                    var delegateType = typeof(Inserting<>).MakeGenericType(new Type[] { entity.GetType() });
+                    var delegateType = typeof(Saving<>).MakeGenericType(new Type[] { entity.GetType() });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
                     await (Task)@delegate?.DynamicInvoke(new object[] { entity, isUpdate });
                 },
                 async (entity, isUpdate) =>
                 {
-                    var delegateType = typeof(Inserted<>).MakeGenericType(new Type[] { entity.GetType() });
+                    var delegateType = typeof(Saved<>).MakeGenericType(new Type[] { entity.GetType() });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
                     await (Task)@delegate?.DynamicInvoke(new object[] { entity, isUpdate });

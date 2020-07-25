@@ -10,7 +10,7 @@ namespace BusinessLayerLib
         private IRepository _dataLayer;
         Deleting _deleting;
         Deleted _deleted;
-        Inserting _inserting;
+        Saving _inserting;
         Inserted _inserted;
         BeforeGet _beforeGet;
         AfterGet _afterGet;
@@ -19,7 +19,7 @@ namespace BusinessLayerLib
             IRepository dataLayer,
             Deleting deleting = null,
             Deleted deleted = null,
-            Inserting inserting = null,
+            Saving inserting = null,
             Inserted inserted = null,
             BeforeGet beforeGet = null,
             AfterGet afterGet = null
