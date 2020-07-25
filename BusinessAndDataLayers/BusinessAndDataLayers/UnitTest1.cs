@@ -1,6 +1,9 @@
 using BusinessLayerLib;
 using DomainLib;
 using EntityFrameworkCoreGetSQL;
+using EntityGraphQL.Schema;
+using ExpressionFromGraphQLLib;
+using LiteDBLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,9 +17,6 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using LiteDBLib;
-using ExpressionFromGraphQLLib;
-using EntityGraphQL.Schema;
 
 namespace BusinessAndDataLayers
 {
@@ -48,7 +48,7 @@ namespace BusinessAndDataLayers
             {
                 var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
                 var asyncEnumerable = await entityFrameworkDataLayer
-                    .GetAsync(new Expression<Func<OrderRecord, bool>>(o => o.Id == _id));
+                    .GetAsync(ExpresionHelpers.CreateQueryExpression<OrderRecord>(o => o.Id == _id));
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
             }
@@ -192,10 +192,10 @@ namespace BusinessAndDataLayers
             //Arrange
 
             //Return 1 person
-            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(true)));
+            _mockGet.Setup(r => r(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(true)));
 
             //Act
-            var savedPerson = await _businessLayer.SaveAsync<Person>(_bob, true);
+            var savedPerson = (Person)await _businessLayer.SaveAsync(_bob, true);
 
             //Assert
 
@@ -203,7 +203,7 @@ namespace BusinessAndDataLayers
             Assert.AreEqual("BobUpdatingUpdated", savedPerson.Name);
 
             //Verify update was called
-            _mockDataLayer.Verify(d => d.SaveAsync(It.IsAny<Person>(), true), Times.Once);
+            _mockSave.Verify(d => d(It.IsAny<Person>(), true), Times.Once);
         }
 
         [TestMethod]
@@ -212,10 +212,10 @@ namespace BusinessAndDataLayers
             //Arrange
 
             //Return no people
-            _mockDataLayer.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(false)));
+            _mockGet.Setup(r => r(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
 
             //Act
-            var savedPerson = await _businessLayer.SaveAsync<Person>(_bob, false);
+            var savedPerson = (Person)await _businessLayer.SaveAsync(_bob, false);
 
             //Assert
 
@@ -223,17 +223,17 @@ namespace BusinessAndDataLayers
             Assert.AreEqual("BobInsertingInserted", savedPerson.Name);
 
             //Verify insert was called
-            _mockDataLayer.Verify(d => d.SaveAsync(It.IsAny<Person>(), false), Times.Once);
+            _mockSave.Verify(d => d(It.IsAny<Person>(), false), Times.Once);
         }
 
         [TestMethod]
         public async Task TestDeleted()
         {
             //Act
-            await _businessLayer.DeleteAsync<Person>(_bob.Key);
+            await _businessLayer.DeleteAsync(typeof(Person), _bob.Key);
 
             //Verify insert was called
-            _mockDataLayer.Verify(d => d.DeleteAsync(typeof(Person), _bob.Key), Times.Once);
+            _mockDelete.Verify(d => d(typeof(Person), _bob.Key), Times.Once);
 
             Assert.IsTrue(_customDeleted && _customDeleting);
         }
@@ -242,10 +242,10 @@ namespace BusinessAndDataLayers
         public async Task TestGet()
         {
             //Act
-            var people = await _businessLayer.GetAllAsync<Person>();
+            var people = await _businessLayer.GetAsync<Person>(null);
 
             //Verify insert was called
-            _mockDataLayer.Verify(d => d.GetAsync(It.IsAny<Expression<Func<Person, bool>>>()), Times.Once);
+            _mockGet.Verify(d => d(It.IsAny<Expression<Func<Person, bool>>>()), Times.Once);
 
             Assert.IsTrue(_customBefore && _customAfter);
         }
