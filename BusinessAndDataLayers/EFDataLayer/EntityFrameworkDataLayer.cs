@@ -1,5 +1,4 @@
 ﻿using BusinessLayerLib;
-using DomainLib;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
 {
-    public class EntityFrameworkDataLayer : IBusinessLayer
+    public class EntityFrameworkDataLayer : IRepository
     {
         DbContext _dbContext;
 
@@ -23,7 +22,7 @@ namespace BusinessAndDataLayers
             throw new NotImplementedException();
         }
 
-        public Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate)
+        public Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
         {
             var setMeth = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
 

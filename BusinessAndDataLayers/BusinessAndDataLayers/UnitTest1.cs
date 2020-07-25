@@ -5,8 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using RepoDb;
+using RepoDbLayer;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -17,10 +20,10 @@ namespace BusinessAndDataLayers
     public partial class UnitTest1
     {
         #region Fields
-        Mock<IBusinessLayer> _mockDataLayer;
+        Mock<IRepository> _mockDataLayer;
         BusinessLayer _businessLayer;
         Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
-        Guid guid = Guid.NewGuid();
+        string _id = Guid.NewGuid().ToString().Replace("-","");
         private bool _customDeleting = false;
         private bool _customDeleted = false;
         private bool _customBefore = false;
@@ -34,20 +37,29 @@ namespace BusinessAndDataLayers
         {
             using (var ordersDbContext = new OrdersDbContext())
             {
-                var asyncEnumerable = await new EntityFrameworkDataLayer(ordersDbContext).GetAsync<Order>(o => o.Id == guid);
+                IRepository entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
+                var asyncEnumerable = await entityFrameworkDataLayer
+                    .GetAsync<Order>(o => o.Id == _id);
                 var returnValue = await asyncEnumerable.ToListAsync();
+                Assert.AreEqual(1, returnValue.Count);
             }
         }
 
-        //[TestMethod]
-        //public async Task TestGetRepoDb()
-        //{
-        //    using (var ordersDbContext = new OrdersDbContext())
-        //    {
-        //        var asyncEnumerable = await new EntityFrameworkDataLayer(ordersDbContext).GetAsync<Order>(o => o.Id == guid);
-        //        var returnValue = await asyncEnumerable.ToListAsync();
-        //    }
-        //}
+        [TestMethod]
+        public async Task TestGetRepoDb()
+        {
+            SqLiteBootstrap.Initialize();
+
+            using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
+            {
+                IRepository repoDbDataLayer = new RepoDbDataLayer(connection);
+                var asyncEnumerable = await repoDbDataLayer
+                    .GetAsync<Order>(o => o.Id == _id);
+
+                var returnValue = await asyncEnumerable.ToListAsync();
+                Assert.AreEqual(1, returnValue.Count);
+            }
+        }
 
 
         [TestMethod]
@@ -121,7 +133,7 @@ namespace BusinessAndDataLayers
         [TestInitialize]
         public async Task TestInitialize()
         {
-            _mockDataLayer = new Mock<IBusinessLayer>();
+            _mockDataLayer = new Mock<IRepository>();
             _mockDataLayer.Setup(r => r.UpdateAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
             _mockDataLayer.Setup(r => r.InsertAsync(It.IsAny<object>())).Returns(Task.FromResult<object>(_bob));
 
@@ -215,7 +227,7 @@ namespace BusinessAndDataLayers
 
             using (var ordersDbContext = new OrdersDbContext())
             {
-                ordersDbContext.Orders.Add(new Order { Id = guid });
+                ordersDbContext.Orders.Add(new Order { Id = _id });
                 await ordersDbContext.SaveChangesAsync();
             }
 

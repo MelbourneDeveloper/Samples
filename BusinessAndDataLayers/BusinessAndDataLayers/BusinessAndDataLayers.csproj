@@ -17,6 +17,7 @@
     <ProjectReference Include="..\BusinessLayer\BusinessLayerLib.csproj" />
     <ProjectReference Include="..\DomainLib\DomainLib.csproj" />
     <ProjectReference Include="..\EFDataLayer\EFDataLayer.csproj" />
+    <ProjectReference Include="..\RepoDbLayer\RepoDbLayer.csproj" />
   </ItemGroup>
 
 </Project>

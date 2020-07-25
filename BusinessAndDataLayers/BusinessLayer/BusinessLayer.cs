@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace BusinessLayerLib
 {
-    public class BusinessLayer : IBusinessLayer
+    public class BusinessLayer : IRepository
     {
-        private IBusinessLayer _dataLayer;
+        private IRepository _dataLayer;
         Deleting _deleting;
         Deleted _deleted;
         Inserting _inserting;
@@ -18,7 +18,7 @@ namespace BusinessLayerLib
         AfterGet _afterGet;
 
         public BusinessLayer(
-            IBusinessLayer dataLayer,
+            IRepository dataLayer,
             Deleting deleting,
             Deleted deleted,
             Inserting inserting,
@@ -47,7 +47,7 @@ namespace BusinessLayerLib
             await _deleted(type, key);
         }
 
-        public async Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate)
+        public async Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
         {
             await _beforeGet(typeof(T), predicate);
             var results = await _dataLayer.GetAsync(predicate);

@@ -6,6 +6,7 @@ namespace EntityFrameworkCoreGetSQL
 {
     public class OrdersDbContext : DbContext
     {
+        public const string ConnectionString = "Data Source=Orders.db";
         #region Public Properties
         public DbSet<OrderLine> OrderLines { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -21,7 +22,7 @@ namespace EntityFrameworkCoreGetSQL
         #region Overrides
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connection = new SqliteConnection("Data Source=Orders.db");
+            var connection = new SqliteConnection(ConnectionString);
             connection.Open();
 
             var command = connection.CreateCommand();
