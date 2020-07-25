@@ -191,7 +191,9 @@ namespace BusinessAndDataLayers
                     beforeGet: async (t, e) => { _customBefore = true; },
                     afterGet: async (t, result) => { _customAfter = true; });
 
-                var asyncEnumerable = await businessLayer
+                GetAsync getAsync = businessLayer.GetAsync;
+
+                var asyncEnumerable = await getAsync
                     .GetAsync<OrderRecord>(o => o.Id == _id);
 
 
@@ -253,7 +255,8 @@ namespace BusinessAndDataLayers
         public async Task TestGet()
         {
             //Act
-            var people = await _businessLayer.GetAsync<Person>(null);
+            GetAsync getAsync = _businessLayer.GetAsync;
+            var people = await getAsync.GetAsync<Person>((p) => true);
 
             //Verify get was called
             _mockGet.Verify(d => d(It.IsAny<Expression<Func<Person, bool>>>()), Times.Once);

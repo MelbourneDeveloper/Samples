@@ -28,6 +28,6 @@ namespace BusinessLayerLib
     public delegate Task Saved<T>(T item, bool isUpdate);
     public delegate Task AfterGet<T>(IAsyncEnumerable<T> results);
     public delegate Task Saving<T>(T item, bool isUpdate);
-    public delegate Task BeforeGet<T>(IQueryable queryable);
+    public delegate Task BeforeGet<T>(Expression predicate);
 
 }

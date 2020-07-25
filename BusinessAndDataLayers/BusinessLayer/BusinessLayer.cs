@@ -49,12 +49,13 @@ namespace BusinessLayerLib
             return deleteCount;
         }
 
-        public async Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
+        public async Task<IAsyncEnumerable<object>> GetAsync(Expression predicate) 
         {
-            await _beforeGet(typeof(T), predicate);
-            var results = await _getAsync.GetAsync(predicate);
+            var type = predicate.Type.GenericTypeArguments[0];
+            await _beforeGet(type, predicate);
+            var results = await _getAsync(predicate);
             //Note: IAsyncEnumerable doesn't have a non-generic version
-            await _afterGet(typeof(T), results);
+            await _afterGet(type, results);
             return results;
         }
 
