@@ -99,6 +99,30 @@ namespace BusinessAndDataLayers
         }
 
         [TestMethod]
+        public async Task TestGetRepoDbViaGraphQL()
+        {
+            await CreateOrdersDb();
+
+            var schema = SchemaBuilder.FromObject<OrdersDbContext>();
+
+            var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
+
+            var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
+
+            await CreateOrdersDb();
+
+            using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
+            {
+                IRepository repoDbDataLayer = new RepoDbDataLayer(connection);
+                var asyncEnumerable = await repoDbDataLayer
+                    .GetAsync((Expression < Func<OrderRecord, bool> > )expression);
+
+                var returnValue = await asyncEnumerable.ToListAsync();
+                Assert.AreEqual(1, returnValue.Count);
+            }
+        }
+
+        [TestMethod]
         public async Task TestGetRepoDb()
         {
             await CreateOrdersDb();
