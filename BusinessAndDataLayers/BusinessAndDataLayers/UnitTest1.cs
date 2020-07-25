@@ -75,6 +75,30 @@ namespace BusinessAndDataLayers
         }
 
         [TestMethod]
+        public async Task TestGetDbLiteViaGraphQL()
+        {
+            SetupLiteDb();
+
+            var schema = SchemaBuilder.FromObject<OrdersDbContext>();
+
+            var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
+
+            var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
+
+            await CreateOrdersDb();
+
+            using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
+            {
+                IRepository repoDbDataLayer = new LiteDbDataLayer(db);
+                var asyncEnumerable = await repoDbDataLayer
+                    .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
+
+                var returnValue = await asyncEnumerable.ToListAsync();
+                Assert.AreEqual(1, returnValue.Count);
+            }
+        }
+
+        [TestMethod]
         public async Task TestGetRepoDb()
         {
             await CreateOrdersDb();
