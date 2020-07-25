@@ -52,10 +52,10 @@ namespace BusinessLayerLib
         public async Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
         {
             await _beforeGet(typeof(T), predicate);
-            var results = await _getAsync(predicate);
+            var results = await _getAsync.GetAsync(predicate);
             //Note: IAsyncEnumerable doesn't have a non-generic version
             await _afterGet(typeof(T), results);
-            return results.Cast<T>();
+            return results;
         }
 
         public async Task<object> SaveAsync(object item, bool isUpdate)
