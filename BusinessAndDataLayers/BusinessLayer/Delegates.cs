@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace BusinessLayerLib
 {
+    delegate Expression GetExpression(string graphQl);
+
     public delegate Task Deleting(Type type, Guid key);
     public delegate Task Deleted(Type type, Guid key);
     public delegate Task Inserting(object item);
