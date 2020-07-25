@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace BusinessLayerLib
 {
+    #region CRUD
+    public delegate Task<IAsyncEnumerable<object>> GetAsync(Expression predicate);
+    public delegate Task<object> SaveAsync(object item, bool isUpdate);
+    public delegate Task<int> DeleteAsync(Type type, object key);
+    #endregion
+
+
     delegate Expression GetExpression(string graphQl);
 
     public delegate Task Deleting(Type type, object key);

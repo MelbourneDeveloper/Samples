@@ -1,5 +1,4 @@
-﻿using BusinessLayerLib;
-using LiteDB;
+﻿using LiteDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LiteDBLib
 {
-    public class LiteDbDataLayer : IRepository
+    public class LiteDbDataLayer
     {
         LiteDatabase _db;
 
@@ -22,7 +21,7 @@ namespace LiteDBLib
             throw new NotImplementedException();
         }
 
-        public Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
+        public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
         {
             // Get a collection (or create, if doesn't exist)
             var orders = _db.GetCollection<T>("OrderRecords");

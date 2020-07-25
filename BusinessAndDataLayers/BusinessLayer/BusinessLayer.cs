@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace BusinessLayerLib
 {
-    public class BusinessLayer : IRepository
+    public class BusinessLayer
     {
-        private IRepository _dataLayer;
+        private SaveAsync _saveAsync;
+        private GetAsync _getAsync;
+        private DeleteAsync _deleteAsync;
         Deleting _deleting;
         Deleted _deleted;
         Saving _inserting;
@@ -16,7 +19,9 @@ namespace BusinessLayerLib
         AfterGet _afterGet;
 
         public BusinessLayer(
-            IRepository dataLayer,
+            SaveAsync saveAsync = null,
+            GetAsync getAsync = null,
+            DeleteAsync deleteAsync = null,
             Deleting deleting = null,
             Deleted deleted = null,
             Saving inserting = null,
@@ -25,7 +30,9 @@ namespace BusinessLayerLib
             AfterGet afterGet = null
            )
         {
-            _dataLayer = dataLayer;
+            _getAsync = getAsync;
+            _deleteAsync = deleteAsync;
+            _saveAsync = saveAsync;
             _deleting = deleting;
             _deleted = deleted;
             _inserting = inserting;
@@ -37,7 +44,7 @@ namespace BusinessLayerLib
         public async Task<int> DeleteAsync(Type type, object key)
         {
             await _deleting(type, key);
-            var deleteCount = await _dataLayer.DeleteAsync(type, key);
+            var deleteCount = await _deleteAsync(type, key);
             await _deleted(type, key, deleteCount);
             return deleteCount;
         }
@@ -45,16 +52,16 @@ namespace BusinessLayerLib
         public async Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
         {
             await _beforeGet(typeof(T), predicate);
-            var results = await _dataLayer.GetAsync(predicate);
+            var results = await _getAsync(predicate);
             //Note: IAsyncEnumerable doesn't have a non-generic version
             await _afterGet(typeof(T), results);
-            return results;
+            return results.Cast<T>();
         }
 
         public async Task<object> SaveAsync(object item, bool isUpdate)
         {
             await _inserting(item, isUpdate);
-            var insertedItem = await _dataLayer.SaveAsync(item, isUpdate);
+            var insertedItem = await _saveAsync(item, isUpdate);
             await _inserted(insertedItem, isUpdate);
 
             return insertedItem;

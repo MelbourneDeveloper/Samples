@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RepoDbLayer
 {
-    public class RepoDbDataLayer : IRepository
+    public class RepoDbDataLayer 
     {
         IDbConnection _dbConnection;
 
@@ -24,7 +24,7 @@ namespace RepoDbLayer
             throw new NotImplementedException();
         }
 
-        public Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
+        public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
         {
             return Task.FromResult(_dbConnection.Query(predicate).ToAsyncEnumerable());
         }

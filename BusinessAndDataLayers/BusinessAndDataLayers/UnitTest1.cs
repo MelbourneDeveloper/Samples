@@ -25,7 +25,9 @@ namespace BusinessAndDataLayers
     {
         private const string LiteDbFileName = "MyData.db";
         #region Fields
-        Mock<IRepository> _mockDataLayer;
+        Mock<GetAsync> _mockGet;
+        Mock<SaveAsync> _mockSave;
+        Mock<DeleteAsync> _mockDelete;
         BusinessLayer _businessLayer;
         Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
         string _id = Guid.NewGuid().ToString().Replace("-", "*");
@@ -44,9 +46,9 @@ namespace BusinessAndDataLayers
 
             using (var ordersDbContext = new OrdersDbContext())
             {
-                IRepository entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
+                var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
                 var asyncEnumerable = await entityFrameworkDataLayer
-                    .GetAsync<OrderRecord>(o => o.Id == _id);
+                    .GetAsync(new Expression<Func<OrderRecord, bool>>(o => o.Id == _id));
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
             }
@@ -66,7 +68,7 @@ namespace BusinessAndDataLayers
 
             using (var ordersDbContext = new OrdersDbContext())
             {
-                IRepository entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
+                var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
                 var asyncEnumerable = await entityFrameworkDataLayer
                     .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
                 var returnValue = await asyncEnumerable.ToListAsync();
@@ -89,7 +91,7 @@ namespace BusinessAndDataLayers
 
             using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
             {
-                IRepository repoDbDataLayer = new LiteDbDataLayer(db);
+                var repoDbDataLayer = new LiteDbDataLayer(db);
                 var asyncEnumerable = await repoDbDataLayer
                     .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
 
@@ -113,9 +115,9 @@ namespace BusinessAndDataLayers
 
             using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
             {
-                IRepository repoDbDataLayer = new RepoDbDataLayer(connection);
+                var repoDbDataLayer = new RepoDbDataLayer(connection);
                 var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync((Expression < Func<OrderRecord, bool> > )expression);
+                    .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
 
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
@@ -131,7 +133,7 @@ namespace BusinessAndDataLayers
 
             using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
             {
-                IRepository repoDbDataLayer = new RepoDbDataLayer(connection);
+                var repoDbDataLayer = new RepoDbDataLayer(connection);
                 var asyncEnumerable = await repoDbDataLayer
                     .GetAsync<OrderRecord>(o => o.Id == _id);
 
@@ -148,7 +150,7 @@ namespace BusinessAndDataLayers
 
             using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
             {
-                IRepository repoDbDataLayer = new LiteDbDataLayer(db);
+                var repoDbDataLayer = new LiteDbDataLayer(db);
                 var asyncEnumerable = await repoDbDataLayer
                     .GetAsync<OrderRecord>(o => o.Id == _id);
 
@@ -169,7 +171,7 @@ namespace BusinessAndDataLayers
                 var repoDbDataLayer = new RepoDbDataLayer(connection);
 
                 var businessLayer = new BusinessLayer(
-                    repoDbDataLayer,
+                    getAsync: repoDbDataLayer.GetAsync,
                     beforeGet: async (t, e) => { _customBefore = true; },
                     afterGet: async (t, result) => { _customAfter = true; });
 
@@ -255,11 +257,7 @@ namespace BusinessAndDataLayers
         [TestInitialize]
         public async Task TestInitialize()
         {
-            _mockDataLayer = new Mock<IRepository>();
-            _mockDataLayer.Setup(r => r.SaveAsync(It.IsAny<object>(), true)).Returns(Task.FromResult<object>(_bob));
-            _mockDataLayer.Setup(r => r.SaveAsync(It.IsAny<object>(), false)).Returns(Task.FromResult<object>(_bob));
-
-            _businessLayer = GetBusinessLayer(_mockDataLayer.Object).businessLayer;
+            _businessLayer = GetBusinessLayer(_mockGet.Object).businessLayer;
         }
 
         private async Task CreateOrdersDb()
@@ -313,8 +311,13 @@ namespace BusinessAndDataLayers
             }
         }
 
-        private (BusinessLayer businessLayer, ServiceProvider serviceProvider) GetBusinessLayer(IRepository repository)
+        private (BusinessLayer businessLayer, ServiceProvider serviceProvider) GetBusinessLayer()
         {
+            _mockGet = new Mock<GetAsync>();
+
+            _mockSave.Setup(r => r(It.IsAny<object>(), true)).Returns(Task.FromResult<object>(_bob));
+            _mockSave.Setup(r => r(It.IsAny<object>(), false)).Returns(Task.FromResult<object>(_bob));
+
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddSingleton<Saving<Person>>(async (p, u) =>
@@ -359,7 +362,9 @@ namespace BusinessAndDataLayers
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             var businessLayer = new BusinessLayer(
-                repository,
+                _mockSave.Object,
+                _mockGet.Object,
+                _mockDelete.Object,
                 async (type, key) =>
                 {
                     var delegateType = typeof(Deleting<>).MakeGenericType(new Type[] { type });
