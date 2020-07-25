@@ -23,6 +23,8 @@ namespace BusinessAndDataLayers
 
         public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
         {
+            throw new NotImplementedException();
+            /*
             var setMeth = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
 
             var setMethodWithTypeArgument = setMeth.MakeGenericMethod(new Type[] { typeof(T) });
@@ -32,6 +34,8 @@ namespace BusinessAndDataLayers
             var whereMethod = typeof(Queryable).GetMethod(nameof(Queryable.Where), new Type[] { });
 
             return Task.FromResult(Queryable.Where(dbSets, predicate).ToAsyncEnumerable());
+
+            */
         }
 
         public Task<object> SaveAsync(object item, bool isUpdate)

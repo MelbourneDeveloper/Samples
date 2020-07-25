@@ -23,6 +23,8 @@ namespace LiteDBLib
 
         public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
         {
+            throw new NotImplementedException();
+            /*
             // Get a collection (or create, if doesn't exist)
             var orders = _db.GetCollection<T>("OrderRecords");
 
@@ -32,6 +34,8 @@ namespace LiteDBLib
                 .ToList();
 
             return Task.FromResult(results.ToAsyncEnumerable());
+
+            */
         }
 
 
