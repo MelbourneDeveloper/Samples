@@ -1,6 +1,7 @@
 ﻿
 using BusinessLayerLib;
 using RepoDb;
+using RepoDb.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Data;

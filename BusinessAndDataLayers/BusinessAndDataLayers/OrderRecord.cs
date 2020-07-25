@@ -3,11 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EntityFrameworkCoreGetSQL
 {
-    public class Order
+    public class OrderRecord
     {
         [Key]
         public string Id { get; set; }
         public string Name { get; set; }
-        public DateTime Date { get; set; }
     }
 }

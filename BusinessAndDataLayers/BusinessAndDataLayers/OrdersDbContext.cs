@@ -9,7 +9,7 @@ namespace EntityFrameworkCoreGetSQL
         public const string ConnectionString = "Data Source=Orders.db";
         #region Public Properties
         public DbSet<OrderLine> OrderLines { get; set; }
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderRecord> OrderRecord { get; set; }
         #endregion
 
         #region Constructor

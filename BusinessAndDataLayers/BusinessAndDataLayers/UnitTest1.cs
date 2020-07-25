@@ -39,7 +39,7 @@ namespace BusinessAndDataLayers
             {
                 IRepository entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
                 var asyncEnumerable = await entityFrameworkDataLayer
-                    .GetAsync<Order>(o => o.Id == _id);
+                    .GetAsync<OrderRecord>(o => o.Id == _id);
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
             }
@@ -54,7 +54,8 @@ namespace BusinessAndDataLayers
             {
                 IRepository repoDbDataLayer = new RepoDbDataLayer(connection);
                 var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync<Order>(o => o.Id == _id);
+                    .GetAsync<OrderRecord>(o => o.Id == _id);
+
 
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
@@ -227,7 +228,7 @@ namespace BusinessAndDataLayers
 
             using (var ordersDbContext = new OrdersDbContext())
             {
-                ordersDbContext.Orders.Add(new Order { Id = _id });
+                ordersDbContext.OrderRecord.Add(new OrderRecord { Id = _id });
                 await ordersDbContext.SaveChangesAsync();
             }
 
