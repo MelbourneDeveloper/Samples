@@ -20,6 +20,21 @@ using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
 {
+    public class DemoController
+    {
+        GetAsync _getAsync;
+
+        public DemoController(GetAsync getAsync)
+        {
+            _getAsync = getAsync;
+        }
+
+        public async Task GetAsync()
+        {
+            var orderRecords = _getAsync.GetAsync<OrderRecord>(o => o.Id == "123");
+        }
+    }
+
     [TestClass]
     public partial class UnitTest1
     {
@@ -263,7 +278,7 @@ namespace BusinessAndDataLayers
             _mockSave.Setup(r => r(It.IsAny<object>(), false)).Returns(Task.FromResult<object>(_bob));
             _mockGet.Setup(r => r(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(false)));
 
-            _getOrderByIdPredicate = ExpresionHelpers.CreateQueryExpression<OrderRecord>(o => o.Id == _id);
+            _getOrderByIdPredicate = _mockGet.Object.CreateQueryExpression<OrderRecord>(o => o.Id == _id);
             _businessLayer = GetBusinessLayer().businessLayer;
         }
 
