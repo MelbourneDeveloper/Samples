@@ -148,8 +148,7 @@ namespace BusinessAndDataLayers
             using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
             {
                 var repoDbDataLayer = new RepoDbDataLayer(connection);
-                var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync(_getOrderByIdPredicate);
+                var asyncEnumerable = await repoDbDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
 
                 var returnValue = await asyncEnumerable.ToListAsync();
@@ -180,14 +179,9 @@ namespace BusinessAndDataLayers
 
             using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
             {
+                var liteDbDataLayer = new LiteDbDataLayer(db);
 
-                var repoDbDataLayer = new LiteDbDataLayer(db);
-
-                var businessLayer = new BusinessLayer(getAsync: async (exp) =>
-                {
-                    var results = await repoDbDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)exp);
-                    return results.Cast<object>();
-                });
+                var businessLayer = new BusinessLayer(getAsync: liteDbDataLayer.GetAsync);
 
                 var getAsync = (GetAsync)businessLayer.GetAsync;
 
@@ -210,7 +204,7 @@ namespace BusinessAndDataLayers
                 var repoDbDataLayer = new RepoDbDataLayer(connection);
 
                 var businessLayer = new BusinessLayer(
-                    getAsync: repoDbDataLayer.GetAsync,
+                    getAsync:repoDbDataLayer.GetAsync ,
                     beforeGet: async (t, e) => { _customBefore = true; },
                     afterGet: async (t, result) => { _customAfter = true; });
 
