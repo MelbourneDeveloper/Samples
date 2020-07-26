@@ -21,6 +21,20 @@ namespace BusinessAndDataLayers
             throw new NotImplementedException();
         }
 
+        public Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
+        {
+            var setMeth = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
+
+            var setMethodWithTypeArgument = setMeth.MakeGenericMethod(new Type[] { typeof(T) });
+
+            var dbSets = (IQueryable<T>)setMethodWithTypeArgument.Invoke(_dbContext, null);
+
+            var whereMethod = typeof(Queryable).GetMethod(nameof(Queryable.Where), new Type[] { });
+
+            return Task.FromResult(Queryable.Where(dbSets, predicate).ToAsyncEnumerable());
+        }
+
+        //Note this should be working
         public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
         {
             //Get the entity type from the predicate
@@ -51,6 +65,7 @@ namespace BusinessAndDataLayers
             //Conver to async and return
             return Task.FromResult(enumerableObjects.ToAsyncEnumerable());
         }
+        
 
         public Task<object> SaveAsync(object item, bool isUpdate)
         {

@@ -52,10 +52,20 @@ namespace BusinessLayerLib
         public async Task<IAsyncEnumerable<object>> GetAsync(Expression predicate) 
         {
             var type = predicate.Type.GenericTypeArguments[0];
-            await _beforeGet(type, predicate);
+
+            if (_beforeGet != null)
+            {
+                await _beforeGet(type, predicate);
+            }
+
             var results = await _getAsync(predicate);
-            //Note: IAsyncEnumerable doesn't have a non-generic version
-            await _afterGet(type, results);
+
+            if (_afterGet != null)
+            {
+                //Note: IAsyncEnumerable doesn't have a non-generic version
+                await _afterGet(type, results);
+            }
+
             return results;
         }
 

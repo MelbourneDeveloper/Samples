@@ -63,8 +63,7 @@ namespace BusinessAndDataLayers
             using (var ordersDbContext = new OrdersDbContext())
             {
                 var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
-                var asyncEnumerable = await entityFrameworkDataLayer
-                    .GetAsync(_getOrderByIdPredicate);
+                var asyncEnumerable = await entityFrameworkDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
             }
