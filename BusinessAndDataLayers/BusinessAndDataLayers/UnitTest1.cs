@@ -85,8 +85,7 @@ namespace BusinessAndDataLayers
             using (var ordersDbContext = new OrdersDbContext())
             {
                 var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
-                var asyncEnumerable = await entityFrameworkDataLayer
-                    .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
+                var asyncEnumerable = await entityFrameworkDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)expression);
                 var returnValue = await asyncEnumerable.ToListAsync();
                 Assert.AreEqual(1, returnValue.Count);
             }
@@ -168,9 +167,34 @@ namespace BusinessAndDataLayers
             {
                 var repoDbDataLayer = new LiteDbDataLayer(db);
                 var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync(_getOrderByIdPredicate);
+                    .GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
                 var returnValue = await asyncEnumerable.ToListAsync();
+                Assert.AreEqual(1, returnValue.Count);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestGetLiteDbWithBusinessLayer()
+        {
+            SetupLiteDb();
+
+            using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
+            {
+
+                var repoDbDataLayer = new LiteDbDataLayer(db);
+
+                var businessLayer = new BusinessLayer(getAsync: async (exp) =>
+                {
+                    var results = await repoDbDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)exp);
+                    return results.Cast<object>();
+                });
+
+                var getAsync = (GetAsync)businessLayer.GetAsync;
+
+                var asyncEnumerable = getAsync.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
+
+                var returnValue = (await asyncEnumerable).ToListAsync().Result;
                 Assert.AreEqual(1, returnValue.Count);
             }
         }
