@@ -1,0 +1,22 @@
+﻿[*.cs]
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = error
+
+dotnet_diagnostic.CA1010.severity = suggestion
+
+csharp_style_var_elsewhere = true:error
+csharp_style_var_for_built_in_types = true:error
+csharp_style_var_when_type_is_apparent = true:error
+
+# Uno0001: Uno type or member is not implemented
+dotnet_diagnostic.Uno0001.severity = warning
+
+
+# CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA2007.severity = suggestion
+
+# IDE0011: Add braces
+csharp_prefer_braces = when_multiline:error
+
+csharp_style_expression_bodied_methods = when_on_single_line:error
