@@ -21,8 +21,9 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
-            <RowDefinition Height=".28*" />
-            <RowDefinition Height=".72*"  />
+            <RowDefinition Height=".4*" />
+            <RowDefinition Height=".6*"  />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20" Grid.Row="1">
@@ -35,27 +36,24 @@
             </Grid.Background>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height=".33*" />
-                <RowDefinition Height=".33*"  />
-                <RowDefinition Height=".33*"  />
+                <RowDefinition Height=".35*" />
+                <RowDefinition Height=".35*"  />
+                <RowDefinition Height=".3*"  />
             </Grid.RowDefinitions>
 
-            <TextBlock Text="cat-facts"  FontSize="42" HorizontalAlignment="Center" Margin="10" />
+            <TextBlock Text="cat-facts"  FontSize="40" HorizontalAlignment="Center" Margin="10" />
 
-            <HyperlinkButton Content="Daily cat facts!" Grid.Row="1" FontSize="28"  Margin="10" Opacity=".5" NavigateUri="https://alexwohlbruck.github.io/cat-facts/" HorizontalAlignment="Center"   />
+            <HyperlinkButton Content="Daily cat facts!" Grid.Row="1" FontSize="30"  Margin="10" Opacity=".5" NavigateUri="https://alexwohlbruck.github.io/cat-facts/" HorizontalAlignment="Center"   />
 
             <Button Content="View on GitHub"  Opacity=".5" Grid.Row="2" HorizontalAlignment="Center" Margin="10" Foreground="White" Command="{Binding GoToGithub}" />
         </Grid>
 
         <ProgressRing  IsActive="{Binding IsLoading}" Canvas.ZIndex="1" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="30" />
 
-        <TextBlock Grid.Row="2" Text="{Binding CatFact.text}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" FontSize="25" Margin="30" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="2" Text="{Binding CatFact.text}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" FontSize="22" Margin="30" TextWrapping="Wrap" />
 
-
-        <Button Command="{Binding Next}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="2" Background="#155a96" Foreground="White"  Height="50" Width="200" Margin="20" Content="Next"  />
-
-
-
+        <Button Command="{Binding Next}" Margin="4" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="3" Background="#155a96" Foreground="White"   Width="200" Content="Next"  />
     </Grid>
+    
 
 </Page>
