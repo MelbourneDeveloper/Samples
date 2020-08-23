@@ -20,32 +20,39 @@
     <Grid >
 
         <Grid.RowDefinitions>
-            <RowDefinition Height=".3*" />
-            <RowDefinition Height=".7*"  />
+            <RowDefinition Height="30" />
+            <RowDefinition Height=".28*" />
+            <RowDefinition Height=".72*"  />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Vertical" Canvas.ZIndex="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20" Grid.Row="1">
 
-            <StackPanel.Background>
+            <Grid.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                     <GradientStop Color="#155a96" Offset="0" />
                     <GradientStop Color="#15965a" Offset="1" />
                 </LinearGradientBrush>
-            </StackPanel.Background>
+            </Grid.Background>
 
-            <TextBlock Text="cat-facts"  FontSize="60" HorizontalAlignment="Center" Margin="15" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".33*" />
+                <RowDefinition Height=".33*"  />
+                <RowDefinition Height=".33*"  />
+            </Grid.RowDefinitions>
 
-            <HyperlinkButton Content="Daily cat facts!" FontSize="40"  Margin="15" Opacity=".5" NavigateUri="https://alexwohlbruck.github.io/cat-facts/" HorizontalAlignment="Center"   />
+            <TextBlock Text="cat-facts"  FontSize="42" HorizontalAlignment="Center" Margin="10" />
 
-            <Button Content="View on GitHub"  Opacity=".5" HorizontalAlignment="Center" Margin="15" Foreground="White" Command="{Binding GoToGithub}" />
-        </StackPanel>
+            <HyperlinkButton Content="Daily cat facts!" Grid.Row="1" FontSize="28"  Margin="10" Opacity=".5" NavigateUri="https://alexwohlbruck.github.io/cat-facts/" HorizontalAlignment="Center"   />
 
-        <ProgressRing  IsActive="{Binding IsLoading}" Canvas.ZIndex="1" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="80" />
+            <Button Content="View on GitHub"  Opacity=".5" Grid.Row="2" HorizontalAlignment="Center" Margin="10" Foreground="White" Command="{Binding GoToGithub}" />
+        </Grid>
 
-        <TextBlock Grid.Row="1" Text="{Binding CatFact.text}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" FontSize="32" Margin="80" TextWrapping="Wrap" />
+        <ProgressRing  IsActive="{Binding IsLoading}" Canvas.ZIndex="1" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="30" />
+
+        <TextBlock Grid.Row="2" Text="{Binding CatFact.text}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" FontSize="25" Margin="30" TextWrapping="Wrap" />
 
 
-        <Button Command="{Binding Next}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="1" Background="#155a96" Foreground="White"  Height="50" Width="200" Margin="20" Content="Next"  />
+        <Button Command="{Binding Next}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="2" Background="#155a96" Foreground="White"  Height="50" Width="200" Margin="20" Content="Next"  />
 
 
 

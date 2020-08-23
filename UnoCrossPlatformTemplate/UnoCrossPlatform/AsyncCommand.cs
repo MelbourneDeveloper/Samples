@@ -6,7 +6,9 @@ using System.Windows.Input;
 
 namespace UnoCrossPlatform
 {
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     public class AsyncCommand : ICommand
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
     {
         #region Events
         public event EventHandler CanExecuteChanged;
