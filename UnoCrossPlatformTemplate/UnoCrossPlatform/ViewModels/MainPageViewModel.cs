@@ -13,12 +13,12 @@ namespace UnoCrossPlatform.ViewModels
     public class MainPageViewModel : INotifyPropertyChanged
     {
         #region Events
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
         #endregion
 
         #region Fields
         private bool _isLoading = true;
-        private CatFact _catFact;
+        private CatFact? _catFact;
         private readonly IClient _client;
         private readonly ILogger _logger;
         #endregion
@@ -26,7 +26,7 @@ namespace UnoCrossPlatform.ViewModels
         #region Public Properties
         public ICommand Next { get; }
         public ICommand GoToGithub { get; }
-        public CatFact CatFact
+        public CatFact? CatFact
         {
             get => _catFact;
             private set
@@ -48,7 +48,9 @@ namespace UnoCrossPlatform.ViewModels
         #endregion
 
         #region Constructor
-        public MainPageViewModel(IClient client, ILoggerFactory loggerFactory)
+        public MainPageViewModel(
+            IClient client,
+            ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<MainPageViewModel>();
 

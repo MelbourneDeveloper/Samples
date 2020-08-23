@@ -11,7 +11,7 @@ namespace UnoCrossPlatform
 #pragma warning restore CA1001 // Types that own disposable fields should be disposable
     {
         #region Events
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged;
         #endregion
 
         #region Fields

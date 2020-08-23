@@ -1,12 +1,19 @@
-﻿namespace UnoCrossPlatform.Wasm
+﻿using Windows.UI.Xaml;
+
+namespace UnoCrossPlatform.Wasm
 {
     public class Program
     {
-        private static App _app;
+        /// <summary>
+        /// This is nullable but perhaps this should be initialized in the constructor?
+        /// </summary>
+#pragma warning disable IDE0052
+        private static App? _app;
+#pragma warning restore IDE0052 
 
-        private static int Main(string[] args)
+        private static int Main()
         {
-            Windows.UI.Xaml.Application.Start(_ => _app = new App());
+            Application.Start(_ => _app = new App());
 
             return 0;
         }
