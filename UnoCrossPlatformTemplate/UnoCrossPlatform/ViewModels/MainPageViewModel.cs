@@ -62,7 +62,7 @@ namespace UnoCrossPlatform.ViewModels
 
             GoToGithub = new AsyncCommand(async (a) =>
             {
-                _ = await Launcher.LaunchUriAsync(new Uri("https://github.com/MelbourneDeveloper/Samples"));
+                _ = await Launcher.LaunchUriAsync(new Uri("https://github.com/MelbourneDeveloper/Samples/tree/master/UnoCrossPlatformTemplate"));
             }, loggerFactory);
         }
 
