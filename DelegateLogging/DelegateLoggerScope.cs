@@ -1,4 +1,4 @@
-﻿# if !NET45
+﻿
 using System;
 
 namespace DelegateLogging
@@ -41,4 +41,3 @@ namespace DelegateLogging
             base.Dispose();
     }
 }
-#endif
