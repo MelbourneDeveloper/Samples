@@ -16,7 +16,9 @@ namespace DelegateLogging
 
         public ILogger CreateLogger(string categoryName)
         {
-            _createLogger?.Invoke(categoryName);
+            var logger =  _createLogger?.Invoke(categoryName);
+
+            if (logger != null) return logger;
 
             throw new InvalidOperationException();
         }
