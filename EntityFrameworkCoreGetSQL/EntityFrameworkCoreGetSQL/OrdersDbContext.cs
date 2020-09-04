@@ -7,8 +7,10 @@ namespace EntityFrameworkCoreGetSQL
 {
     public class OrdersDbContext : DbContext
     {
+        #region Fields
         ILoggerProvider _loggerProvider;
         ILoggerFactory _loggerFactory;
+        #endregion
 
         #region Public Properties
         public DbSet<OrderLine> OrderLines { get; set; }
@@ -16,25 +18,16 @@ namespace EntityFrameworkCoreGetSQL
         #endregion
 
         #region Constructor
-        public OrdersDbContext(ILoggerProvider loggerFactory) 
+        public OrdersDbContext(ILoggerFactory loggerFactory) 
         {
+            _loggerFactory = loggerFactory;
             _ = Database.EnsureCreated();
-            _loggerProvider = loggerFactory;
-            _loggerFactory.AddProvider(_loggerProvider);
         }
         #endregion
 
         #region Overrides
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            _loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder
-                .AddFilter((category, level) =>
-                    category == DbLoggerCategory.Database.Command.Name
-                    && level == LogLevel.Information);
-            });
-
             optionsBuilder.UseLoggerFactory(_loggerFactory);
 
             var connection = new SqliteConnection("Data Source=Orders.db");
@@ -50,6 +43,6 @@ namespace EntityFrameworkCoreGetSQL
             base.OnConfiguring(optionsBuilder);
         }
         #endregion
-
+     
     }
 }

@@ -1,0 +1,18 @@
+﻿[*.cs]
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = error
+
+dotnet_diagnostic.CA1010.severity = suggestion
+
+csharp_style_var_elsewhere = true:error
+csharp_style_var_for_built_in_types = true:error
+csharp_style_var_when_type_is_apparent = true:error
+
+dotnet_diagnostic.Uno0001.severity = warning
+
+dotnet_diagnostic.CA2007.severity = suggestion
+
+csharp_prefer_braces = when_multiline:error
+
+csharp_style_expression_bodied_methods = when_on_single_line:error
