@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EntityFrameworkCoreGetSQL
+namespace BusinessAndDataLayers
 {
     public class OrderLine
     {

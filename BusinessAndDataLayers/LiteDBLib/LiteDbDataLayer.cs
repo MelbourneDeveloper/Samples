@@ -26,9 +26,9 @@ namespace LiteDBLib
         {
             var recordType = predicate.Type.GenericTypeArguments[0];
 
-            var getCollectionMethod = typeof(LiteDatabase).GetMethod(nameof(LiteDatabase.GetCollection), new Type[] { }).MakeGenericMethod(new[] { recordType });
+            var getCollectionMethod = typeof(LiteDatabase).GetMethod(nameof(LiteDatabase.GetCollection), new Type[] { }).MakeGenericMethod(recordType);
 
-            var queryMethod = typeof(ILiteCollection<>).MakeGenericType(new[] { recordType }).GetMethod(nameof(ILiteCollection<object>.Query));
+            var queryMethod = typeof(ILiteCollection<>).MakeGenericType(recordType).GetMethod(nameof(ILiteCollection<object>.Query));
 
             //TODO: this is pretty horrible
             var whereMethod = Enumerable.FirstOrDefault(typeof(LiteQueryable<>).MakeGenericType((Type[])(new[] { recordType })).GetMethods(), m =>
@@ -45,7 +45,7 @@ namespace LiteDBLib
                  return m.Name == nameof(LiteQueryable<object>.Where);
              });
 
-            var toListMethod = typeof(LiteQueryable<>).MakeGenericType(new[] { recordType }).GetMethod(nameof(LiteQueryable<object>.ToList));
+            var toListMethod = typeof(LiteQueryable<>).MakeGenericType(recordType).GetMethod(nameof(LiteQueryable<object>.ToList));
 
             //Get the collection
             var liteCollection = getCollectionMethod.Invoke(_db, null);

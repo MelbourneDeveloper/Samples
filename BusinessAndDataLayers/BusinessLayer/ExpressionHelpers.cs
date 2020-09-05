@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace BusinessLayerLib
 {
-    public static class ExpresionHelpers
+    public static class ExpressionHelpers
     {
         public static Expression CreateQueryExpression<T>(this WhereAsync whereAsync, Expression<Func<T, bool>> predicate)
         {
             return predicate;
         }
 
-        public async static Task<IAsyncEnumerable<T>> GetAsync<T>(this WhereAsync whereAsync, Expression<Func<T, bool>> predicate)
+        public static async Task<IAsyncEnumerable<T>> GetAsync<T>(this WhereAsync whereAsync, Expression<Func<T, bool>> predicate)
         {
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 

@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace BusinessAndDataLayers
+namespace EFDataLayer
 {
     public class EntityFrameworkDataLayer
     {
@@ -30,7 +30,7 @@ namespace BusinessAndDataLayers
             //Get the set method
             var setMeth = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
 
-            var setMethodWithTypeArgument = setMeth.MakeGenericMethod(new[] { type });
+            var setMethodWithTypeArgument = setMeth.MakeGenericMethod(type);
 
             //Get the DbSet
             var dbSet = (IQueryable)setMethodWithTypeArgument.Invoke(_dbContext, null);

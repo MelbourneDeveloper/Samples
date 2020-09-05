@@ -1,8 +1,7 @@
-﻿
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace EntityFrameworkCoreGetSQL
+namespace BusinessAndDataLayers
 {
     public class OrdersDbContext : DbContext
     {
