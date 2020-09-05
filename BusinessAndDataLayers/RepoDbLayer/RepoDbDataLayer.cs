@@ -18,19 +18,9 @@ namespace RepoDbLayer
             _dbConnection = dbConnection;
         }
 
-        public Task<int> DeleteAsync(Type type, object key)
+        public Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate)
         {
-            throw new NotImplementedException();
-        }
-
-        //public Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate) where T : class
-        //{
-        //    return Task.FromResult(_dbConnection.Query(predicate).ToAsyncEnumerable());
-        //}
-
-        public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
-        {
-            Type type = predicate.Type.GenericTypeArguments[0];
+            var type = predicate.Type.GenericTypeArguments[0];
 
             //Warning: Extremely dodgy hack!
             //TODO: Find a better way to do this and cache the method

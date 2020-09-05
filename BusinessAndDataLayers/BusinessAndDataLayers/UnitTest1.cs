@@ -63,7 +63,7 @@ namespace BusinessAndDataLayers
 
             using var ordersDbContext = new OrdersDbContext();
             var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
-            var asyncEnumerable = await entityFrameworkDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
+            var asyncEnumerable = await entityFrameworkDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
             var returnValue = await asyncEnumerable.ToListAsync();
             Assert.AreEqual(1, returnValue.Count);
         }
@@ -82,7 +82,7 @@ namespace BusinessAndDataLayers
 
             using var ordersDbContext = new OrdersDbContext();
             var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
-            var asyncEnumerable = await entityFrameworkDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)expression);
+            var asyncEnumerable = await entityFrameworkDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)expression);
             var returnValue = await asyncEnumerable.ToListAsync();
             Assert.AreEqual(1, returnValue.Count);
         }
@@ -138,7 +138,7 @@ namespace BusinessAndDataLayers
 
             using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
             var repoDbDataLayer = new RepoDbDataLayer(connection);
-            var asyncEnumerable = await repoDbDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
+            var asyncEnumerable = await repoDbDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
 
             var returnValue = await asyncEnumerable.ToListAsync();
@@ -184,7 +184,7 @@ namespace BusinessAndDataLayers
             var repoDbDataLayer = new RepoDbDataLayer(connection);
 
             var businessLayer = new BusinessLayer(
-                whereAsync: repoDbDataLayer.GetAsync,
+                whereAsync: repoDbDataLayer.WhereAsync,
                 beforeGet: async (t, e) => { _customBefore = true; },
                 afterGet: async (t, result) => { _customAfter = true; });
 

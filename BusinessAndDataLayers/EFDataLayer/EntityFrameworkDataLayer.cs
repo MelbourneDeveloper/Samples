@@ -22,7 +22,7 @@ namespace BusinessAndDataLayers
         }
 
         //Note this should be working
-        public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
+        public Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate)
         {
             //Get the entity type from the predicate
             var type = predicate.Type.GenericTypeArguments[0];
