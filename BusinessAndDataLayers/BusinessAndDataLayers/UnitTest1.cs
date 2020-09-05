@@ -94,18 +94,20 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestGetDbLiteViaGraphQL()
         {
-            SetupLiteDb();
-
-            var schema = SchemaBuilder.FromObject<OrdersDbContext>();
-
-            var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
-
-            var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
-
-            await CreateOrdersDb();
-
-            using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
+            using (var db = SetupLiteDb())
             {
+
+                var orders = db.GetCollection<OrderRecord>();
+                orders.Insert(new OrderRecord { Id = _id, Name = "123" });
+
+                var schema = SchemaBuilder.FromObject<OrdersDbContext>();
+
+                var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
+
+                var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
+
+                await CreateOrdersDb();
+
                 var repoDbDataLayer = new LiteDbDataLayer(db);
                 var asyncEnumerable = await repoDbDataLayer
                     .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
@@ -319,7 +321,7 @@ namespace BusinessAndDataLayers
             if (File.Exists(LiteDbFileName)) File.Delete(LiteDbFileName);
             var db = new LiteDatabase(LiteDbFileName);
 
-                // Get a collection (or create, if doesn't exist)
+            // Get a collection (or create, if doesn't exist)
             var orders = db.GetCollection<OrderRecord>("OrderRecords");
 
             // Create your new customer instance
