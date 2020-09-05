@@ -3,6 +3,7 @@ using DomainLib;
 using EntityFrameworkCoreGetSQL;
 using EntityGraphQL.Schema;
 using ExpressionFromGraphQLLib;
+using LiteDB;
 using LiteDBLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -159,10 +160,12 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestGetLiteDb()
         {
-            SetupLiteDb();
-
-            using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
+            using (var db = SetupLiteDb())
             {
+                //TODO: This shouldn't be necessary. We already inserted an order with the same id...
+                var orders = db.GetCollection<OrderRecord>();
+                orders.Insert(new OrderRecord { Id = _id, Name = "123" });
+
                 var repoDbDataLayer = new LiteDbDataLayer(db);
                 var asyncEnumerable = await repoDbDataLayer
                     .GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
@@ -204,7 +207,7 @@ namespace BusinessAndDataLayers
                 var repoDbDataLayer = new RepoDbDataLayer(connection);
 
                 var businessLayer = new BusinessLayer(
-                    getAsync:repoDbDataLayer.GetAsync ,
+                    getAsync: repoDbDataLayer.GetAsync,
                     beforeGet: async (t, e) => { _customBefore = true; },
                     afterGet: async (t, result) => { _customAfter = true; });
 
@@ -311,46 +314,47 @@ namespace BusinessAndDataLayers
             }
         }
 
-        private void SetupLiteDb()
+        private LiteDatabase SetupLiteDb()
         {
             if (File.Exists(LiteDbFileName)) File.Delete(LiteDbFileName);
-            using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
-            {
+            var db = new LiteDatabase(LiteDbFileName);
+
                 // Get a collection (or create, if doesn't exist)
-                var orders = db.GetCollection<OrderRecord>("OrderRecords");
+            var orders = db.GetCollection<OrderRecord>("OrderRecords");
 
-                // Create your new customer instance
-                var order = new OrderRecord
-                {
-                    Id = _id.ToString(),
-                    Name = "John Doe"
-                };
+            // Create your new customer instance
+            var order = new OrderRecord
+            {
+                Id = _id,
+                Name = "John Doe"
+            };
 
-                // Insert new customer document (Id will be auto-incremented)
-                orders.Insert(order);
+            // Insert new customer document (Id will be auto-incremented)
+            orders.Insert(order);
 
-                // Update a document inside a collection
-                order.Name = "Jane Doe";
+            // Update a document inside a collection
+            order.Name = "Jane Doe";
 
-                orders.Update(order);
+            orders.Update(order);
 
-                // Index document using document Name property
-                orders.EnsureIndex(x => x.Name);
+            // Index document using document Name property
+            orders.EnsureIndex(x => x.Name);
 
-                // Use LINQ to query documents (filter, sort, transform)
-                var results = orders.Query()
-                    .Where(x => x.Name.StartsWith("J"))
-                    .OrderBy(x => x.Name)
-                    .Select(x => new { x.Name, NameUpper = x.Name.ToUpper() })
-                    .Limit(10)
-                    .ToList();
+            // Use LINQ to query documents (filter, sort, transform)
+            var results = orders.Query()
+                .Where(x => x.Name.StartsWith("J"))
+                .OrderBy(x => x.Name)
+                .Select(x => new { x.Name, NameUpper = x.Name.ToUpper() })
+                .Limit(10)
+                .ToList();
 
-                // Let's create an index in phone numbers (using expression). It's a multikey index
-                orders.EnsureIndex(x => x.Name);
+            // Let's create an index in phone numbers (using expression). It's a multikey index
+            orders.EnsureIndex(x => x.Name);
 
-                // and now we can query phones
-                var r = orders.FindOne(x => x.Name.Contains("Jane"));
-            }
+            // and now we can query phones
+            var r = orders.FindOne(x => x.Name.Contains("Jane"));
+
+            return db;
         }
 
         private (BusinessLayer businessLayer, ServiceProvider serviceProvider) GetBusinessLayer()
