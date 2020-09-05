@@ -13,8 +13,8 @@ namespace BusinessLayerLib
         private readonly DeleteAsync _deleteAsync;
         private readonly Deleting _deleting;
         private readonly Deleted _deleted;
-        private readonly Saving _inserting;
-        private readonly Inserted _inserted;
+        private readonly Saving _saving;
+        private readonly Saved _saved;
         private readonly BeforeGet _beforeGet;
         private readonly AfterGet _afterGet;
         #endregion
@@ -26,8 +26,8 @@ namespace BusinessLayerLib
             DeleteAsync deleteAsync = null,
             Deleting deleting = null,
             Deleted deleted = null,
-            Saving inserting = null,
-            Inserted inserted = null,
+            Saving saving = null,
+            Saved saved = null,
             BeforeGet beforeGet = null,
             AfterGet afterGet = null
            )
@@ -37,8 +37,8 @@ namespace BusinessLayerLib
             _saveAsync = saveAsync;
             _deleting = deleting;
             _deleted = deleted;
-            _inserting = inserting;
-            _inserted = inserted;
+            _saving = saving;
+            _saved = saved;
             _beforeGet = beforeGet;
             _afterGet = afterGet;
         }
@@ -74,9 +74,9 @@ namespace BusinessLayerLib
         {
             if (_saveAsync == null) throw new NotImplementedException("Save not implemented");
 
-            if (_inserting != null) await _inserting(item, isUpdate);
+            if (_saving != null) await _saving(item, isUpdate);
             var insertedItem = await _saveAsync(item, isUpdate);
-            if (_inserted != null) await _inserted(insertedItem, isUpdate);
+            if (_saved != null) await _saved(insertedItem, isUpdate);
 
             return insertedItem;
         }

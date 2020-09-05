@@ -14,7 +14,7 @@ namespace BusinessLayerLib
     public delegate Task Deleting(Type type, object key);
     public delegate Task Deleted(Type type, object key, int count);
     public delegate Task Saving(object item, bool isUpdate);
-    public delegate Task Inserted(object item, bool isUpdate);
+    public delegate Task Saved(object item, bool isUpdate);
     public delegate Task BeforeGet(Type type, Expression predicate);
     public delegate Task AfterGet(Type type, object results);
 
