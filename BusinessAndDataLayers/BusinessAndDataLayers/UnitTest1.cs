@@ -286,43 +286,7 @@ namespace BusinessAndDataLayers
             if (File.Exists(LiteDbFileName)) File.Delete(LiteDbFileName);
             var db = new LiteDatabase(LiteDbFileName);
 
-            // Get a collection (or create, if doesn't exist)
-            var orders = db.GetCollection<OrderRecord>("OrderRecords");
-
-            // Create your new customer instance
-            var order = new OrderRecord
-            {
-                Id = _id,
-                Name = "John Doe"
-            };
-
-            // Insert new customer document (Id will be auto-incremented)
-            orders.Insert(order);
-
-            // Update a document inside a collection
-            order.Name = "Jane Doe";
-
-            orders.Update(order);
-
-            // Index document using document Name property
-            orders.EnsureIndex(x => x.Name);
-
-            // Use LINQ to query documents (filter, sort, transform)
-            var results = orders.Query()
-                .Where(x => x.Name.StartsWith("J"))
-                .OrderBy(x => x.Name)
-                .Select(x => new { x.Name, NameUpper = x.Name.ToUpper() })
-                .Limit(10)
-                .ToList();
-
-            // Let's create an index in phone numbers (using expression). It's a multikey index
-            orders.EnsureIndex(x => x.Name);
-
-            // and now we can query phones
-            var r = orders.FindOne(x => x.Name.Contains("Jane"));
-
-            //TODO: This shouldn't be necessary. We already inserted an order with the same id...
-            orders = db.GetCollection<OrderRecord>();
+            var orders = db.GetCollection<OrderRecord>();
             orders.Insert(new OrderRecord { Id = _id, Name = "123" });
 
             return db;
