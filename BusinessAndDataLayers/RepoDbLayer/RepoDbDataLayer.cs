@@ -51,11 +51,5 @@ namespace RepoDbLayer
 
             return Task.FromResult(list.ToAsyncEnumerable());
         }
-
-
-        public Task<object> SaveAsync(object item, bool isUpdate)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

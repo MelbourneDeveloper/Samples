@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -26,18 +27,15 @@ namespace LiteDBLib
             var queryMethod = typeof(ILiteCollection<>).MakeGenericType(recordType).GetMethod(nameof(ILiteCollection<object>.Query));
 
             //TODO: this is pretty horrible
-            var whereMethod = Enumerable.FirstOrDefault(typeof(LiteQueryable<>).MakeGenericType(recordType).GetMethods(), m =>
+            var whereMethod = typeof(LiteQueryable<>).MakeGenericType(recordType).GetMethods().FirstOrDefault(m =>
              {
                  var parameters = m.GetParameters();
 
                  var firstParameter = parameters.First();
 
-                 if (firstParameter.ParameterType.Name != "Expression`1")
-                 {
-                     return false;
-                 }
+                 if (m.Name != nameof(LiteQueryable<object>.Where)) return false;
 
-                 return m.Name == nameof(LiteQueryable<object>.Where);
+                 return firstParameter.ParameterType.Name == "Expression`1";
              });
 
             var toListMethod = typeof(LiteQueryable<>).MakeGenericType(recordType).GetMethod(nameof(LiteQueryable<object>.ToList));
