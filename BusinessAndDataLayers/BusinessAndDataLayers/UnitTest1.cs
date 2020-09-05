@@ -172,9 +172,7 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestGetLiteDbWithBusinessLayer()
         {
-            SetupLiteDb();
-
-            using (var db = new LiteDB.LiteDatabase(LiteDbFileName))
+            using (var db = SetupLiteDb())
             {
                 var liteDbDataLayer = new LiteDbDataLayer(db);
 
