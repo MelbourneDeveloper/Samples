@@ -7,7 +7,7 @@ namespace ExpressionFromGraphQLLib
 {
     public class ExpressionFromGraphQLProvider
     {
-        ISchemaProvider _schemaProvider;
+        private readonly ISchemaProvider _schemaProvider;
 
         public ExpressionFromGraphQLProvider(ISchemaProvider schemaProvider)
         {

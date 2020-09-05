@@ -10,7 +10,7 @@ namespace LiteDBLib
 {
     public class LiteDbDataLayer
     {
-        LiteDatabase _db;
+        private readonly LiteDatabase _db;
 
         public LiteDbDataLayer(LiteDatabase db)
         {

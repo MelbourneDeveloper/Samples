@@ -1,6 +1,4 @@
-﻿
-using BusinessLayerLib;
-using RepoDb;
+﻿using RepoDb;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +11,7 @@ namespace RepoDbLayer
 {
     public class RepoDbDataLayer
     {
-        IDbConnection _dbConnection;
+        private readonly IDbConnection _dbConnection;
 
         public RepoDbDataLayer(IDbConnection dbConnection)
         {

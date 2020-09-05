@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -13,7 +12,7 @@ namespace BusinessLayerLib
     #endregion
 
 
-    delegate Expression GetExpression(string graphQl);
+    internal delegate Expression GetExpression(string graphQl);
 
     public delegate Task Deleting(Type type, object key);
     public delegate Task Deleted(Type type, object key, int count);

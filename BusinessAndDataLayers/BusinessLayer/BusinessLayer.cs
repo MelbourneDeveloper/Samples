@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -8,16 +7,19 @@ namespace BusinessLayerLib
 {
     public class BusinessLayer
     {
-        private SaveAsync _saveAsync;
-        private GetAsync _getAsync;
-        private DeleteAsync _deleteAsync;
-        Deleting _deleting;
-        Deleted _deleted;
-        Saving _inserting;
-        Inserted _inserted;
-        BeforeGet _beforeGet;
-        AfterGet _afterGet;
+        #region Fields
+        private readonly SaveAsync _saveAsync;
+        private readonly GetAsync _getAsync;
+        private readonly DeleteAsync _deleteAsync;
+        private readonly Deleting _deleting;
+        private readonly Deleted _deleted;
+        private readonly Saving _inserting;
+        private readonly Inserted _inserted;
+        private readonly BeforeGet _beforeGet;
+        private readonly AfterGet _afterGet;
+        #endregion
 
+        #region Constructor
         public BusinessLayer(
             SaveAsync saveAsync = null,
             GetAsync getAsync = null,
@@ -40,7 +42,9 @@ namespace BusinessLayerLib
             _beforeGet = beforeGet;
             _afterGet = afterGet;
         }
+        #endregion
 
+        #region Public Methods
         public async Task<int> DeleteAsync(Type type, object key)
         {
             await _deleting(type, key);
@@ -49,7 +53,7 @@ namespace BusinessLayerLib
             return deleteCount;
         }
 
-        public async Task<IAsyncEnumerable<object>> GetAsync(Expression predicate) 
+        public async Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
         {
             var type = predicate.Type.GenericTypeArguments[0];
 
@@ -77,5 +81,6 @@ namespace BusinessLayerLib
 
             return insertedItem;
         }
+        #endregion
     }
 }

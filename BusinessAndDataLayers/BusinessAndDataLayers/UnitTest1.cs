@@ -5,7 +5,6 @@ using EntityGraphQL.Schema;
 using ExpressionFromGraphQLLib;
 using LiteDB;
 using LiteDBLib;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -23,7 +22,7 @@ namespace BusinessAndDataLayers
 {
     public class DemoController
     {
-        GetAsync _getAsync;
+        private readonly GetAsync _getAsync;
 
         public DemoController(GetAsync getAsync)
         {
@@ -41,17 +40,18 @@ namespace BusinessAndDataLayers
     {
         private const string LiteDbFileName = "MyData.db";
         #region Fields
-        Mock<GetAsync> _mockGet;
-        Mock<SaveAsync> _mockSave;
-        Mock<DeleteAsync> _mockDelete;
-        BusinessLayer _businessLayer;
-        Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
-        string _id = Guid.NewGuid().ToString().Replace("-", "*");
+
+        private Mock<GetAsync> _mockGet;
+        private Mock<SaveAsync> _mockSave;
+        private Mock<DeleteAsync> _mockDelete;
+        private BusinessLayer _businessLayer;
+        private readonly Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
+        private readonly string _id = Guid.NewGuid().ToString().Replace("-", "*");
         private bool _customDeleting = false;
         private bool _customDeleted = false;
         private bool _customBefore = false;
         private bool _customAfter = false;
-        Expression _getOrderByIdPredicate;
+        private Expression _getOrderByIdPredicate;
         #endregion
 
         #region Tests
@@ -61,13 +61,11 @@ namespace BusinessAndDataLayers
         {
             await CreateOrdersDb();
 
-            using (var ordersDbContext = new OrdersDbContext())
-            {
-                var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
-                var asyncEnumerable = await entityFrameworkDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
-                var returnValue = await asyncEnumerable.ToListAsync();
-                Assert.AreEqual(1, returnValue.Count);
-            }
+            using var ordersDbContext = new OrdersDbContext();
+            var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
+            var asyncEnumerable = await entityFrameworkDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
+            var returnValue = await asyncEnumerable.ToListAsync();
+            Assert.AreEqual(1, returnValue.Count);
         }
 
 
@@ -82,42 +80,17 @@ namespace BusinessAndDataLayers
 
             await CreateOrdersDb();
 
-            using (var ordersDbContext = new OrdersDbContext())
-            {
-                var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
-                var asyncEnumerable = await entityFrameworkDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)expression);
-                var returnValue = await asyncEnumerable.ToListAsync();
-                Assert.AreEqual(1, returnValue.Count);
-            }
+            using var ordersDbContext = new OrdersDbContext();
+            var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
+            var asyncEnumerable = await entityFrameworkDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)expression);
+            var returnValue = await asyncEnumerable.ToListAsync();
+            Assert.AreEqual(1, returnValue.Count);
         }
 
         [TestMethod]
         public async Task TestGetDbLiteViaGraphQL()
         {
-            using (var db = SetupLiteDb())
-            {
-                var schema = SchemaBuilder.FromObject<OrdersDbContext>();
-
-                var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
-
-                var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
-
-                await CreateOrdersDb();
-
-                var repoDbDataLayer = new LiteDbDataLayer(db);
-                var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
-
-                var returnValue = await asyncEnumerable.ToListAsync();
-                Assert.AreEqual(1, returnValue.Count);
-            }
-        }
-
-        [TestMethod]
-        public async Task TestGetRepoDbViaGraphQL()
-        {
-            await CreateOrdersDb();
-
+            using var db = SetupLiteDb();
             var schema = SchemaBuilder.FromObject<OrdersDbContext>();
 
             var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
@@ -126,16 +99,35 @@ namespace BusinessAndDataLayers
 
             await CreateOrdersDb();
 
-            using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
-            {
-                var repoDbDataLayer = new RepoDbDataLayer(connection);
-                var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
+            var repoDbDataLayer = new LiteDbDataLayer(db);
+            var asyncEnumerable = await repoDbDataLayer
+                .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
 
-                var returnValue = await asyncEnumerable.ToListAsync();
-                Assert.AreEqual(1, returnValue.Count);
-            }
+            var returnValue = await asyncEnumerable.ToListAsync();
+            Assert.AreEqual(1, returnValue.Count);
         }
+
+        //[TestMethod]
+        //public async Task TestGetRepoDbViaGraphQL()
+        //{
+        //    await CreateOrdersDb();
+
+        //    var schema = SchemaBuilder.FromObject<OrdersDbContext>();
+
+        //    var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
+
+        //    var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
+
+        //    await CreateOrdersDb();
+
+        //    using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
+        //    var repoDbDataLayer = new RepoDbDataLayer(connection);
+        //    var asyncEnumerable = await repoDbDataLayer
+        //        .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
+
+        //    var returnValue = await asyncEnumerable.ToListAsync();
+        //    Assert.AreEqual(1, returnValue.Count);
+        //}
 
         [TestMethod]
         public async Task TestGetRepoDb()
@@ -144,47 +136,41 @@ namespace BusinessAndDataLayers
 
             SqLiteBootstrap.Initialize();
 
-            using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
-            {
-                var repoDbDataLayer = new RepoDbDataLayer(connection);
-                var asyncEnumerable = await repoDbDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
+            using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
+            var repoDbDataLayer = new RepoDbDataLayer(connection);
+            var asyncEnumerable = await repoDbDataLayer.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
 
-                var returnValue = await asyncEnumerable.ToListAsync();
-                Assert.AreEqual(1, returnValue.Count);
-            }
+            var returnValue = await asyncEnumerable.ToListAsync();
+            Assert.AreEqual(1, returnValue.Count);
         }
 
         [TestMethod]
         public async Task TestGetLiteDb()
         {
-            using (var db = SetupLiteDb())
-            {
-                var repoDbDataLayer = new LiteDbDataLayer(db);
-                var asyncEnumerable = await repoDbDataLayer
-                    .GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
+            using var db = SetupLiteDb();
+            var repoDbDataLayer = new LiteDbDataLayer(db);
+            var asyncEnumerable = await repoDbDataLayer
+                .GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
-                var returnValue = await asyncEnumerable.ToListAsync();
-                Assert.AreEqual(1, returnValue.Count);
-            }
+            var returnValue = await asyncEnumerable.ToListAsync();
+            Assert.AreEqual(1, returnValue.Count);
         }
 
         [TestMethod]
         public async Task TestGetLiteDbWithBusinessLayer()
         {
-            using (var db = SetupLiteDb())
-            {
-                var liteDbDataLayer = new LiteDbDataLayer(db);
+            using var db = SetupLiteDb();
+            var liteDbDataLayer = new LiteDbDataLayer(db);
 
-                var businessLayer = new BusinessLayer(getAsync: liteDbDataLayer.GetAsync);
+            var businessLayer = new BusinessLayer(getAsync: liteDbDataLayer.GetAsync);
 
-                var getAsync = (GetAsync)businessLayer.GetAsync;
+            var getAsync = (GetAsync)businessLayer.GetAsync;
 
-                var asyncEnumerable = getAsync.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
+            var asyncEnumerable = getAsync.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
-                var returnValue = (await asyncEnumerable).ToListAsync().Result;
-                Assert.AreEqual(1, returnValue.Count);
-            }
+            var returnValue = (await asyncEnumerable).ToListAsync().Result;
+            Assert.AreEqual(1, returnValue.Count);
         }
 
         [TestMethod]
@@ -194,25 +180,23 @@ namespace BusinessAndDataLayers
 
             SqLiteBootstrap.Initialize();
 
-            using (var connection = new SQLiteConnection(OrdersDbContext.ConnectionString))
-            {
-                var repoDbDataLayer = new RepoDbDataLayer(connection);
+            using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
+            var repoDbDataLayer = new RepoDbDataLayer(connection);
 
-                var businessLayer = new BusinessLayer(
-                    getAsync: repoDbDataLayer.GetAsync,
-                    beforeGet: async (t, e) => { _customBefore = true; },
-                    afterGet: async (t, result) => { _customAfter = true; });
+            var businessLayer = new BusinessLayer(
+                getAsync: repoDbDataLayer.GetAsync,
+                beforeGet: async (t, e) => { _customBefore = true; },
+                afterGet: async (t, result) => { _customAfter = true; });
 
-                GetAsync getAsync = businessLayer.GetAsync;
+            GetAsync getAsync = businessLayer.GetAsync;
 
-                var asyncEnumerable = await getAsync
-                    .GetAsync<OrderRecord>(o => o.Id == _id);
+            var asyncEnumerable = await getAsync
+                .GetAsync<OrderRecord>(o => o.Id == _id);
 
 
-                var returnValue = await asyncEnumerable.ToListAsync();
-                Assert.AreEqual(1, returnValue.Count);
-                Assert.IsTrue(_customBefore && _customAfter);
-            }
+            var returnValue = await asyncEnumerable.ToListAsync();
+            Assert.AreEqual(1, returnValue.Count);
+            Assert.IsTrue(_customBefore && _customAfter);
         }
 
 
@@ -299,11 +283,9 @@ namespace BusinessAndDataLayers
 
         private async Task CreateOrdersDb()
         {
-            using (var ordersDbContext = new OrdersDbContext())
-            {
-                ordersDbContext.OrderRecord.Add(new OrderRecord { Id = _id });
-                await ordersDbContext.SaveChangesAsync();
-            }
+            await using var ordersDbContext = new OrdersDbContext();
+            await ordersDbContext.OrderRecord.AddAsync(new OrderRecord { Id = _id });
+            await ordersDbContext.SaveChangesAsync();
         }
 
         private LiteDatabase SetupLiteDb()

@@ -6,7 +6,7 @@ namespace BusinessAndDataLayers
 {
     public class DummyPersonAsObjectAsyncEnumerable : IAsyncEnumerable<Person>
     {
-        DummyPersonAsObjectAsyncEnumerator dummyPersonAsObjectAsyncEnumerator;
+        private readonly DummyPersonAsObjectAsyncEnumerator dummyPersonAsObjectAsyncEnumerator;
 
         public DummyPersonAsObjectAsyncEnumerable(bool returnAPerson)
         {

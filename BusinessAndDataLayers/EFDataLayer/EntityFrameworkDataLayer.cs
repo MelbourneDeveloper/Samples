@@ -9,7 +9,7 @@ namespace BusinessAndDataLayers
 {
     public class EntityFrameworkDataLayer
     {
-        DbContext _dbContext;
+        private readonly DbContext _dbContext;
 
         public EntityFrameworkDataLayer(DbContext dbContext)
         {
