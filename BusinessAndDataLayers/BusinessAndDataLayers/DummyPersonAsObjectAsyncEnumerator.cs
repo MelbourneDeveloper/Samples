@@ -6,7 +6,7 @@ namespace BusinessAndDataLayers
 {
     public class DummyPersonAsObjectAsyncEnumerator : IAsyncEnumerator<Person>
     {
-        private bool _isFirst = true;
+        private bool _isFirst;
 
         public DummyPersonAsObjectAsyncEnumerator(bool returnAPerson)
         {
@@ -22,12 +22,10 @@ namespace BusinessAndDataLayers
 
         public ValueTask<bool> MoveNextAsync()
         {
-            if (_isFirst)
-            {
-                _isFirst = false;
-                return new ValueTask<bool>(true);
-            }
-            return new ValueTask<bool>(false);
+            if (!_isFirst) return new ValueTask<bool>(false);
+
+            _isFirst = false;
+            return new ValueTask<bool>(true);
         }
     }
 }

@@ -61,7 +61,7 @@ namespace BusinessAndDataLayers
         {
             await CreateOrdersDb();
 
-            using var ordersDbContext = new OrdersDbContext();
+            await using var ordersDbContext = new OrdersDbContext();
             var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
             var asyncEnumerable = await entityFrameworkDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
             var returnValue = await asyncEnumerable.ToListAsync();
@@ -80,7 +80,7 @@ namespace BusinessAndDataLayers
 
             await CreateOrdersDb();
 
-            using var ordersDbContext = new OrdersDbContext();
+            await using var ordersDbContext = new OrdersDbContext();
             var entityFrameworkDataLayer = new EntityFrameworkDataLayer(ordersDbContext);
             var asyncEnumerable = await entityFrameworkDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)expression);
             var returnValue = await asyncEnumerable.ToListAsync();
@@ -136,7 +136,7 @@ namespace BusinessAndDataLayers
 
             SqLiteBootstrap.Initialize();
 
-            using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
+            await using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
             var repoDbDataLayer = new RepoDbDataLayer(connection);
             var asyncEnumerable = await repoDbDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
@@ -180,7 +180,7 @@ namespace BusinessAndDataLayers
 
             SqLiteBootstrap.Initialize();
 
-            using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
+            await using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
             var repoDbDataLayer = new RepoDbDataLayer(connection);
 
             var businessLayer = new BusinessLayer(
