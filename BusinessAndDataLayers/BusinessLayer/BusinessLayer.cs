@@ -45,7 +45,7 @@ namespace BusinessLayerLib
         #endregion
 
         #region Public Methods
-        public async Task<int> DeleteAsync(Type type, object key)
+        public async Task<int> DeleteAsync(Type type, Expression predicate)
         {
             if(_deleteAsync==null) throw new NotImplementedException("Delete not implemented");
 

@@ -7,7 +7,7 @@ namespace BusinessLayerLib
 {
     public interface IBusinessLayer
     {
-        Task<int> DeleteAsync(Type type, object key);
+        Task<int> DeleteAsync(Type type, Expression predicate);
         Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate);
         Task<object> SaveAsync(object item, bool isUpdate);
     }
