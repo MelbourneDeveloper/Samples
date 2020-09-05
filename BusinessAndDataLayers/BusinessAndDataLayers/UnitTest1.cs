@@ -260,7 +260,7 @@ namespace BusinessAndDataLayers
         #endregion
         #region Arrange
         [TestInitialize]
-        public async Task TestInitialize()
+        public void TestInitialize()
         {
             _mockGet = new Mock<WhereAsync>();
             _mockSave = new Mock<SaveAsync>();
@@ -296,7 +296,7 @@ namespace BusinessAndDataLayers
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddSingleton<Saving<Person>>(async (p, u) =>
+            serviceCollection.AddSingleton<Saving<Person>>( (p, u) =>
             {
                 if (u)
                 {
@@ -306,6 +306,8 @@ namespace BusinessAndDataLayers
                 {
                     p.Name += "Inserting";
                 }
+
+                return Task.FromResult(true);
             })
             .AddSingleton<Saved<Person>>( (p, u) =>
             {

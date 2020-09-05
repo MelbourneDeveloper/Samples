@@ -12,9 +12,7 @@ namespace BusinessAndDataLayers
             _whereAsync = whereAsync;
         }
 
-        public async Task GetAsync()
-        {
-            var orderRecords = _whereAsync.GetAsync<OrderRecord>(o => o.Id == "123");
-        }
+        public Task GetAsync() => _whereAsync.GetAsync<OrderRecord>(o => o.Id == "123");
+
     }
 }
