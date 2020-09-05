@@ -17,11 +17,6 @@ namespace LiteDBLib
             _db = db;
         }
 
-        public Task<int> DeleteAsync(Type type, object key)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
         {
             var recordType = predicate.Type.GenericTypeArguments[0];
@@ -63,12 +58,6 @@ namespace LiteDBLib
             var objects = list.Cast<object>();
 
             return Task.FromResult(objects.ToAsyncEnumerable());
-        }
-
-
-        public Task<object> SaveAsync(object item, bool isUpdate)
-        {
-            throw new NotImplementedException();
         }
     }
 }

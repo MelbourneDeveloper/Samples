@@ -16,11 +16,6 @@ namespace EFDataLayer
             _dbContext = dbContext;
         }
 
-        public Task<int> DeleteAsync(Type type, object key)
-        {
-            throw new NotImplementedException();
-        }
-
         //Note this should be working
         public Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate)
         {
@@ -52,12 +47,5 @@ namespace EFDataLayer
             //Conver to async and return
             return Task.FromResult(enumerableObjects.ToAsyncEnumerable());
         }
-        
-
-        public Task<object> SaveAsync(object item, bool isUpdate)
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }
