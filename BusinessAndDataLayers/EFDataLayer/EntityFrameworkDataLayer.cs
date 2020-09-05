@@ -21,19 +21,6 @@ namespace BusinessAndDataLayers
             throw new NotImplementedException();
         }
 
-        //public Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate) where T : class
-        //{
-        //    var setMeth = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
-
-        //    var setMethodWithTypeArgument = setMeth.MakeGenericMethod(new Type[] { typeof(T) });
-
-        //    var dbSets = (IQueryable<T>)setMethodWithTypeArgument.Invoke(_dbContext, null);
-
-        //    var whereMethod = typeof(Queryable).GetMethod(nameof(Queryable.Where), new Type[] { });
-
-        //    return Task.FromResult(Queryable.Where(dbSets, predicate).ToAsyncEnumerable());
-        //}
-
         //Note this should be working
         public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
         {
@@ -43,7 +30,7 @@ namespace BusinessAndDataLayers
             //Get the set method
             var setMeth = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
 
-            var setMethodWithTypeArgument = setMeth.MakeGenericMethod(new Type[] { type });
+            var setMethodWithTypeArgument = setMeth.MakeGenericMethod(new[] { type });
 
             //Get the DbSet
             var dbSet = (IQueryable)setMethodWithTypeArgument.Invoke(_dbContext, null);
@@ -60,7 +47,7 @@ namespace BusinessAndDataLayers
             var castMethod = typeof(Queryable).GetMethods().Where(m => m.Name == "Cast").First().MakeGenericMethod(typeof(object));
 
             //Cast to IEnumerable<object>
-            var enumerableObjects = (IEnumerable<object>)castMethod.Invoke(null, new object[] { result });
+            var enumerableObjects = (IEnumerable<object>)castMethod.Invoke(null, new[] { result });
 
             //Conver to async and return
             return Task.FromResult(enumerableObjects.ToAsyncEnumerable());

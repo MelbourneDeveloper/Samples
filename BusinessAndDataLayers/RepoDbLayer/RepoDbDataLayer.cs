@@ -37,7 +37,7 @@ namespace RepoDbLayer
             var methods = typeof(DbConnectionExtension).GetMethods().Where(m => m.Name == nameof(DbConnectionExtension.Query)).ToList();
             var methodInfo = methods.FirstOrDefault(m => m.GetParameters()[1].ParameterType.Name.Contains("Expression"));
 
-            var genericMethod = methodInfo.MakeGenericMethod(new Type[] { type });
+            var genericMethod = methodInfo.MakeGenericMethod(new[] { type });
 
             //TODO: Casting here will degrade performance
             var result = (IList)genericMethod.Invoke(

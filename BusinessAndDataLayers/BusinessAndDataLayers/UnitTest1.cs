@@ -386,44 +386,44 @@ namespace BusinessAndDataLayers
                 _mockDelete.Object,
                 async (type, key) =>
                 {
-                    var delegateType = typeof(Deleting<>).MakeGenericType(new Type[] { type });
+                    var delegateType = typeof(Deleting<>).MakeGenericType(new[] { type });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { key });
+                    await (Task)@delegate?.DynamicInvoke(new[] { key });
                 },
                 async (type, key, count) =>
                 {
-                    var delegateType = typeof(Deleted<>).MakeGenericType(new Type[] { type });
+                    var delegateType = typeof(Deleted<>).MakeGenericType(new[] { type });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { key });
+                    await (Task)@delegate?.DynamicInvoke(new[] { key });
                 }, async (entity, isUpdate) =>
                 {
-                    var delegateType = typeof(Saving<>).MakeGenericType(new Type[] { entity.GetType() });
+                    var delegateType = typeof(Saving<>).MakeGenericType(new[] { entity.GetType() });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { entity, isUpdate });
+                    await (Task)@delegate?.DynamicInvoke(new[] { entity, isUpdate });
                 },
                 async (entity, isUpdate) =>
                 {
-                    var delegateType = typeof(Saved<>).MakeGenericType(new Type[] { entity.GetType() });
+                    var delegateType = typeof(Saved<>).MakeGenericType(new[] { entity.GetType() });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { entity, isUpdate });
+                    await (Task)@delegate?.DynamicInvoke(new[] { entity, isUpdate });
                 },
                 async (type, query) =>
                 {
-                    var delegateType = typeof(BeforeGet<>).MakeGenericType(new Type[] { type });
+                    var delegateType = typeof(BeforeGet<>).MakeGenericType(new[] { type });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
                     await (Task)@delegate.DynamicInvoke(new object[] { query });
                 },
                 async (type, items) =>
                 {
-                    var delegateType = typeof(AfterGet<>).MakeGenericType(new Type[] { type });
+                    var delegateType = typeof(AfterGet<>).MakeGenericType(new[] { type });
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(new object[] { items });
+                    await (Task)@delegate?.DynamicInvoke(new[] { items });
                 }
                 );
 
