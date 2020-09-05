@@ -1,5 +1,4 @@
 ﻿using RepoDb;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -45,7 +44,7 @@ namespace RepoDbLayer
                     null,
                     null,
                     null,
-                    null,
+                    null
              });
             var list = new List<object>((IEnumerable<object>)result);
 

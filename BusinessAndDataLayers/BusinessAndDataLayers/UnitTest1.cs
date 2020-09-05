@@ -32,10 +32,10 @@ namespace BusinessAndDataLayers
         private BusinessLayer _businessLayer;
         private readonly Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
         private readonly string _id = Guid.NewGuid().ToString().Replace("-", "*");
-        private bool _customDeleting = false;
-        private bool _customDeleted = false;
-        private bool _customBefore = false;
-        private bool _customAfter = false;
+        private bool _customDeleting;
+        private bool _customDeleted;
+        private bool _customBefore;
+        private bool _customAfter;
         private Expression _getOrderByIdPredicate;
         #endregion
 
@@ -353,27 +353,27 @@ namespace BusinessAndDataLayers
                     var delegateType = typeof(Deleting<>).MakeGenericType(type);
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(key);
+                    await (Task)@delegate.DynamicInvoke(key);
                 },
                 async (type, key, count) =>
                 {
                     var delegateType = typeof(Deleted<>).MakeGenericType(type);
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(key);
+                    await (Task)@delegate.DynamicInvoke(key);
                 }, async (entity, isUpdate) =>
                 {
                     var delegateType = typeof(Saving<>).MakeGenericType(entity.GetType());
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(entity, isUpdate);
+                    await (Task)@delegate.DynamicInvoke(entity, isUpdate);
                 },
                 async (entity, isUpdate) =>
                 {
                     var delegateType = typeof(Saved<>).MakeGenericType(entity.GetType());
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(entity, isUpdate);
+                    await (Task)@delegate.DynamicInvoke(entity, isUpdate);
                 },
                 async (type, query) =>
                 {
@@ -387,7 +387,7 @@ namespace BusinessAndDataLayers
                     var delegateType = typeof(AfterGet<>).MakeGenericType(type);
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate?.DynamicInvoke(items);
+                    await (Task)@delegate.DynamicInvoke(items);
                 }
                 );
 

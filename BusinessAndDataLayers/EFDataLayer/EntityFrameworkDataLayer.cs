@@ -23,28 +23,28 @@ namespace EFDataLayer
             var type = predicate.Type.GenericTypeArguments[0];
 
             //Get the set method
-            var setMeth = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
+            var setMethod = typeof(DbContext).GetMethod(nameof(DbContext.Set), new Type[] { });
 
-            var setMethodWithTypeArgument = setMeth.MakeGenericMethod(type);
+            var setMethodWithTypeArgument = setMethod.MakeGenericMethod(type);
 
             //Get the DbSet
             var dbSet = (IQueryable)setMethodWithTypeArgument.Invoke(_dbContext, null);
 
             //Warning extremely dodgy
             //TODO: Fix
-            var whereMethod = typeof(Queryable).GetMethods().Where(m => m.Name == "Where").First().MakeGenericMethod(type);
+            var whereMethod = typeof(Queryable).GetMethods().First(m => m.Name == nameof(Queryable.Where)).MakeGenericMethod(type);
 
             //Invoke where
             var result = whereMethod.Invoke(null, new object[] { dbSet, predicate });
 
             //Warning: More dodge here
             //Cast to enumerable of objects
-            var castMethod = typeof(Queryable).GetMethods().Where(m => m.Name == "Cast").First().MakeGenericMethod(typeof(object));
+            var castMethod = typeof(Queryable).GetMethods().First(m => m.Name == nameof(Queryable.Cast)).MakeGenericMethod(typeof(object));
 
             //Cast to IEnumerable<object>
             var enumerableObjects = (IEnumerable<object>)castMethod.Invoke(null, new[] { result });
 
-            //Conver to async and return
+            //Convert to async and return
             return Task.FromResult(enumerableObjects.ToAsyncEnumerable());
         }
     }
