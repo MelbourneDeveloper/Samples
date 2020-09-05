@@ -40,7 +40,7 @@ namespace EntityFrameworkCoreGetSQL
             var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder
-                .AddConsole((options) =>{})
+                .AddConsole((options) => { })
                 .AddFilter((category, level) =>
                     category == DbLoggerCategory.Database.Command.Name
                     && level == LogLevel.Information);
@@ -48,7 +48,11 @@ namespace EntityFrameworkCoreGetSQL
 
             using (var ordersDbContext = new OrdersDbContext(loggerFactory))
             {
-                var orderLines = ordersDbContext.OrderLines.Where(o => o.Id == Guid.Empty).ToList();
+                IQueryable<OrderLine> queryables = ordersDbContext.OrderLines.Where(o => o.Id == Guid.Empty);
+
+                var asdasd = queryables.ToQueryString();
+
+                var orderLines = queryables.ToList();
                 orderLines = ordersDbContext.OrderLines.ToList();
             }
         }

@@ -1,10 +1,10 @@
-﻿using BusinessAndDataLayers.Shared;
+﻿using DomainLib;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
 {
-    public class DummyPersonAsObjectAsyncEnumerator : IAsyncEnumerator<object>
+    public class DummyPersonAsObjectAsyncEnumerator : IAsyncEnumerator<Person>
     {
         private bool _isFirst = true;
 
@@ -13,7 +13,7 @@ namespace BusinessAndDataLayers
             _isFirst = returnAPerson;
         }
 
-        public object Current { get; } = new Person { Name = "Bob" };
+        public Person Current { get; } = new Person { Name = "Bob" };
 
         public ValueTask DisposeAsync()
         {
