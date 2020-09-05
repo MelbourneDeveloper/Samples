@@ -96,10 +96,6 @@ namespace BusinessAndDataLayers
         {
             using (var db = SetupLiteDb())
             {
-
-                var orders = db.GetCollection<OrderRecord>();
-                orders.Insert(new OrderRecord { Id = _id, Name = "123" });
-
                 var schema = SchemaBuilder.FromObject<OrdersDbContext>();
 
                 var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
@@ -164,10 +160,6 @@ namespace BusinessAndDataLayers
         {
             using (var db = SetupLiteDb())
             {
-                //TODO: This shouldn't be necessary. We already inserted an order with the same id...
-                var orders = db.GetCollection<OrderRecord>();
-                orders.Insert(new OrderRecord { Id = _id, Name = "123" });
-
                 var repoDbDataLayer = new LiteDbDataLayer(db);
                 var asyncEnumerable = await repoDbDataLayer
                     .GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
@@ -355,6 +347,10 @@ namespace BusinessAndDataLayers
 
             // and now we can query phones
             var r = orders.FindOne(x => x.Name.Contains("Jane"));
+
+            //TODO: This shouldn't be necessary. We already inserted an order with the same id...
+            orders = db.GetCollection<OrderRecord>();
+            orders.Insert(new OrderRecord { Id = _id, Name = "123" });
 
             return db;
         }
