@@ -185,8 +185,16 @@ namespace BusinessAndDataLayers
 
             var businessLayer = new BusinessLayer(
                 whereAsync: repoDbDataLayer.WhereAsync,
-                beforeGet: async (t, e) => { _customBefore = true; },
-                afterGet: async (t, result) => { _customAfter = true; });
+                beforeGet: (t, e) =>
+                {
+                    _customBefore = true;
+                    return Task.FromResult(true);
+                },
+                afterGet: (t, result) =>
+                {
+                    _customAfter = true;
+                    return Task.FromResult(true);
+                });
 
             WhereAsync whereAsync = businessLayer.WhereAsync;
 
@@ -350,7 +358,7 @@ namespace BusinessAndDataLayers
                     p.Name += "Inserting";
                 }
             })
-            .AddSingleton<Saved<Person>>(async (p, u) =>
+            .AddSingleton<Saved<Person>>( (p, u) =>
             {
                 if (u)
                 {
@@ -360,22 +368,27 @@ namespace BusinessAndDataLayers
                 {
                     p.Name += "Inserted";
                 }
+                return Task.FromResult(true);
             })
-            .AddSingleton<Deleting<Person>>(async key =>
+            .AddSingleton<Deleting<Person>>( key =>
             {
                 _customDeleting = key == _bob.Key;
+                return Task.FromResult(true);
             })
-            .AddSingleton<Deleted<Person>>(async key =>
+            .AddSingleton<Deleted<Person>>( key =>
             {
                 _customDeleted = key == _bob.Key;
+                return Task.FromResult(true);
             })
-            .AddSingleton<BeforeGet<Person>>(async query =>
+            .AddSingleton<BeforeGet<Person>>( query =>
             {
                 _customBefore = true;
+                return Task.FromResult(true);
             })
-            .AddSingleton<AfterGet<Person>>(async people =>
+            .AddSingleton<AfterGet<Person>>( people =>
             {
                 _customAfter = true;
+                return Task.FromResult(true);
             });
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
