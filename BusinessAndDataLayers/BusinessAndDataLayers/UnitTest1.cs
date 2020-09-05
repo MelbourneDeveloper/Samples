@@ -252,7 +252,7 @@ namespace BusinessAndDataLayers
         {
             //Act
             WhereAsync whereAsync = _businessLayer.WhereAsync;
-            var people = await whereAsync.GetAsync<Person>((p) => true);
+            var people = await whereAsync.GetAsync<Person>(p => true);
 
             //Verify get was called
             _mockGet.Verify(d => d(It.IsAny<Expression<Func<Person, bool>>>()), Times.Once);
@@ -361,19 +361,19 @@ namespace BusinessAndDataLayers
                     p.Name += "Inserted";
                 }
             })
-            .AddSingleton<Deleting<Person>>(async (key) =>
+            .AddSingleton<Deleting<Person>>(async key =>
             {
                 _customDeleting = key == _bob.Key;
             })
-            .AddSingleton<Deleted<Person>>(async (key) =>
+            .AddSingleton<Deleted<Person>>(async key =>
             {
                 _customDeleted = key == _bob.Key;
             })
-            .AddSingleton<BeforeGet<Person>>(async (query) =>
+            .AddSingleton<BeforeGet<Person>>(async query =>
             {
                 _customBefore = true;
             })
-            .AddSingleton<AfterGet<Person>>(async (people) =>
+            .AddSingleton<AfterGet<Person>>(async people =>
             {
                 _customAfter = true;
             });

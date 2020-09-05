@@ -31,7 +31,7 @@ namespace LiteDBLib
             var queryMethod = typeof(ILiteCollection<>).MakeGenericType(recordType).GetMethod(nameof(ILiteCollection<object>.Query));
 
             //TODO: this is pretty horrible
-            var whereMethod = Enumerable.FirstOrDefault(typeof(LiteQueryable<>).MakeGenericType((Type[])(new[] { recordType })).GetMethods(), m =>
+            var whereMethod = Enumerable.FirstOrDefault(typeof(LiteQueryable<>).MakeGenericType(recordType).GetMethods(), m =>
              {
                  var parameters = m.GetParameters();
 
