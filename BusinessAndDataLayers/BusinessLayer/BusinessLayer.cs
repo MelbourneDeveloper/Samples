@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace BusinessLayerLib
 {
-    public class BusinessLayer
+    public class BusinessLayer : IBusinessLayer
     {
         #region Fields
         private readonly SaveAsync _saveAsync;
-        private readonly GetAsync _getAsync;
+        private readonly WhereAsync _whereAsync;
         private readonly DeleteAsync _deleteAsync;
         private readonly Deleting _deleting;
         private readonly Deleted _deleted;
@@ -22,7 +22,7 @@ namespace BusinessLayerLib
         #region Constructor
         public BusinessLayer(
             SaveAsync saveAsync = null,
-            GetAsync getAsync = null,
+            WhereAsync whereAsync = null,
             DeleteAsync deleteAsync = null,
             Deleting deleting = null,
             Deleted deleted = null,
@@ -32,7 +32,7 @@ namespace BusinessLayerLib
             AfterGet afterGet = null
            )
         {
-            _getAsync = getAsync;
+            _whereAsync = whereAsync;
             _deleteAsync = deleteAsync;
             _saveAsync = saveAsync;
             _deleting = deleting;
@@ -47,37 +47,36 @@ namespace BusinessLayerLib
         #region Public Methods
         public async Task<int> DeleteAsync(Type type, object key)
         {
-            await _deleting(type, key);
+            if(_deleteAsync==null) throw new NotImplementedException("Delete not implemented");
+
+            if (_deleting != null) await _deleting.Invoke(type, key);
             var deleteCount = await _deleteAsync(type, key);
-            await _deleted(type, key, deleteCount);
+            if (_deleted != null) await _deleted(type, key, deleteCount);
             return deleteCount;
         }
 
-        public async Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
+        public async Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate)
         {
+            if (_whereAsync == null) throw new NotImplementedException("Where not implemented");
+
             var type = predicate.Type.GenericTypeArguments[0];
 
-            if (_beforeGet != null)
-            {
-                await _beforeGet(type, predicate);
-            }
+            if (_beforeGet != null) await _beforeGet(type, predicate);
 
-            var results = await _getAsync(predicate);
+            var results = await _whereAsync(predicate);
 
-            if (_afterGet != null)
-            {
-                //Note: IAsyncEnumerable doesn't have a non-generic version
-                await _afterGet(type, results);
-            }
+            if (_afterGet != null) await _afterGet(type, results);
 
             return results;
         }
 
         public async Task<object> SaveAsync(object item, bool isUpdate)
         {
-            await _inserting(item, isUpdate);
+            if (_saveAsync == null) throw new NotImplementedException("Save not implemented");
+
+            if (_inserting != null) await _inserting(item, isUpdate);
             var insertedItem = await _saveAsync(item, isUpdate);
-            await _inserted(insertedItem, isUpdate);
+            if (_inserted != null) await _inserted(insertedItem, isUpdate);
 
             return insertedItem;
         }

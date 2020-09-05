@@ -22,16 +22,16 @@ namespace BusinessAndDataLayers
 {
     public class DemoController
     {
-        private readonly GetAsync _getAsync;
+        private readonly WhereAsync _whereAsync;
 
-        public DemoController(GetAsync getAsync)
+        public DemoController(WhereAsync whereAsync)
         {
-            _getAsync = getAsync;
+            _whereAsync = whereAsync;
         }
 
         public async Task GetAsync()
         {
-            var orderRecords = _getAsync.GetAsync<OrderRecord>(o => o.Id == "123");
+            var orderRecords = _whereAsync.GetAsync<OrderRecord>(o => o.Id == "123");
         }
     }
 
@@ -41,7 +41,7 @@ namespace BusinessAndDataLayers
         private const string LiteDbFileName = "MyData.db";
         #region Fields
 
-        private Mock<GetAsync> _mockGet;
+        private Mock<WhereAsync> _mockGet;
         private Mock<SaveAsync> _mockSave;
         private Mock<DeleteAsync> _mockDelete;
         private BusinessLayer _businessLayer;
@@ -123,7 +123,7 @@ namespace BusinessAndDataLayers
         //    using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
         //    var repoDbDataLayer = new RepoDbDataLayer(connection);
         //    var asyncEnumerable = await repoDbDataLayer
-        //        .GetAsync((Expression<Func<OrderRecord, bool>>)expression);
+        //        .WhereAsync((Expression<Func<OrderRecord, bool>>)expression);
 
         //    var returnValue = await asyncEnumerable.ToListAsync();
         //    Assert.AreEqual(1, returnValue.Count);
@@ -163,9 +163,9 @@ namespace BusinessAndDataLayers
             using var db = SetupLiteDb();
             var liteDbDataLayer = new LiteDbDataLayer(db);
 
-            var businessLayer = new BusinessLayer(getAsync: liteDbDataLayer.GetAsync);
+            var businessLayer = new BusinessLayer(whereAsync: liteDbDataLayer.GetAsync);
 
-            var getAsync = (GetAsync)businessLayer.GetAsync;
+            var getAsync = (WhereAsync)businessLayer.WhereAsync;
 
             var asyncEnumerable = getAsync.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
@@ -184,13 +184,13 @@ namespace BusinessAndDataLayers
             var repoDbDataLayer = new RepoDbDataLayer(connection);
 
             var businessLayer = new BusinessLayer(
-                getAsync: repoDbDataLayer.GetAsync,
+                whereAsync: repoDbDataLayer.GetAsync,
                 beforeGet: async (t, e) => { _customBefore = true; },
                 afterGet: async (t, result) => { _customAfter = true; });
 
-            GetAsync getAsync = businessLayer.GetAsync;
+            WhereAsync whereAsync = businessLayer.WhereAsync;
 
-            var asyncEnumerable = await getAsync
+            var asyncEnumerable = await whereAsync
                 .GetAsync<OrderRecord>(o => o.Id == _id);
 
 
@@ -251,8 +251,8 @@ namespace BusinessAndDataLayers
         public async Task TestGet()
         {
             //Act
-            GetAsync getAsync = _businessLayer.GetAsync;
-            var people = await getAsync.GetAsync<Person>((p) => true);
+            WhereAsync whereAsync = _businessLayer.WhereAsync;
+            var people = await whereAsync.GetAsync<Person>((p) => true);
 
             //Verify get was called
             _mockGet.Verify(d => d(It.IsAny<Expression<Func<Person, bool>>>()), Times.Once);
@@ -269,7 +269,7 @@ namespace BusinessAndDataLayers
         [TestInitialize]
         public async Task TestInitialize()
         {
-            _mockGet = new Mock<GetAsync>();
+            _mockGet = new Mock<WhereAsync>();
             _mockSave = new Mock<SaveAsync>();
             _mockDelete = new Mock<DeleteAsync>();
 

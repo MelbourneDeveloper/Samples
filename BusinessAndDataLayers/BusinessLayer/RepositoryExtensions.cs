@@ -15,7 +15,7 @@
 //        public static async Task<IAsyncEnumerable<T>> GetAllAsync<T>(this IRepository repository) where T : class
 //        {
 //            //TODO: the query interface...
-//            var asyncEnumerable = await repository.GetAsync<T>(null);
+//            var asyncEnumerable = await repository.WhereAsync<T>(null);
 
 //            return asyncEnumerable;
 //        }

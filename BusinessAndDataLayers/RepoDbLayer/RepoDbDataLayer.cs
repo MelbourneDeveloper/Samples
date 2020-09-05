@@ -23,7 +23,7 @@ namespace RepoDbLayer
             throw new NotImplementedException();
         }
 
-        //public Task<IAsyncEnumerable<T>> GetAsync<T>(Expression<Func<T, bool>> predicate) where T : class
+        //public Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate) where T : class
         //{
         //    return Task.FromResult(_dbConnection.Query(predicate).ToAsyncEnumerable());
         //}
