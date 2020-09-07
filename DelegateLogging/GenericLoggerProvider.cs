@@ -18,9 +18,7 @@ namespace DelegateLogging
         {
             var logger =  _createLogger?.Invoke(categoryName);
 
-            if (logger != null) return logger;
-
-            throw new InvalidOperationException();
+            return logger != null ? logger : throw new InvalidOperationException();
         }
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
