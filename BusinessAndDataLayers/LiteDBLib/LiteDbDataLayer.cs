@@ -19,42 +19,10 @@ namespace LiteDBLib
 
         public Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate)
         {
-            var recordType = predicate.Type.GenericTypeArguments[0];
-
-            var getCollectionMethod = typeof(LiteDatabase).GetMethod(nameof(LiteDatabase.GetCollection), new Type[] { }).MakeGenericMethod(recordType);
-
-            var queryMethod = typeof(ILiteCollection<>).MakeGenericType(recordType).GetMethod(nameof(ILiteCollection<object>.Query));
-
-            //TODO: this is pretty horrible
-            var whereMethod = typeof(LiteQueryable<>).MakeGenericType(recordType).GetMethods().FirstOrDefault(m =>
-             {
-                 var parameters = m.GetParameters();
-
-                 var firstParameter = parameters.First();
-
-                 if (m.Name != nameof(LiteQueryable<object>.Where)) return false;
-
-                 return firstParameter.ParameterType.Name == "Expression`1";
-             });
-
-            var toListMethod = typeof(LiteQueryable<>).MakeGenericType(recordType).GetMethod(nameof(LiteQueryable<object>.ToList));
-
-            //Get the collection
-            var liteCollection = getCollectionMethod.Invoke(_db, null);
-
-            //Get the queryable
-            var liteQueryable = queryMethod.Invoke(liteCollection, null);
-
-            //Get queryable with a where clause
-            var liteQueryableWithWhere = whereMethod.Invoke(liteQueryable, new object[] { predicate });
-
-            //Perform the query
-            var list = (IList)toListMethod.Invoke(liteQueryableWithWhere, null);
-
-            //Cast to a list of objects
-            var objects = list.Cast<object>();
-
-            return Task.FromResult(objects.ToAsyncEnumerable());
+            var liteCollection = _db.GetCollection<T>();
+            var liteQueryable = liteCollection.Query();
+            var list = liteQueryable.Where(predicate).ToList();
+            return Task.FromResult(list.ToAsyncEnumerable());
         }
     }
 }
