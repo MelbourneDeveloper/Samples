@@ -193,7 +193,7 @@ namespace BusinessAndDataLayers
             });
 
             //Load the records
-            var asyncEnumerable = await businessLayer.Item2.WhereAsync((Expression<Func<OrderRecord, bool>>)expression);
+            var asyncEnumerable = await businessLayer.Item2.WhereAsync(expression);
             var returnValue = await asyncEnumerable.ToListAsync();
 
             //Check that the business rule was called
