@@ -302,57 +302,7 @@ namespace BusinessAndDataLayers
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.OnSaving<Person>((p, u) =>
-            {
-               if (u)
-               {
-                   p.Name += "Updating";
-               }
-               else
-               {
-                   p.Name += "Inserting";
-               }
-
-               return Task.FromResult(true);
-            })
-            .OnSaved<Person>((p, u) =>
-            {
-               if (u)
-               {
-                   p.Name += "Updated";
-               }
-               else
-               {
-                   p.Name += "Inserted";
-               }
-               return Task.FromResult(true);
-            })
-            .OnDeleting<Person>(e =>
-            {
-               var expression = (Expression<Func<Person, bool>>)e;
-               var body = (dynamic)expression.Body;
-               var left = body.Left;
-               var leftMember = left.Member;
-               var getMethods = (MethodInfo)leftMember.GetMethod;
-               var bobKey = (Guid)getMethods.Invoke(_bob, null);
-               _customDeleting = _bob.Key == bobKey;
-               return Task.FromResult(true);
-            })
-            .OnDeleted<Person>(count =>
-            {
-               _customDeleted = count == 1;
-               return Task.FromResult(true);
-            })
-            .OnFetching<Person>(e =>
-            {
-               _customBefore = true;
-               return Task.FromResult(true);
-            })
-            .OnFetched<Person>(people =>
-            {
-               _customAfter = true;
-               return Task.FromResult(true);
-            });
+            ConfigureBusinessRules(serviceCollection);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -404,6 +354,61 @@ namespace BusinessAndDataLayers
                 );
 
             return (businessLayer, serviceProvider);
+        }
+
+        private void ConfigureBusinessRules(IServiceCollection serviceCollection)
+        {
+            serviceCollection.OnSaving<Person>((p, u) =>
+            {
+                if (u)
+                {
+                    p.Name += "Updating";
+                }
+                else
+                {
+                    p.Name += "Inserting";
+                }
+
+                return Task.FromResult(true);
+            })
+            .OnSaved<Person>((p, u) =>
+            {
+                if (u)
+                {
+                    p.Name += "Updated";
+                }
+                else
+                {
+                    p.Name += "Inserted";
+                }
+                return Task.FromResult(true);
+            })
+            .OnDeleting<Person>(e =>
+            {
+                var expression = (Expression<Func<Person, bool>>)e;
+                var body = (dynamic)expression.Body;
+                var left = body.Left;
+                var leftMember = left.Member;
+                var getMethods = (MethodInfo)leftMember.GetMethod;
+                var bobKey = (Guid)getMethods.Invoke(_bob, null);
+                _customDeleting = _bob.Key == bobKey;
+                return Task.FromResult(true);
+            })
+            .OnDeleted<Person>(count =>
+            {
+                _customDeleted = count == 1;
+                return Task.FromResult(true);
+            })
+            .OnFetching<Person>(e =>
+            {
+                _customBefore = true;
+                return Task.FromResult(true);
+            })
+            .OnFetched<Person>(people =>
+            {
+                _customAfter = true;
+                return Task.FromResult(true);
+            });
         }
         #endregion
     }
