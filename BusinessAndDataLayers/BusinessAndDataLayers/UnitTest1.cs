@@ -17,6 +17,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EFDataLayer;
+using RepoDb.Enumerations;
+using RepoDb.Extensions;
+using System.Reflection;
 
 namespace BusinessAndDataLayers
 {
@@ -232,10 +235,11 @@ namespace BusinessAndDataLayers
         public async Task TestDeleted()
         {
             //Act
-            await _businessLayer.DeleteAsync(typeof(Person), _bob.Key);
+            var expression = _mockGet.Object.CreateQueryExpression<Person>(p => p.Key == _bob.Key);
+            await _businessLayer.DeleteAsync(typeof(Person), expression);
 
             //Verify insert was called
-            _mockDelete.Verify(d => d(typeof(Person), _bob.Key), Times.Once);
+            _mockDelete.Verify(d => d(typeof(Person), expression), Times.Once);
 
             Assert.IsTrue(_customDeleted && _customDeleting);
         }
@@ -296,51 +300,57 @@ namespace BusinessAndDataLayers
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddSingleton<Saving<Person>>( (p, u) =>
-            {
-                if (u)
-                {
-                    p.Name += "Updating";
-                }
-                else
-                {
-                    p.Name += "Inserting";
-                }
+            serviceCollection.AddSingleton<Saving<Person>>((p, u) =>
+           {
+               if (u)
+               {
+                   p.Name += "Updating";
+               }
+               else
+               {
+                   p.Name += "Inserting";
+               }
 
-                return Task.FromResult(true);
-            })
-            .AddSingleton<Saved<Person>>( (p, u) =>
-            {
-                if (u)
-                {
-                    p.Name += "Updated";
-                }
-                else
-                {
-                    p.Name += "Inserted";
-                }
-                return Task.FromResult(true);
-            })
-            .AddSingleton<Deleting<Person>>( key =>
-            {
-                _customDeleting = key == _bob.Key;
-                return Task.FromResult(true);
-            })
-            .AddSingleton<Deleted<Person>>( key =>
-            {
-                _customDeleted = key == _bob.Key;
-                return Task.FromResult(true);
-            })
-            .AddSingleton<BeforeGet<Person>>( query =>
-            {
-                _customBefore = true;
-                return Task.FromResult(true);
-            })
-            .AddSingleton<AfterGet<Person>>( people =>
-            {
-                _customAfter = true;
-                return Task.FromResult(true);
-            });
+               return Task.FromResult(true);
+           })
+            .AddSingleton<Saved<Person>>((p, u) =>
+           {
+               if (u)
+               {
+                   p.Name += "Updated";
+               }
+               else
+               {
+                   p.Name += "Inserted";
+               }
+               return Task.FromResult(true);
+           })
+            .AddSingleton<Deleting<Person>>(key =>
+           {
+               var expression = (Expression<Func<Person, bool>>)key;
+               var body = (dynamic)expression.Body;
+               var left = body.Left;
+               var leftMember = left.Member;
+               var getMethods = (MethodInfo)leftMember.GetMethod;
+               var bobKey = getMethods.Invoke(_bob, null);
+               Assert.AreEqual(_bob.Key, bobKey);
+               return Task.FromResult(true);
+           })
+            .AddSingleton<Deleted<Person>>(count =>
+           {
+               _customDeleted = count == 1;
+               return Task.FromResult(true);
+           })
+            .AddSingleton<BeforeGet<Person>>(query =>
+           {
+               _customBefore = true;
+               return Task.FromResult(true);
+           })
+            .AddSingleton<AfterGet<Person>>(people =>
+           {
+               _customAfter = true;
+               return Task.FromResult(true);
+           });
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -355,12 +365,12 @@ namespace BusinessAndDataLayers
                     if (@delegate == null) return;
                     await (Task)@delegate.DynamicInvoke(key);
                 },
-                async (type, key, count) =>
+                async (type, count) =>
                 {
                     var delegateType = typeof(Deleted<>).MakeGenericType(type);
                     var @delegate = (Delegate)serviceProvider.GetService(delegateType);
                     if (@delegate == null) return;
-                    await (Task)@delegate.DynamicInvoke(key);
+                    await (Task)@delegate.DynamicInvoke(new object[] { count });
                 }, async (entity, isUpdate) =>
                 {
                     var delegateType = typeof(Saving<>).MakeGenericType(entity.GetType());

@@ -49,9 +49,9 @@ namespace BusinessLayerLib
         {
             if(_deleteAsync==null) throw new NotImplementedException("Delete not implemented");
 
-            if (_deleting != null) await _deleting.Invoke(type, key);
-            var deleteCount = await _deleteAsync(type, key);
-            if (_deleted != null) await _deleted(type, key, deleteCount);
+            if (_deleting != null) await _deleting.Invoke(type, predicate);
+            var deleteCount = await _deleteAsync(type, predicate);
+            if (_deleted != null) await _deleted(type, deleteCount);
             return deleteCount;
         }
 

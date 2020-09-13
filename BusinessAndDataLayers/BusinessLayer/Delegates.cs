@@ -11,16 +11,16 @@ namespace BusinessLayerLib
     public delegate Task<int> DeleteAsync(Type type, object key);
     #endregion
 
-    public delegate Task Deleting(Type type, object key);
-    public delegate Task Deleted(Type type, object key, int count);
+    public delegate Task Deleting(Type type, Expression predicate);
+    public delegate Task Deleted(Type type, int count);
     public delegate Task Saving(object item, bool isUpdate);
     public delegate Task Saved(object item, bool isUpdate);
     public delegate Task BeforeGet(Type type, Expression predicate);
     public delegate Task AfterGet(Type type, object results);
 
 
-    public delegate Task Deleting<T>(Guid key);
-    public delegate Task Deleted<T>(Guid key);
+    public delegate Task Deleting<T>(Expression predicate);
+    public delegate Task Deleted<T>(int count);
     public delegate Task Saved<in T>(T item, bool isUpdate);
     public delegate Task AfterGet<in T>(IAsyncEnumerable<T> results);
     public delegate Task Saving<in T>(T item, bool isUpdate);
