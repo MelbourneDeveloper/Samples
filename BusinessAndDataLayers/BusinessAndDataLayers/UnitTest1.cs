@@ -302,8 +302,8 @@ namespace BusinessAndDataLayers
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddSingleton<Saving<Person>>((p, u) =>
-           {
+            serviceCollection.OnSaving<Person>((p, u) =>
+            {
                if (u)
                {
                    p.Name += "Updating";
@@ -314,9 +314,9 @@ namespace BusinessAndDataLayers
                }
 
                return Task.FromResult(true);
-           })
-            .AddSingleton<Saved<Person>>((p, u) =>
-           {
+            })
+            .OnSaved<Person>((p, u) =>
+            {
                if (u)
                {
                    p.Name += "Updated";
@@ -326,10 +326,10 @@ namespace BusinessAndDataLayers
                    p.Name += "Inserted";
                }
                return Task.FromResult(true);
-           })
-            .AddSingleton<Deleting<Person>>(key =>
-           {
-               var expression = (Expression<Func<Person, bool>>)key;
+            })
+            .OnDeleting<Person>(e =>
+            {
+               var expression = (Expression<Func<Person, bool>>)e;
                var body = (dynamic)expression.Body;
                var left = body.Left;
                var leftMember = left.Member;
@@ -337,22 +337,22 @@ namespace BusinessAndDataLayers
                var bobKey = (Guid)getMethods.Invoke(_bob, null);
                _customDeleting = _bob.Key == bobKey;
                return Task.FromResult(true);
-           })
-            .AddSingleton<Deleted<Person>>(count =>
-           {
+            })
+            .OnDeleted<Person>(count =>
+            {
                _customDeleted = count == 1;
                return Task.FromResult(true);
-           })
-            .AddSingleton<BeforeGet<Person>>(query =>
-           {
+            })
+            .OnFetching<Person>(e =>
+            {
                _customBefore = true;
                return Task.FromResult(true);
-           })
-            .AddSingleton<AfterGet<Person>>(people =>
-           {
+            })
+            .OnFetched<Person>(people =>
+            {
                _customAfter = true;
                return Task.FromResult(true);
-           });
+            });
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
