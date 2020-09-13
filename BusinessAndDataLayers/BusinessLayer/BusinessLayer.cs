@@ -42,9 +42,11 @@ namespace BusinessLayerLib
 
         public async Task<T> SaveAsync<T>(T item, bool isUpdate)
         {
-            await _serviceProvider.GetRequiredService<Saving<T>>()(item, isUpdate);
+            var saving = _serviceProvider.GetService<Saving<T>>();
+            var saved = _serviceProvider.GetService<Saved<T>>();
+            if (saving != null) await saving(item, isUpdate);
             var insertedItem = await _serviceProvider.GetRequiredService<SaveAsync<T>>()(item, isUpdate);
-            await _serviceProvider.GetRequiredService<Saved<T>>()(insertedItem, isUpdate);
+            if (saved != null) await saved(insertedItem, isUpdate);
             return insertedItem;
         }
         #endregion

@@ -1,23 +1,10 @@
 using BusinessLayerLib;
 using DomainLib;
-using EFDataLayer;
-using EntityGraphQL.Schema;
-using ExpressionFromGraphQLLib;
-using LiteDB;
-using LiteDBLib;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using OrmLiteDbLayer;
-using RepoDb;
-using RepoDbLayer;
 using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
@@ -25,6 +12,9 @@ namespace BusinessAndDataLayers
     [TestClass]
     public partial class UnitTest1
     {
+        private readonly Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
+
+        /*
         private const string LiteDbFileName = "MyData.db";
         private const string CustomValue = "Custom";
 
@@ -34,7 +24,6 @@ namespace BusinessAndDataLayers
         //private Mock<SaveAsync> _mockSave;
         private Mock<DeleteAsync> _mockDelete;
         private BusinessLayer _businessLayer;
-        private readonly Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
         private readonly string _id = Guid.NewGuid().ToString().Replace("-", "*");
         private bool _customDeleting;
         private bool _customDeleted;
@@ -294,18 +283,27 @@ namespace BusinessAndDataLayers
             Assert.AreEqual(1, returnValue.Count);
             Assert.IsTrue(_customBefore && _customAfter);
         }
-
+        */
 
         [TestMethod]
         public async Task TestUpdating()
         {
             //Arrange
+            const string updateText = "BobUpdatingUpdated";
 
             //Return 1 person
-            _mockGet.Setup(r => r(It.IsAny<Expression<Func<Person, bool>>>())).Returns(Task.FromResult<IAsyncEnumerable<object>>(new DummyPersonAsObjectAsyncEnumerable(true)));
+            var mockSave = new Mock<SaveAsync<Person>>();
+            mockSave.Setup(d => d(It.IsAny<Person>(), true)).Returns(Task.FromResult(_bob));
+
+            var businessLayer = new ServiceCollection()
+                .SetWhere((WhereAsync<Person>)((e) => Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(true))))
+                .SetSave(mockSave.Object)
+                .OnSaved((Saved<Person>)(async (p, u) => {  p.Name = updateText; }))
+                .BuildServiceProvider()
+                .CreateBusinessLayer();
 
             //Act
-            var savedPerson = (Person)await _businessLayer.SaveAsync(_bob, true);
+            var savedPerson = await businessLayer.SaveAsync(_bob, true);
 
             //Assert
 
@@ -313,9 +311,10 @@ namespace BusinessAndDataLayers
             Assert.AreEqual("BobUpdatingUpdated", savedPerson.Name);
 
             //Verify update was called
-            _mockSave.Verify(d => d(It.IsAny<Person>(), true), Times.Once);
+            mockSave.Verify(d => d(It.IsAny<Person>(), true), Times.Once);
         }
 
+        /*
         [TestMethod]
         public async Task TestInserted()
         {
@@ -512,5 +511,6 @@ namespace BusinessAndDataLayers
             });
         }
         #endregion
+        */
     }
 }
