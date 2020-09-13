@@ -76,6 +76,8 @@ namespace BusinessAndDataLayers
             Assert.AreEqual(1, returnValue.Count);
         }
 
+
+
         [TestMethod]
         public async Task TestGetDbLiteViaGraphQL()
         {
@@ -139,10 +141,26 @@ namespace BusinessAndDataLayers
         {
             await CreateOrdersDb();
 
-            await using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
             var repoDbDataLayer = new OrmLiteLayer("Orders.db");
             var asyncEnumerable = await repoDbDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
+            var returnValue = await asyncEnumerable.ToListAsync();
+            Assert.AreEqual(1, returnValue.Count);
+        }
+
+        [TestMethod]
+        public async Task TestOrmLiteViaGraphQL()
+        {
+            var schema = SchemaBuilder.FromObject<OrdersDbContext>();
+
+            var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
+
+            var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
+
+            await CreateOrdersDb();
+
+            var repoDbDataLayer = new OrmLiteLayer("Orders.db");
+            var asyncEnumerable = await repoDbDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)expression);
             var returnValue = await asyncEnumerable.ToListAsync();
             Assert.AreEqual(1, returnValue.Count);
         }
