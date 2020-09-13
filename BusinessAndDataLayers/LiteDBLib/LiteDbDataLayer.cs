@@ -17,7 +17,7 @@ namespace LiteDBLib
             _db = db;
         }
 
-        public Task<IAsyncEnumerable<object>> GetAsync(Expression predicate)
+        public Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate)
         {
             var recordType = predicate.Type.GenericTypeArguments[0];
 

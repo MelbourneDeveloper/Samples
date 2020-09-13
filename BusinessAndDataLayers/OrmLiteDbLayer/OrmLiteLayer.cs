@@ -20,7 +20,7 @@ namespace OrmLiteDbLayer
             _dbConnection.Open();
         }
 
-        public async Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate)
+        public async Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate)
         {
             var returnVaue = _dbConnection.Select((Expression<Func<OrderRecord, bool>>)predicate);
 

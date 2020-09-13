@@ -253,7 +253,7 @@ namespace BusinessAndDataLayers
 
             var businessLayer = new BusinessLayer(whereAsync: liteDbDataLayer.GetAsync);
 
-            var getAsync = (WhereAsync)businessLayer.WhereAsync;
+            var getAsync = businessLayer.WhereAsync;
 
             var asyncEnumerable = getAsync.GetAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 

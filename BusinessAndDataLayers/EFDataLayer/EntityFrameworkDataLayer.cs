@@ -16,9 +16,10 @@ namespace EFDataLayer
             _dbContext = dbContext;
         }
 
-        //Note this should be working
-        public Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate)
+        public Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate)
         {
+            //NOTE: all this reflection is because EF doesn't allow value types. We can work around that like this
+
             //Get the entity type from the predicate
             var type = predicate.Type.GenericTypeArguments[0];
 
@@ -35,17 +36,10 @@ namespace EFDataLayer
             var whereMethod = typeof(Queryable).GetMethods().First(m => m.Name == nameof(Queryable.Where)).MakeGenericMethod(type);
 
             //Invoke where
-            var result = whereMethod.Invoke(null, new object[] { dbSet, predicate });
-
-            //Warning: More dodge here
-            //Cast to enumerable of objects
-            var castMethod = typeof(Queryable).GetMethods().First(m => m.Name == nameof(Queryable.Cast)).MakeGenericMethod(typeof(object));
-
-            //Cast to IEnumerable<object>
-            var enumerableObjects = (IEnumerable<object>)castMethod.Invoke(null, new[] { result });
+            var result = (IQueryable<T>)whereMethod.Invoke(null, new object[] { dbSet, predicate });
 
             //Convert to async and return
-            return Task.FromResult(enumerableObjects.ToAsyncEnumerable());
+            return Task.FromResult(result.ToAsyncEnumerable());
         }
     }
 }
