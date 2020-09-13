@@ -234,8 +234,10 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestDeleted()
         {
+
             //Act
             var expression = _mockGet.Object.CreateQueryExpression<Person>(p => p.Key == _bob.Key);
+            _mockDelete.Setup(d => d(typeof(Person), expression)).Returns(Task.FromResult(1));
             await _businessLayer.DeleteAsync(typeof(Person), expression);
 
             //Verify insert was called
@@ -332,8 +334,8 @@ namespace BusinessAndDataLayers
                var left = body.Left;
                var leftMember = left.Member;
                var getMethods = (MethodInfo)leftMember.GetMethod;
-               var bobKey = getMethods.Invoke(_bob, null);
-               Assert.AreEqual(_bob.Key, bobKey);
+               var bobKey = (Guid)getMethods.Invoke(_bob, null);
+               _customDeleting = _bob.Key == bobKey;
                return Task.FromResult(true);
            })
             .AddSingleton<Deleted<Person>>(count =>
