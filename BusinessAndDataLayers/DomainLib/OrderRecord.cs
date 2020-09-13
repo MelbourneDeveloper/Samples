@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿//using System.ComponentModel.DataAnnotations;
 
-namespace BusinessAndDataLayers
+namespace DomainLib
 {
     public class OrderRecord
     {
-        [Key]
+        //[Key]
         public string Id { get; set; }
         public string Name { get; set; }
     }

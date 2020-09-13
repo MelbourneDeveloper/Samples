@@ -20,6 +20,7 @@
     <ProjectReference Include="..\EFDataLayer\EFDataLayer.csproj" />
     <ProjectReference Include="..\ExpressionFromGraphQLLib\ExpressionFromGraphQLLib.csproj" />
     <ProjectReference Include="..\LiteDBLib\LiteDBLib.csproj" />
+    <ProjectReference Include="..\OrmLiteDbLayer\OrmLiteDbLayer.csproj" />
     <ProjectReference Include="..\RepoDbLayer\RepoDbLayer.csproj" />
   </ItemGroup>
 

@@ -9,13 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLayerLib", "Busines
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainLib", "DomainLib\DomainLib.csproj", "{934EB793-6392-4BEB-9942-67099FDABD4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFDataLayer", "EFDataLayer\EFDataLayer.csproj", "{2BFB7206-7EF8-451B-90B1-D86DD08620C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFDataLayer", "EFDataLayer\EFDataLayer.csproj", "{2BFB7206-7EF8-451B-90B1-D86DD08620C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoDbLayer", "RepoDbLayer\RepoDbLayer.csproj", "{18F90792-9B81-4ACE-9BAE-C672271F93AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoDbLayer", "RepoDbLayer\RepoDbLayer.csproj", "{18F90792-9B81-4ACE-9BAE-C672271F93AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiteDBLib", "LiteDBLib\LiteDBLib.csproj", "{0CFAEEB3-FE9E-48AC-9428-A4C6CFF42E2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiteDBLib", "LiteDBLib\LiteDBLib.csproj", "{0CFAEEB3-FE9E-48AC-9428-A4C6CFF42E2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionFromGraphQLLib", "ExpressionFromGraphQLLib\ExpressionFromGraphQLLib.csproj", "{F6A234FE-B973-4490-BFE0-E9A66987FD07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpressionFromGraphQLLib", "ExpressionFromGraphQLLib\ExpressionFromGraphQLLib.csproj", "{F6A234FE-B973-4490-BFE0-E9A66987FD07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrmLiteDbLayer", "OrmLiteDbLayer\OrmLiteDbLayer.csproj", "{C68906D9-5F0C-4F33-9194-D144FE202A18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{F6A234FE-B973-4490-BFE0-E9A66987FD07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6A234FE-B973-4490-BFE0-E9A66987FD07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6A234FE-B973-4490-BFE0-E9A66987FD07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C68906D9-5F0C-4F33-9194-D144FE202A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C68906D9-5F0C-4F33-9194-D144FE202A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C68906D9-5F0C-4F33-9194-D144FE202A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C68906D9-5F0C-4F33-9194-D144FE202A18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

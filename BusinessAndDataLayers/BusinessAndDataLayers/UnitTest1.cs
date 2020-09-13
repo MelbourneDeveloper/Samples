@@ -20,6 +20,7 @@ using EFDataLayer;
 using RepoDb.Enumerations;
 using RepoDb.Extensions;
 using System.Reflection;
+using OrmLiteDbLayer;
 
 namespace BusinessAndDataLayers
 {
@@ -128,6 +129,19 @@ namespace BusinessAndDataLayers
             var repoDbDataLayer = new RepoDbDataLayer(connection);
             var asyncEnumerable = await repoDbDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
+
+            var returnValue = await asyncEnumerable.ToListAsync();
+            Assert.AreEqual(1, returnValue.Count);
+        }
+
+        [TestMethod]
+        public async Task TestGetOrmLite()
+        {
+            await CreateOrdersDb();
+
+            await using var connection = new SQLiteConnection(OrdersDbContext.ConnectionString);
+            var repoDbDataLayer = new OrmLiteLayer("Orders.db");
+            var asyncEnumerable = await repoDbDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)_getOrderByIdPredicate);
 
             var returnValue = await asyncEnumerable.ToListAsync();
             Assert.AreEqual(1, returnValue.Count);
