@@ -28,6 +28,7 @@ namespace BusinessAndDataLayers
     public partial class UnitTest1
     {
         private const string LiteDbFileName = "MyData.db";
+        private const string CustomValue = "Custom";
         #region Fields
 
         private Mock<WhereAsync> _mockGet;
@@ -163,6 +164,74 @@ namespace BusinessAndDataLayers
             var asyncEnumerable = await repoDbDataLayer.WhereAsync((Expression<Func<OrderRecord, bool>>)expression);
             var returnValue = await asyncEnumerable.ToListAsync();
             Assert.AreEqual(1, returnValue.Count);
+        }
+
+        [TestMethod]
+        public async Task TestOrmLiteViaGraphQLBusinessRules()
+        {
+            //Configure Expressions to GraphQL
+            var schema = SchemaBuilder.FromObject<OrdersDbContext>();
+            var expressionFromGraphQLProvider = new ExpressionFromGraphQLProvider(schema);
+
+            //Get an expression from graphql
+            var expression = expressionFromGraphQLProvider.GetExpression($@"orderRecord.where(id = ""{_id}"")");
+
+            //Create the SQLite DB
+            await CreateOrdersDb();
+
+            //Create the data layer
+            var ormLiteLayer = new OrmLiteLayer("Orders.db");
+
+            //Create a business layer and rules
+            var businessLayer = GetBusinessRulesContainer(ormLiteLayer);
+
+            //Add a rule
+            businessLayer.Item1.OnFetched<OrderRecord>(async (a) =>
+            {
+                var results = await a.ToListAsync();
+                results.First().CustomValue = CustomValue;
+            });
+
+            //Load the records
+            var asyncEnumerable = await businessLayer.Item2.WhereAsync((Expression<Func<OrderRecord, bool>>)expression);
+            var returnValue = await asyncEnumerable.ToListAsync();
+
+            //Check that the business rule was called
+            var resultOrder = (OrderRecord)returnValue.First();
+            Assert.AreEqual(CustomValue, resultOrder.CustomValue);
+        }
+
+        private static (ServiceCollection, BusinessLayer) GetBusinessRulesContainer(OrmLiteLayer ormLiteLayer)
+        {
+            var serviceCollection = new ServiceCollection();
+
+
+            var businessLayer = new BusinessLayer(
+                null,
+                ormLiteLayer.WhereAsync,
+                null,
+                null,
+                null,
+                null,
+                null,
+                async (type, query) =>
+                {
+                    var serviceProvider = serviceCollection.BuildServiceProvider();
+                    var delegateType = typeof(BeforeGet<>).MakeGenericType(type);
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate.DynamicInvoke(query);
+                },
+                async (type, items) =>
+                {
+                    var serviceProvider = serviceCollection.BuildServiceProvider();
+                    var delegateType = typeof(AfterGet<>).MakeGenericType(type);
+                    var @delegate = (Delegate)serviceProvider.GetService(delegateType);
+                    if (@delegate == null) return;
+                    await (Task)@delegate.DynamicInvoke(items);
+                }
+                );
+            return (serviceCollection, businessLayer);
         }
 
         [TestMethod]
