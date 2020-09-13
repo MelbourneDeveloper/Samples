@@ -1,11 +1,9 @@
-﻿using DomainLib;
-using ServiceStack.OrmLite;
+﻿using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OrmLiteDbLayer
@@ -20,11 +18,6 @@ namespace OrmLiteDbLayer
             _dbConnection.Open();
         }
 
-        public async Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate)
-        {
-            var returnVaue = _dbConnection.Select((Expression<Func<OrderRecord, bool>>)predicate);
-
-            return returnVaue.ToAsyncEnumerable();
-        }
+        public async Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate) => _dbConnection.Select(predicate).ToAsyncEnumerable();
     }
 }
