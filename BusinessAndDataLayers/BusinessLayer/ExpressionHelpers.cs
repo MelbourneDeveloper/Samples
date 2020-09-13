@@ -8,16 +8,16 @@ namespace BusinessLayerLib
 {
     public static class ExpressionHelpers
     {
-        public static Expression CreateQueryExpression<T>(this WhereAsync whereAsync, Expression<Func<T, bool>> predicate)
-        {
-            return predicate;
-        }
+        //public static Expression CreateQueryExpression<T>(this WhereAsync whereAsync, Expression<Func<T, bool>> predicate)
+        //{
+        //    return predicate;
+        //}
 
-        public static async Task<IAsyncEnumerable<T>> GetAsync<T>(this WhereAsync whereAsync, Expression<Func<T, bool>> predicate)
-        {
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+        //public static async Task<IAsyncEnumerable<T>> GetAsync<T>(this WhereAsync whereAsync, Expression<Func<T, bool>> predicate)
+        //{
+        //    if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 
-            return (await whereAsync(predicate)).Cast<T>();
-        }
+        //    return (await whereAsync(predicate)).Cast<T>();
+        //}
     }
 }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 namespace BusinessLayerLib
 {
     #region CRUD
-    public delegate Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate);
-    public delegate Task<object> SaveAsync(object item, bool isUpdate);
+    public delegate Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate);
+    public delegate Task<T> SaveAsync<T>(T item, bool isUpdate);
     public delegate Task<int> DeleteAsync(Type type, object key);
     #endregion
 
@@ -19,6 +19,7 @@ namespace BusinessLayerLib
     public delegate Task AfterGet(Type type, object results);
 
 
+    public delegate Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate);
     public delegate Task Deleting<T>(Expression predicate);
     public delegate Task Deleted<T>(int count);
     public delegate Task Saved<in T>(T item, bool isUpdate);

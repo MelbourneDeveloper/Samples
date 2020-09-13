@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace BusinessLayerLib
 {
     public interface IBusinessLayer
     {
-        Task<int> DeleteAsync(Type type, Expression predicate);
-        Task<IAsyncEnumerable<object>> WhereAsync(Expression predicate);
-        Task<object> SaveAsync(object item, bool isUpdate);
+        Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate);
+        Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate);
+        Task<T> SaveAsync<T>(T item, bool isUpdate);
     }
 }

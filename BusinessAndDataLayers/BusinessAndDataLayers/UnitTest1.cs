@@ -1,5 +1,6 @@
 using BusinessLayerLib;
 using DomainLib;
+using EFDataLayer;
 using EntityGraphQL.Schema;
 using ExpressionFromGraphQLLib;
 using LiteDB;
@@ -7,6 +8,7 @@ using LiteDBLib;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using OrmLiteDbLayer;
 using RepoDb;
 using RepoDbLayer;
 using System;
@@ -15,12 +17,8 @@ using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using EFDataLayer;
-using RepoDb.Enumerations;
-using RepoDb.Extensions;
 using System.Reflection;
-using OrmLiteDbLayer;
+using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
 {
@@ -29,10 +27,11 @@ namespace BusinessAndDataLayers
     {
         private const string LiteDbFileName = "MyData.db";
         private const string CustomValue = "Custom";
+
         #region Fields
 
-        private Mock<WhereAsync> _mockGet;
-        private Mock<SaveAsync> _mockSave;
+        //private Mock<WhereAsync> _mockGet;
+        //private Mock<SaveAsync> _mockSave;
         private Mock<DeleteAsync> _mockDelete;
         private BusinessLayer _businessLayer;
         private readonly Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
@@ -365,6 +364,7 @@ namespace BusinessAndDataLayers
 
 
         #endregion
+
         #region Arrange
         [TestInitialize]
         public void TestInitialize()
