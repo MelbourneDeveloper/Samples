@@ -310,8 +310,6 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestUpdating()
         {
-            await CreateOrdersDb();
-
             //Arrange
             const string updateText = "BobUpdatingUpdated";
 
@@ -340,6 +338,8 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestBusinessLogicOrmLite()
         {
+            await CreateOrdersDb();
+
             //Arrange
             const string updateText = "BobUpdatingUpdated";
 
@@ -349,8 +349,8 @@ namespace BusinessAndDataLayers
                 .SetWhere(ormLiteDbLayer, new List<Type> { typeof(OrderRecord) })
                 .OnFetched<OrderRecord>(async (a) =>
                 {
-                    var asdasd = await a.ToListAsync();
-                    asdasd.First().CustomValue = updateText;
+                    var someOrders = await a.ToListAsync();
+                    someOrders.First().CustomValue = updateText;
                 })
                 .BuildServiceProvider()
                 .CreateBusinessLayer();
