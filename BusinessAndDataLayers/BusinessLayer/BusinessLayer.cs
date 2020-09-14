@@ -45,7 +45,8 @@ namespace BusinessLayerLib
             var saving = _serviceProvider.GetService<Saving<T>>();
             var saved = _serviceProvider.GetService<Saved<T>>();
             if (saving != null) await saving(item, isUpdate);
-            var insertedItem = await _serviceProvider.GetRequiredService<SaveAsync<T>>()(item, isUpdate);
+            var saveAsync = _serviceProvider.GetRequiredService<SaveAsync<T>>();
+            var insertedItem = await saveAsync(item, isUpdate);
             if (saved != null) await saved(insertedItem, isUpdate);
             return insertedItem;
         }

@@ -3,8 +3,10 @@ using DomainLib;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace BusinessAndDataLayers
@@ -285,6 +287,16 @@ namespace BusinessAndDataLayers
         }
         */
 
+
+        private static Mock<SaveAsync<Person>> mockSave = new Mock<SaveAsync<Person>>();
+
+        public async static Task<T> SaveAsync<T>(T item, bool isUpdate)
+        {
+            var person = (Person)(object)item;
+            person = await mockSave.Object(person, isUpdate);
+            return (T)(object)person;
+        }
+
         [TestMethod]
         public async Task TestUpdating()
         {
@@ -292,13 +304,12 @@ namespace BusinessAndDataLayers
             const string updateText = "BobUpdatingUpdated";
 
             //Return 1 person
-            var mockSave = new Mock<SaveAsync<Person>>();
             mockSave.Setup(d => d(It.IsAny<Person>(), true)).Returns(Task.FromResult(_bob));
 
             var businessLayer = new ServiceCollection()
                 .SetWhere((WhereAsync<Person>)((e) => Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(true))))
-                .SetSave(mockSave.Object)
-                .OnSaved((Saved<Person>)(async (p, u) => {  p.Name = updateText; }))
+                .SetSave(null, GetType().GetMethod(nameof(SaveAsync)), new List<Type> { typeof(Person) })
+                .OnSaved((Saved<Person>)(async (p, u) => { p.Name = updateText; }))
                 .BuildServiceProvider()
                 .CreateBusinessLayer();
 
