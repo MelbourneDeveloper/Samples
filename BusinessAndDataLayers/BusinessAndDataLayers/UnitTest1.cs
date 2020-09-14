@@ -4,8 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Serialization;
+using OrmLiteDbLayer;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -14,7 +16,16 @@ namespace BusinessAndDataLayers
     [TestClass]
     public partial class UnitTest1
     {
+        private readonly string _id = Guid.NewGuid().ToString().Replace("-", "*");
         private readonly Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
+
+        private async Task CreateOrdersDb()
+        {
+            await using var ordersDbContext = new OrdersDbContext();
+            await ordersDbContext.OrderRecord.AddAsync(new OrderRecord { Id = _id });
+            await ordersDbContext.SaveChangesAsync();
+        }
+
 
         /*
         private const string LiteDbFileName = "MyData.db";
@@ -26,7 +37,6 @@ namespace BusinessAndDataLayers
         //private Mock<SaveAsync> _mockSave;
         private Mock<DeleteAsync> _mockDelete;
         private BusinessLayer _businessLayer;
-        private readonly string _id = Guid.NewGuid().ToString().Replace("-", "*");
         private bool _customDeleting;
         private bool _customDeleted;
         private bool _customBefore;
@@ -300,6 +310,8 @@ namespace BusinessAndDataLayers
         [TestMethod]
         public async Task TestUpdating()
         {
+            await CreateOrdersDb();
+
             //Arrange
             const string updateText = "BobUpdatingUpdated";
 
@@ -323,6 +335,34 @@ namespace BusinessAndDataLayers
 
             //Verify update was called
             mockSave.Verify(d => d(It.IsAny<Person>(), true), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task TestBusinessLogicOrmLite()
+        {
+            //Arrange
+            const string updateText = "BobUpdatingUpdated";
+
+            var ormLiteDbLayer = new OrmLiteLayer("Orders.db");
+
+            var businessLayer = new ServiceCollection()
+                .SetWhere(ormLiteDbLayer, new List<Type> { typeof(OrderRecord) })
+                .OnFetched<OrderRecord>(async (a) =>
+                {
+                    var asdasd = await a.ToListAsync();
+                    asdasd.First().CustomValue = updateText;
+                })
+                .BuildServiceProvider()
+                .CreateBusinessLayer();
+
+            //Act
+            var orders = await (await businessLayer.WhereAsync<OrderRecord>((o) => o.Id == _id)).ToListAsync();
+
+            //Assert
+
+            //Verify custom business logic
+            Assert.AreEqual(1, orders.Count);
+            Assert.AreEqual("BobUpdatingUpdated", orders.First().CustomValue);
         }
 
         /*
@@ -391,12 +431,6 @@ namespace BusinessAndDataLayers
             _businessLayer = GetBusinessLayer().businessLayer;
         }
 
-        private async Task CreateOrdersDb()
-        {
-            await using var ordersDbContext = new OrdersDbContext();
-            await ordersDbContext.OrderRecord.AddAsync(new OrderRecord { Id = _id });
-            await ordersDbContext.SaveChangesAsync();
-        }
 
         private LiteDatabase SetupLiteDb()
         {

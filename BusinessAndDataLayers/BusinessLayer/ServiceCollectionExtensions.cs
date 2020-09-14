@@ -35,6 +35,23 @@ namespace BusinessLayerLib
             return serviceCollection;
         }
 
+        public static IServiceCollection SetWhere(this IServiceCollection serviceCollection, object target, MethodInfo methodInfo, IEnumerable<Type> knownTypes)
+        {
+            foreach (var knownType in knownTypes)
+            {
+                var type = typeof(WhereAsync<>).MakeGenericType(new Type[] { knownType });
+                var method = methodInfo.MakeGenericMethod(new Type[] { knownType });
+                var @delegate = Delegate.CreateDelegate(type, target, method);
+                serviceCollection.AddSingleton(type, @delegate);
+            }
+
+            return serviceCollection;
+        }
+
+        public static IServiceCollection SetWhere(this IServiceCollection serviceCollection, object dbLayer, IEnumerable<Type> knownTypes)
+        {
+            return SetWhere(serviceCollection, dbLayer, dbLayer.GetType().GetMethod("WhereAsync"), knownTypes);
+        }
 
     }
 }

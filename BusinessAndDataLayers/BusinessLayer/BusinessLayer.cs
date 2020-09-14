@@ -34,9 +34,11 @@ namespace BusinessLayerLib
 
         public async Task<IAsyncEnumerable<T>> WhereAsync<T>(Expression<Func<T, bool>> predicate)
         {
-            await _serviceProvider.GetRequiredService<BeforeGet<T>>()(predicate);
+            var beforeGet = _serviceProvider.GetService<BeforeGet<T>>();
+            if (beforeGet != null) await beforeGet(predicate);
             var results = await _serviceProvider.GetRequiredService<WhereAsync<T>>()(predicate);
-            await _serviceProvider.GetRequiredService<AfterGet<T>>()(results);
+            var afterGet = _serviceProvider.GetService<AfterGet<T>>();
+            if (afterGet != null) await afterGet(results);
             return results;
         }
 
