@@ -16,8 +16,10 @@ namespace BusinessAndDataLayers
     [TestClass]
     public partial class UnitTest1
     {
+        const string updateText = "BobUpdatingUpdated";
         private readonly string _id = Guid.NewGuid().ToString().Replace("-", "*");
         private readonly Person _bob = new Person { Key = new Guid("087aca6b-61d4-4d94-8425-1bdfb34dab38"), Name = "Bob" };
+        private Mock<SaveAsync<Person>> _mockSave = new Mock<SaveAsync<Person>>();
 
         private async Task CreateOrdersDb()
         {
@@ -298,12 +300,11 @@ namespace BusinessAndDataLayers
         */
 
 
-        private static Mock<SaveAsync<Person>> mockSave = new Mock<SaveAsync<Person>>();
 
-        public async static Task<T> SaveAsync<T>(T item, bool isUpdate)
+        public async Task<T> SaveAsync<T>(T item, bool isUpdate)
         {
             var person = (Person)(object)item;
-            person = await mockSave.Object(person, isUpdate);
+            person = await _mockSave.Object(person, isUpdate);
             return (T)(object)person;
         }
 
@@ -311,14 +312,13 @@ namespace BusinessAndDataLayers
         public async Task TestUpdating()
         {
             //Arrange
-            const string updateText = "BobUpdatingUpdated";
 
             //Return 1 person
-            mockSave.Setup(d => d(It.IsAny<Person>(), true)).Returns(Task.FromResult(_bob));
+            _mockSave.Setup(d => d(It.IsAny<Person>(), true)).Returns(Task.FromResult(_bob));
 
             var businessLayer = new ServiceCollection()
                 .SetWhere((WhereAsync<Person>)((e) => Task.FromResult<IAsyncEnumerable<Person>>(new DummyPersonAsObjectAsyncEnumerable(true))))
-                .SetSave(null, GetType().GetMethod(nameof(SaveAsync)), new List<Type> { typeof(Person) })
+                .SetSave(this, GetType().GetMethod(nameof(SaveAsync)), new List<Type> { typeof(Person) })
                 .OnSaved((Saved<Person>)(async (p, u) => { p.Name = updateText; }))
                 .BuildServiceProvider()
                 .CreateBusinessLayer();
@@ -332,7 +332,7 @@ namespace BusinessAndDataLayers
             Assert.AreEqual("BobUpdatingUpdated", savedPerson.Name);
 
             //Verify update was called
-            mockSave.Verify(d => d(It.IsAny<Person>(), true), Times.Once);
+            _mockSave.Verify(d => d(It.IsAny<Person>(), true), Times.Once);
         }
 
         [TestMethod]
@@ -341,7 +341,6 @@ namespace BusinessAndDataLayers
             await CreateOrdersDb();
 
             //Arrange
-            const string updateText = "BobUpdatingUpdated";
 
             var ormLiteDbLayer = new OrmLiteLayer("Orders.db");
 
@@ -362,10 +361,9 @@ namespace BusinessAndDataLayers
 
             //Verify custom business logic
             Assert.AreEqual(1, orders.Count);
-            Assert.AreEqual("BobUpdatingUpdated", orders.First().CustomValue);
+            Assert.AreEqual(updateText, orders.First().CustomValue);
         }
 
-        /*
         [TestMethod]
         public async Task TestInserted()
         {
@@ -381,6 +379,7 @@ namespace BusinessAndDataLayers
             _mockSave.Verify(d => d(It.IsAny<Person>(), false), Times.Once);
         }
 
+        /*
         [TestMethod]
         public async Task TestDeleted()
         {
