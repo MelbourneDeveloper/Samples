@@ -15,6 +15,11 @@ namespace FSharpFromCSharp
                     FSharpList<int>.Empty)));
 
             Console.WriteLine(string.Join(", ", numbers));
+
+            var fsharpPoint = new FSharpLibrary.Point(1, 2, 3);
+            var csharpPoint = new CsharpPoint(1, 2, 3);
         }
-    }
+    } 
 }
+
+
