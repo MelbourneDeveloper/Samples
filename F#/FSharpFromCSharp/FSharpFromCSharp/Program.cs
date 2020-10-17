@@ -19,7 +19,7 @@ namespace FSharpFromCSharp
             var fsharpPoint = new FSharpLibrary.Point(1, 2, 3);
             var csharpPoint = new CsharpPoint(1, 2, 3);
 
-            var shape = FSharpLibrary.Shape.NewCircle(1);
+            FSharpLibrary.Shape shape = FSharpLibrary.Shape.NewCircle(1);
             Console.WriteLine($"Is this a rectangle: {shape.IsRectangle}");
         }
     } 
