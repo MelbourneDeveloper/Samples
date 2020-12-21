@@ -1,0 +1,26 @@
+﻿[*.cs]
+
+dotnet_analyzer_diagnostic.severity = error
+
+# IDE0008: Use explicit type
+csharp_style_var_when_type_is_apparent = true:error
+
+# IDE0008: Use explicit type
+csharp_style_var_elsewhere = true:error
+
+# IDE0008: Use explicit type
+csharp_style_var_for_built_in_types = true:error
+
+
+
+# CS8601: Possible null reference assignment.
+dotnet_diagnostic.CS8601.severity = error
+
+# CS8602: Dereference of a possibly null reference.
+dotnet_diagnostic.CS8602.severity = error
+
+# CS8625: Cannot convert null literal to non-nullable reference type.
+dotnet_diagnostic.CS8625.severity = error
+
+# IDE0022: Use block body for methods
+csharp_style_expression_bodied_methods = true:error
