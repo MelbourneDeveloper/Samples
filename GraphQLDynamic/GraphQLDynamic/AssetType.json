@@ -1,0 +1,78 @@
+{
+  "AttributeDefinitions": [
+    {
+      "Name": "Id",
+      "Label": "Id",
+      "HintText": "Id",
+      "Category": "Details",
+      "Heading": "Main Details",
+      "AttributeType": 1,
+      "DropDownItemDefinitions": []
+    },
+    {
+      "Name": "Name",
+      "Label": "Name",
+      "HintText": "Name",
+      "Category": "Details",
+      "Heading": "Main Details",
+      "AttributeType": 0,
+      "DropDownItemDefinitions": []
+    }
+  ],
+  "Relationships": [
+    {
+      "Name": "Location",
+      "RelationshipType": {
+        "AttributeDefinitions": [
+          {
+            "Name": "Latitude",
+            "Label": "Latitude",
+            "HintText": "Latitude",
+            "Category": "Location",
+            "Heading": "Location",
+            "AttributeType": 1,
+            "DropDownItemDefinitions": []
+          },
+          {
+            "Name": "Longitude",
+            "Label": "Longitude",
+            "HintText": "Longitude",
+            "Category": "Location",
+            "Heading": "Location",
+            "AttributeType": 1,
+            "DropDownItemDefinitions": []
+          }
+        ],
+        "Relationships": []
+      },
+      "RelationshipCategory": 0
+    },
+    {
+      "Name": "Inspections",
+      "RelationshipType": {
+        "AttributeDefinitions": [
+          {
+            "Name": "Id",
+            "Label": "Id",
+            "HintText": "Id",
+            "Category": "Inspection",
+            "Heading": "Inspection",
+            "AttributeType": 1,
+            "DropDownItemDefinitions": []
+          },
+          {
+            "Name": "Score",
+            "Label": "Score",
+            "HintText": "Score",
+            "Category": "Inspection",
+            "Heading": "Inspection",
+            "AttributeType": 1,
+            "DropDownItemDefinitions": []
+          }
+        ],
+        "Relationships": []
+      },
+      "RelationshipCategory": 1
+    }
+  ]
+}

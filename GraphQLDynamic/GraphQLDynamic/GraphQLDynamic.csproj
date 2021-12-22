@@ -11,8 +11,18 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<WarningsNotAsErrors>CA1014</WarningsNotAsErrors>
+		<WarningsNotAsErrors>CA1014;CA1050</WarningsNotAsErrors>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="AssetType.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="AssetType.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="GraphQL.NewtonsoftJson" Version="4.6.1" />

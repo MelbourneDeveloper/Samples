@@ -18,39 +18,19 @@ namespace GraphQLDynamic
         [TestMethod]
         public async Task TestDynamicSchema2()
         {
-            var expectedAsset = new TestAsset(1, "R2-D2", new Location(1000, 1200));
+            var expectedAsset = new TestAsset(1, "R2-D2", new Location(1000, 1200), ImmutableList.Create(new Inspection(5, 10)));
             var assetJson = JsonConvert.SerializeObject(expectedAsset);
             var jsonObject = assetJson.ToJsonObject();
 
             if (jsonObject == null) throw new Exception();
 
-            var locationType = new TypeDefinition(
-            ImmutableList.Create
-            (
-                new AttributeDefinition[]
-                {
-                    new AttributeDefinition("Latitude", "Latitude", "Latitude", "Location", "Location", AttributeType.Number, ImmutableList<DropDownItemDefinition>.Empty),
-                    new AttributeDefinition("Longitude", "Longitude", "Longitude", "Location", "Location", AttributeType.Number, ImmutableList<DropDownItemDefinition>.Empty)
-                }),
-                ImmutableList<Relationship>.Empty
-            );
-
-            var assetType = new TypeDefinition(
-            ImmutableList.Create
-            (
-                new AttributeDefinition[]
-                {
-                    new AttributeDefinition("Id", "Id", "Id", "Details", "Main Details", AttributeType.Number, ImmutableList<DropDownItemDefinition>.Empty),
-                    new AttributeDefinition("Name", "Name", "Name", "Details", "Main Details", AttributeType.Text, ImmutableList<DropDownItemDefinition>.Empty)
-                }),
-                ImmutableList.Create(new Relationship("Location", locationType, RelationshipCategory.OneToOne))
-            );
+            var assetType = JsonConvert.DeserializeObject<TypeDefinition>(File.ReadAllText("AssetType.json")) ?? throw new Exception("File missing");
 
             using var schema = assetType.ToDynamicObjectGraphSchema();
 
             var json = await schema.ExecuteAsync(_ =>
             {
-                _.Query = "{ id name  }";
+                _.Query = "{ id name }";
                 _.Root = jsonObject;
             }).ConfigureAwait(false);
 
@@ -63,9 +43,11 @@ namespace GraphQLDynamic
         }
     }
 
-    public record TestAsset(int Id, string Name, Location Location);
+    public record TestAsset(int Id, string Name, Location Location, ImmutableList<Inspection> Inspections);
 
     public record Location(double Latitude, double Longitude);
+
+    public record Inspection(int Id, double Score);
 
     public class Root<T>
     {
