@@ -25,3 +25,5 @@ file_paths.xml
 *.bak
 /.vscode
 *.nuspec
+
+.DS_Store
