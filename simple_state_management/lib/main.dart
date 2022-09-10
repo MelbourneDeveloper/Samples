@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 //---Utility classes that will go into a package-------------
 
-///This gives your view model, business logic, or whatever you want to call it,
-///access to setState() like the State class does.
+///Use this like a Cubit from the Bloc library
+///It's modeled after it Cubit and faciliates separation of Business Logic and
+///the View. But doesn't use streams
 class Bloobit<TState> {
   Bloobit(this.initialState) : _state = initialState;
 
@@ -18,62 +19,77 @@ class Bloobit<TState> {
 
   void emit(TState state) {
     assert(_setState != null, 'You must call attach');
+
+    //This is kind of controversial to me.
+    //Depending on overriding the == operator is a bit of a code smell
+    //Leaving this here for now so it works in a similar way to Cubit
+    //but this may change
+    if (state == _state) {
+      return;
+    }
+
     _setState!(() {
       _state = state;
     });
   }
 }
 
-///Extends the State class to automate the attach method
+///Use with State class to automate the attach method
 mixin AttachesSetState<TWidget extends StatefulWidget,
     TCallsSetState extends Bloobit> on State<TWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    SetStatePropagator.of<TCallsSetState>(context).stateSetter.attach(setState);
+    BloobitPropagator.of<TCallsSetState>(context).bloobit.attach(setState);
   }
 }
 
-///This inherited widget propagates the view model down the widget tree
+///This inherited widget propagates the Bloobit down the widget tree
 ///much like Provider
-class SetStatePropagator<T extends Bloobit> extends InheritedWidget {
-  const SetStatePropagator({
-    required this.stateSetter,
+class BloobitPropagator<T extends Bloobit> extends InheritedWidget {
+  const BloobitPropagator({
+    required this.bloobit,
     required Widget child,
     final Key? key,
   }) : super(key: key, child: child);
 
-  final T stateSetter;
+  final T bloobit;
 
-  static SetStatePropagator<T> of<T extends Bloobit>(BuildContext context) {
+  static BloobitPropagator<T> of<T extends Bloobit>(BuildContext context) {
     final result =
-        context.dependOnInheritedWidgetOfExactType<SetStatePropagator<T>>();
-    assert(result != null, 'No class of type $T found in context');
+        context.dependOnInheritedWidgetOfExactType<BloobitPropagator<T>>();
+    assert(result != null, 'No Bloobit of type $T found in context');
 
     return result!;
   }
 
   @override
   bool updateShouldNotify(covariant final InheritedWidget oldWidget) =>
-      stateSetter != (oldWidget as SetStatePropagator<T>).stateSetter;
+      bloobit != (oldWidget as BloobitPropagator<T>).bloobit;
 }
 //---Utility classes that will go into a package-------------
 
 //---Classes specific to this app----------------------------
 
-class AppViewModelState {
+///The immutable state of the app
+@immutable
+class AppState {
   final int callCount;
   final bool isProcessing;
   final bool displayWidgets;
 
-  AppViewModelState(this.callCount, this.isProcessing, this.displayWidgets);
+  const AppState(
+    this.callCount,
+    this.isProcessing,
+    this.displayWidgets,
+  );
 
-  AppViewModelState copyWith({
+  AppState copyWith({
     int? callCount,
     bool? isProcessing,
     bool? displayWidgets,
   }) =>
-      AppViewModelState(
+      AppState(
         callCount ?? this.callCount,
         isProcessing ?? this.isProcessing,
         displayWidgets ?? this.displayWidgets,
@@ -84,15 +100,14 @@ class AppViewModelState {
 ///however, you call setState() instead of emit() and
 ///you set the state inside the callback as the framework
 ///recommends
-class AppViewModel extends Bloobit<AppViewModelState> {
+class AppBloobit extends Bloobit<AppState> {
   int get callCount => state.callCount;
   bool get isProcessing => state.isProcessing;
   bool get displayWidgets => state.displayWidgets;
 
   final CountServerService countServerService;
 
-  AppViewModel(this.countServerService)
-      : super(AppViewModelState(0, false, true));
+  AppBloobit(this.countServerService) : super(const AppState(0, false, true));
 
   void hideWidgets() {
     emit(state.copyWith(displayWidgets: false));
@@ -123,7 +138,7 @@ void main() {
   final builder = IocContainerBuilder()
     ..addSingletonService(CountServerService())
     ..addSingleton(
-        (container) => AppViewModel(container.get<CountServerService>()));
+        (container) => AppBloobit(container.get<CountServerService>()));
 
   runApp(MyApp(builder.toContainer()));
 }
@@ -141,8 +156,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SetStatePropagator<AppViewModel>(
-        stateSetter: container.get<AppViewModel>(),
+      home: BloobitPropagator<AppBloobit>(
+        bloobit: container.get<AppBloobit>(),
         child: const Home(),
       ),
     );
@@ -161,37 +176,37 @@ class _HomeState extends
     State<Home>
     with
         //This automatically adds the ability to call setState() on the model
-        AttachesSetState<Home, AppViewModel> {
+        AttachesSetState<Home, AppBloobit> {
   @override
   Widget build(BuildContext context) {
-    final viewModel = SetStatePropagator.of<AppViewModel>(context).stateSetter;
+    final bloobit = BloobitPropagator.of<AppBloobit>(context).bloobit;
     return Scaffold(
       appBar: AppBar(
         title:
             const Text("Managing Up The State with Management-like Managers"),
       ),
       body: Stack(children: [
-        viewModel.displayWidgets
+        bloobit.displayWidgets
             ? Wrap(children: [
-                CounterDisplay(viewModel: viewModel),
-                CounterDisplay(viewModel: viewModel),
-                CounterDisplay(viewModel: viewModel),
-                CounterDisplay(viewModel: viewModel),
-                CounterDisplay(viewModel: viewModel),
-                CounterDisplay(viewModel: viewModel),
-                CounterDisplay(viewModel: viewModel)
+                CounterDisplay(viewModel: bloobit),
+                CounterDisplay(viewModel: bloobit),
+                CounterDisplay(viewModel: bloobit),
+                CounterDisplay(viewModel: bloobit),
+                CounterDisplay(viewModel: bloobit),
+                CounterDisplay(viewModel: bloobit),
+                CounterDisplay(viewModel: bloobit)
               ])
             : Text('X', style: Theme.of(context).textTheme.headline1),
         Align(
           alignment: Alignment.bottomRight,
           child: Row(children: [
             FloatingActionButton(
-              onPressed: () => viewModel.callGetCount(),
+              onPressed: () => bloobit.callGetCount(),
               tooltip: 'Increment',
               child: const Icon(Icons.add),
             ),
             FloatingActionButton(
-              onPressed: () => viewModel.hideWidgets(),
+              onPressed: () => bloobit.hideWidgets(),
               tooltip: 'X',
               child: const Icon(Icons.close),
             )
@@ -208,7 +223,7 @@ class CounterDisplay extends StatelessWidget {
     required this.viewModel,
   }) : super(key: key);
 
-  final AppViewModel viewModel;
+  final AppBloobit viewModel;
 
   @override
   Widget build(BuildContext context) {
