@@ -4,23 +4,29 @@ import 'package:flutter/material.dart';
 
 ///This gives your view model, business logic, or whatever you want to call it,
 ///access to setState() like the State class does.
-mixin CallsSetState<TState> {
-  void Function(VoidCallback fn)? _setState;
+class Bloobit<TState> {
+  Bloobit(this.initialState) : _state = initialState;
+
+  late final void Function(VoidCallback fn)? _setState;
+  final TState initialState;
+  TState _state;
+
+  TState get state => _state;
 
   ///Pass in the setState function from your state here
   void attach(Function(VoidCallback fn) setState) => _setState = setState;
 
-  ///This does the same thing as calling [setState] in your widget's
-  ///state class
-  void setState(VoidCallback fn) {
+  void emit(TState state) {
     assert(_setState != null, 'You must call attach');
-    _setState!(fn);
+    _setState!(() {
+      _state = state;
+    });
   }
 }
 
 ///Extends the State class to automate the attach method
 mixin AttachesSetState<TWidget extends StatefulWidget,
-    TCallsSetState extends CallsSetState> on State<TWidget> {
+    TCallsSetState extends Bloobit> on State<TWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -30,7 +36,7 @@ mixin AttachesSetState<TWidget extends StatefulWidget,
 
 ///This inherited widget propagates the view model down the widget tree
 ///much like Provider
-class SetStatePropagator<T extends CallsSetState> extends InheritedWidget {
+class SetStatePropagator<T extends Bloobit> extends InheritedWidget {
   const SetStatePropagator({
     required this.stateSetter,
     required Widget child,
@@ -39,8 +45,7 @@ class SetStatePropagator<T extends CallsSetState> extends InheritedWidget {
 
   final T stateSetter;
 
-  static SetStatePropagator<T> of<T extends CallsSetState>(
-      BuildContext context) {
+  static SetStatePropagator<T> of<T extends Bloobit>(BuildContext context) {
     final result =
         context.dependOnInheritedWidgetOfExactType<SetStatePropagator<T>>();
     assert(result != null, 'No class of type $T found in context');
@@ -56,19 +61,19 @@ class SetStatePropagator<T extends CallsSetState> extends InheritedWidget {
 
 //---Classes specific to this app----------------------------
 
-class VM {
+class AppViewModelState {
   final int callCount;
   final bool isProcessing;
   final bool displayWidgets;
 
-  VM(this.callCount, this.isProcessing, this.displayWidgets);
+  AppViewModelState(this.callCount, this.isProcessing, this.displayWidgets);
 
-  VM copyWith({
+  AppViewModelState copyWith({
     int? callCount,
     bool? isProcessing,
     bool? displayWidgets,
   }) =>
-      VM(
+      AppViewModelState(
         callCount ?? this.callCount,
         isProcessing ?? this.isProcessing,
         displayWidgets ?? this.displayWidgets,
@@ -79,35 +84,26 @@ class VM {
 ///however, you call setState() instead of emit() and
 ///you set the state inside the callback as the framework
 ///recommends
-class AppViewModel with CallsSetState {
-  //This is an immutable type. The reference itself changes
-  //just like the state variable on A Cubit changes.
-  VM vm = VM(0, false, true);
-
-  int get callCount => vm.callCount;
-  bool get isProcessing => vm.isProcessing;
-  bool get displayWidgets => vm.displayWidgets;
+class AppViewModel extends Bloobit<AppViewModelState> {
+  int get callCount => state.callCount;
+  bool get isProcessing => state.isProcessing;
+  bool get displayWidgets => state.displayWidgets;
 
   final CountServerService countServerService;
 
-  AppViewModel(this.countServerService);
+  AppViewModel(this.countServerService)
+      : super(AppViewModelState(0, false, true));
 
   void hideWidgets() {
-    setState(() {
-      vm = vm.copyWith(displayWidgets: false);
-    });
+    emit(state.copyWith(displayWidgets: false));
   }
 
   Future<void> callGetCount() async {
-    setState(() {
-      vm = vm.copyWith(isProcessing: true);
-    });
+    emit(state.copyWith(isProcessing: true));
 
     final callCount = await countServerService.getCallCount();
 
-    setState(() {
-      vm = vm.copyWith(isProcessing: false, callCount: callCount);
-    });
+    emit(state.copyWith(isProcessing: false, callCount: callCount));
   }
 }
 
