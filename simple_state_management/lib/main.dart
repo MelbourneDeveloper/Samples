@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 //---Utility classes that will go into a package-------------
@@ -6,10 +8,13 @@ import 'package:flutter/material.dart';
 ///It's modeled after it Cubit and faciliates separation of Business Logic and
 ///the View. But doesn't use streams
 class Bloobit<TState> {
-  Bloobit(this.initialState) : _state = initialState;
+  Bloobit(this.initialState, {void Function(TState)? callback})
+      : _state = initialState,
+        callback = callback ?? ((s) {});
 
   late final void Function(VoidCallback fn)? _setState;
   final TState initialState;
+  final void Function(TState) callback;
   TState _state;
 
   TState get state => _state;
@@ -27,6 +32,9 @@ class Bloobit<TState> {
     if (state == _state) {
       return;
     }
+
+    //This is so we can hook up a stream or any other reactive listener
+    callback(_state);
 
     _setState!(() {
       _state = state;
@@ -96,10 +104,7 @@ class AppState {
       );
 }
 
-///This app's view model. This basically works like a Cubit
-///however, you call setState() instead of emit() and
-///you set the state inside the callback as the framework
-///recommends
+///This basically works like a Cubit
 class AppBloobit extends Bloobit<AppState> {
   int get callCount => state.callCount;
   bool get isProcessing => state.isProcessing;
@@ -107,7 +112,8 @@ class AppBloobit extends Bloobit<AppState> {
 
   final CountServerService countServerService;
 
-  AppBloobit(this.countServerService) : super(const AppState(0, false, true));
+  AppBloobit(this.countServerService, {void Function(AppState)? callback})
+      : super(const AppState(0, false, true), callback: callback);
 
   void hideWidgets() {
     emit(state.copyWith(displayWidgets: false));
@@ -136,11 +142,28 @@ class CountServerService {
 void main() {
   //Register services and the view model with an IoC container
   final builder = IocContainerBuilder()
+    //A simple singleton service to emulate a server counting calls
     ..addSingletonService(CountServerService())
-    ..addSingleton(
-        (container) => AppBloobit(container.get<CountServerService>()));
 
-  runApp(MyApp(builder.toContainer()));
+    //The AppState stream controller so we can stream state changes
+    ..addSingletonService(StreamController<AppState>())
+
+    //The stream from the AppState stream controller
+    ..addSingleton<Stream<AppState>>(
+        (con) => con.get<StreamController<AppState>>().stream)
+
+    //The Bloobit
+    ..addSingleton((con) => AppBloobit(con.get<CountServerService>(),
+        callback: (s) => con.get<StreamController<AppState>>().add(s)));
+
+  var container = builder.toContainer();
+
+  container
+      .get<Stream<AppState>>()
+      //Stream the state changes to the debug console
+      .listen((appState) => debugPrint(appState.callCount.toString()));
+
+  runApp(MyApp(container));
 }
 
 class MyApp extends StatelessWidget {
