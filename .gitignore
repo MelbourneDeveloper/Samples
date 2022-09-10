@@ -27,3 +27,5 @@ file_paths.xml
 *.nuspec
 
 .DS_Store
+
+simple_state_management/pubspec.lock
