@@ -34,7 +34,7 @@ public class ConsoleWebhookReceiver : IReceiveWebhook
     /// <summary>
     /// Writes the POST request body to the console and returns JSON
     /// </summary>
-    public async Task<String> ProcessRequest(string requestBody)
+    public async Task<string> ProcessRequest(string requestBody)
     {
         //This is where you would put your actual business logic for receiving webhooks
 

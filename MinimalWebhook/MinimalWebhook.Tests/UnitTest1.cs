@@ -2,14 +2,10 @@
 //the service is correctly receiving the POST data
 
 using System.Net;
-using System.Text.Json;
-using System.Xml;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
-using MinimalWebhook;
 
 namespace MinimalWebhook.Tests;
 
@@ -19,9 +15,9 @@ namespace MinimalWebhook.Tests;
 /// </summary>
 public class FakewebhookReceiver : IReceiveWebhook
 {
-    public List<String> Receipts = new List<String>();
+    public List<string> Receipts = new List<string>();
 
-    public async Task<string> ProcessRequest(String requestBody)
+    public async Task<string> ProcessRequest(string requestBody)
     {
         Receipts.Add(requestBody);
 
@@ -75,8 +71,6 @@ public class Tests
 
             //Verify that we received the correct details from the webhook
             Assert.Equal("Hi", fakeReceiver.Receipts.First());
-
-
 
         }, s => s.AddSingleton((IReceiveWebhook)fakeReceiver));
     }
