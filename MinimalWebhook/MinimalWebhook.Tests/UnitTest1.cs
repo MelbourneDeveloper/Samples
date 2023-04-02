@@ -30,13 +30,18 @@ public class Tests
     /// <summary>
     /// This test only works when the actual webhook is running. You should see the
     /// request body outputted to the console
+    /// 
+    /// Open this project at the CLI and run dotnet run
     /// </summary>
     /// <returns></returns>
     [Fact]
     public async Task TestLiveWebhook()
     {
         var client = new HttpClient();
-        await client.PostAsync("http://localhost:60000/webhook", new StringContent("Hi"));
+        var response = await client.PostAsync("http://localhost:60000/webhook", new StringContent("Hi"));
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("{\"message\" : \"Thanks! We got your webhook\"}", responseBody);
     }
 
 
