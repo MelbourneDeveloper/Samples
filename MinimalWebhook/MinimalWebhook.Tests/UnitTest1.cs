@@ -45,9 +45,8 @@ public class Tests
     }
 
     /// <summary>
-    /// This works like a basic ASP.NET Core integration test and tests everything working together
-    /// However, if you delete the section between the lines, you can also use
-    /// this to test actual incoming calls via ngrok
+    /// This is a basic ASP.NET Core integration test and tests everything working together
+    /// However, emulates the webhook so its not a full end to end tets 
     /// </summary>
     /// <returns></returns>
     [Fact]
@@ -57,27 +56,14 @@ public class Tests
 
         await WithTestServer(async (c, s) =>
         {
-            //Wait 100 seconds to receive the webhook
-            for (var i = 0; i < 100; i++)
-            {
-                //----------------------------------------
-                //This emulates the webhook receipt locally. Delete this and use ngrok to tunnel the call through
-                var response = await c.PostAsync("webhook", new StringContent("Hi"));
+            var response = await c.PostAsync("webhook", new StringContent("Hi"));
 
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-                var responseText = await response.Content.ReadAsStringAsync();
+            var responseText = await response.Content.ReadAsStringAsync();
 
-                Assert.Equal("Hello back", responseText);
-                //----------------------------------------
-
-                if (fakeReceiver.Receipts.Count > 0)
-                {
-                    break;
-                }
-
-                await Task.Delay(1000);
-            }
+            //Verify we got the expected response
+            Assert.Equal("Hello back", responseText);
 
             //Verify that we received the correct details from the webhook
             Assert.Equal("Hi", fakeReceiver.Receipts.First());
