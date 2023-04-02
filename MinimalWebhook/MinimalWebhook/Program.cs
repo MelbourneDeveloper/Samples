@@ -11,14 +11,10 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 //Listen for POST webhooks
-app.MapPost("/webhook", async (HttpContext context) =>
-{
-    var receiveWebook = context.RequestServices.GetRequiredService<IReceiveWebhook>();
-
-    return await receiveWebook.ProcessRequest(
-        Encoding.UTF8.GetString((await context.Request.BodyReader.ReadAsync()).Buffer));
-
-});
+app.MapPost("/webhook", async (HttpContext context, IReceiveWebhook receiveWebook) =>
+     await receiveWebook.ProcessRequest(
+        Encoding.UTF8.GetString((await context.Request.BodyReader.ReadAsync()).Buffer))
+);
 
 app.Run();
 
@@ -40,6 +36,8 @@ public class ConsoleWebhookReceiver : IReceiveWebhook
     /// </summary>
     public async Task<String> ProcessRequest(string requestBody)
     {
+        //This is where you would put your actual business logic for receiving webhooks
+
         Console.WriteLine($"Request Body: {requestBody}");
 
         return "{\"message\" : \"Thanks! We got your webhook\"}";
