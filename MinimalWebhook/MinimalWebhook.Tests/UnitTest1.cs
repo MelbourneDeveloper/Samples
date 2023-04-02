@@ -40,7 +40,7 @@ public class Tests
     public async Task TestLiveWebhook()
     {
         var client = new HttpClient();
-        await client.PostAsync("https://localhost:60000/webhook", new StringContent("Hi"));
+        await client.PostAsync("http://localhost:60000/webhook", new StringContent("Hi"));
     }
 
 
