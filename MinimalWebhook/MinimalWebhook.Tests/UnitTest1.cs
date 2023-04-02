@@ -1,15 +1,11 @@
-﻿//This is an ASP .NET Core Integration test that waits for a webhook and verifies that
+//This is an ASP .NET Core Integration test that waits for a webhook and verifies that
 //the service is correctly receiving the POST data
 
 using System.Net;
-using System.Text.Json;
-using System.Xml;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
-using MinimalWebhook;
 
 namespace MinimalWebhook.Tests;
 
@@ -19,9 +15,9 @@ namespace MinimalWebhook.Tests;
 /// </summary>
 public class FakewebhookReceiver : IReceiveWebhook
 {
-    public List<String> Receipts = new List<String>();
+    public List<string> Receipts = new List<string>();
 
-    public async Task<string> ProcessRequest(String requestBody)
+    public async Task<string> ProcessRequest(string requestBody)
     {
         Receipts.Add(requestBody);
 
@@ -34,13 +30,18 @@ public class Tests
     /// <summary>
     /// This test only works when the actual webhook is running. You should see the
     /// request body outputted to the console
+    /// 
+    /// Open this project at the CLI and run dotnet run
     /// </summary>
     /// <returns></returns>
     [Fact]
     public async Task TestLiveWebhook()
     {
         var client = new HttpClient();
-        await client.PostAsync("http://localhost:60000/webhook", new StringContent("Hi"));
+        var response = await client.PostAsync("http://localhost:60000/webhook", new StringContent("Hi"));
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("{\"message\" : \"Thanks! We got your webhook\"}", responseBody);
     }
 
 
@@ -75,8 +76,6 @@ public class Tests
 
             //Verify that we received the correct details from the webhook
             Assert.Equal("Hi", fakeReceiver.Receipts.First());
-
-
 
         }, s => s.AddSingleton((IReceiveWebhook)fakeReceiver));
     }
