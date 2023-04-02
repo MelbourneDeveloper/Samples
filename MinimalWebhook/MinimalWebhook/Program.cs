@@ -13,15 +13,9 @@ app.UseHttpsRedirection();
 //Listen for POST webhooks
 app.MapPost("/webhook", async (HttpContext context, IReceiveWebhook receiveWebook) =>
 {
-    string body = "";
     using StreamReader stream = new StreamReader(context.Request.Body);
-    
-        body = await stream.ReadToEndAsync();
-    
-
-    return await receiveWebook.ProcessRequest(body);
-}
-);
+    return await receiveWebook.ProcessRequest(await stream.ReadToEndAsync());
+});
 
 app.Run();
 
