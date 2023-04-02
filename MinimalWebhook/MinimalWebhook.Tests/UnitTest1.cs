@@ -44,7 +44,12 @@ public class Tests
         Assert.Equal("{\"message\" : \"Thanks! We got your webhook\"}", responseBody);
     }
 
-
+    /// <summary>
+    /// This works like a basic ASP.NET Core integration test and tests everything working together
+    /// However, if you delete the section between the lines, you can also use
+    /// this to test actual incoming calls via ngrok
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task TestReceivingWebhook()
     {
