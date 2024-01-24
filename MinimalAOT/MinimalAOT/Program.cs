@@ -28,11 +28,9 @@ groupBuilder.MapGet(
     "/",
     async (MyDbContext myDbContext) =>
     {
-        var query = myDbContext.Set<Todo>().Where(x => x.Id == 1);
-        var sqlQuery = query.ToQueryString();
-        var asdasd= myDbContext.Database.SqlQuery<Todo>(FormattableStringFactory.Create(sqlQuery));
-        var results = await asdasd.ToListAsync();
-        return results;
+        var sqlQuery = myDbContext.Set<Todo>().Where(x => true).ToQueryString();
+        var query= myDbContext.Database.SqlQuery<Todo>(FormattableStringFactory.Create(sqlQuery));
+        return await query.ToListAsync();
     }
 );
 groupBuilder.MapPost(
