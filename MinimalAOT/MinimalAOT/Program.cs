@@ -6,14 +6,15 @@ var builder = WebApplication.CreateSlimBuilder(args);
 builder
     .Services.ConfigureHttpJsonOptions(options =>
     {
-        options.SerializerOptions.TypeInfoResolverChain.Insert(0, MinimalAOT.AppJsonSerializerContext.Default);
+        options.SerializerOptions.TypeInfoResolverChain.Insert(
+            0,
+            MinimalAOT.AppJsonSerializerContext.Default
+        );
     })
     .AddLogging(b => b.AddConsole())
     .AddDbContext<MyDbContext>(
         options =>
-            options
-                .UseSqlite("Data Source=mydatabase.db")
-                .UseModel(MyDbContextModel.Instance)
+            options.UseSqlite("Data Source=mydatabase.db").UseModel(MyDbContextModel.Instance)
     );
 
 builder.Logging.AddConsole();
@@ -22,7 +23,7 @@ var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 var groupBuilder = app.MapGroup("/todos");
-groupBuilder.MapGet("/", async (MyDbContext myDbContext) =>  myDbContext.Todos.ToListAsync());
+groupBuilder.MapGet("/", async (MyDbContext myDbContext) => await myDbContext.Todos.ToListAsync());
 groupBuilder.MapPost(
     "/",
     async (Todo todo, MyDbContext myDbContext) =>
@@ -39,7 +40,5 @@ groupBuilder.MapPost(
         }
     }
 );
-
-
 
 app.Run();
