@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using MinimalAOT;
 using MinimalAOT.Models;
@@ -23,15 +24,25 @@ var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 var groupBuilder = app.MapGroup("/todos");
-groupBuilder.MapGet("/", async (MyDbContext myDbContext) => await myDbContext.Todos.ToListAsync());
+groupBuilder.MapGet(
+    "/",
+    async (MyDbContext myDbContext) =>
+    {
+        var query = myDbContext.Set<Todo>().Where(x => x.Id == 1);
+        var sqlQuery = query.ToQueryString();
+        var asdasd= myDbContext.Database.SqlQuery<Todo>(FormattableStringFactory.Create(sqlQuery));
+        var results = await asdasd.ToListAsync();
+        return results;
+    }
+);
 groupBuilder.MapPost(
     "/",
     async (Todo todo, MyDbContext myDbContext) =>
     {
         try
         {
-            myDbContext.Todos.Add(todo);
-            await myDbContext.SaveChangesAsync();
+            //myDbContext.Todos.Add(todo);
+            //await myDbContext.SaveChangesAsync();
         }
         catch (Exception e)
         {

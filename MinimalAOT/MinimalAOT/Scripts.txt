@@ -1,0 +1,7 @@
+dotnet ef dbcontext optimize -o MyDbContextModel.cs -c MyDbContext --namespace MinimalAOT.Models
+
+dotnet ef migrations add InitialCreate
+
+dotnet csharpier .  
+
+dotnet ef database update
