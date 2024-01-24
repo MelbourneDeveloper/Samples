@@ -21,7 +21,7 @@ var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 var groupBuilder = app.MapGroup("/todos");
-groupBuilder.MapGet("/", async (MyDbContext myDbContext) =>  myDbContext.Todos.ToList());
+groupBuilder.MapGet("/", async (MyDbContext myDbContext) =>  myDbContext.Todos.ToListAsync());
 groupBuilder.MapPost(
     "/",
     async (Todo todo, MyDbContext myDbContext) =>
