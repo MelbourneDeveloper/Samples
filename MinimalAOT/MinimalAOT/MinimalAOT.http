@@ -1,0 +1,11 @@
+@MinimalAOT_HostAddress = http://localhost:5174
+
+GET {{MinimalAOT_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{MinimalAOT_HostAddress}}/todos/1
+Accept: application/json
+
+###
