@@ -14,12 +14,12 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlite("Data Source=mydatabase.db"));
-
+    
 var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 
-app.UseStatusCodePages(async statusCodeContext
+app.UseStatusCodePages(async statusCodeContext 
     => await Results.Problem(statusCode: statusCodeContext.HttpContext.Response.StatusCode)
         .ExecuteAsync(statusCodeContext.HttpContext));
 
@@ -51,11 +51,10 @@ class MyDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlite("Data Source=mydatabase.db")
-                .UseModel(YourProjectNamespace.MyDbContextModel.Instance);
+            optionsBuilder.UseSqlite("Data Source=mydatabase.db").UseModel(YourProjectNamespace.MyDbContextModel.Instance);
         }
     }
-
+    
     public DbSet<Todo> Todos { get; set; }
 }
 

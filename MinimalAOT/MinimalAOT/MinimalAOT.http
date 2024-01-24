@@ -16,7 +16,6 @@ Accept-Language: en-US,en;q=0.5
 
 {
   "id": 10,
-  "itle": "wash dishes",
-  "isComplete": true,
-  "dueBy": "2025/01/01"
+  "title": "wash dishes",
+  "isComplete": true
 }
