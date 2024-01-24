@@ -5,19 +5,18 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
-using MinimalAOT;
 
 #pragma warning disable 219, 612, 618
 #nullable disable
 
-namespace YourProjectNamespace
+namespace MinimalAOT.Models
 {
     internal partial class TodoEntityType
     {
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "Todo",
+                "MinimalAOT.Todo",
                 typeof(Todo),
                 baseEntityType);
 

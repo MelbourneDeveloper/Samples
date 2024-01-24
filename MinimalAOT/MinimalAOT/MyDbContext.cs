@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MinimalAOT;
-using YourProjectNamespace;
+using MinimalAOT.Models;
 
 public class MyDbContext : DbContext
 {
@@ -15,7 +15,7 @@ public class MyDbContext : DbContext
         {
             optionsBuilder
                 .UseSqlite("Data Source=mydatabase.db")
-                .UseModel(MyDbContextModel.Instance); // Use your compiled model here
+                .UseModel(MyDbContextModel.Instance);
         }
     }
 

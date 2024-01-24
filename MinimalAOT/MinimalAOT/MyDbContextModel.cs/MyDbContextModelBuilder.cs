@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 #pragma warning disable 219, 612, 618
 #nullable disable
 
-namespace YourProjectNamespace
+namespace MinimalAOT.Models
 {
     public partial class MyDbContextModel
     {
@@ -27,33 +27,33 @@ namespace YourProjectNamespace
         {
             var relationalModel = new RelationalModel(this);
 
-            var todo = FindEntityType("Todo")!;
+            var todo = FindEntityType("MinimalAOT.Todo")!;
 
             var defaultTableMappings = new List<TableMappingBase<ColumnMappingBase>>();
             todo.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings);
-            var todoTableBase = new TableBase("Todo", null, relationalModel);
-            var dueByColumnBase = new ColumnBase<ColumnMappingBase>("DueBy", "TEXT", todoTableBase)
+            var minimalAOTTodoTableBase = new TableBase("MinimalAOT.Todo", null, relationalModel);
+            var dueByColumnBase = new ColumnBase<ColumnMappingBase>("DueBy", "TEXT", minimalAOTTodoTableBase)
             {
                 IsNullable = true
             };
-            todoTableBase.Columns.Add("DueBy", dueByColumnBase);
-            var idColumnBase = new ColumnBase<ColumnMappingBase>("Id", "INTEGER", todoTableBase);
-            todoTableBase.Columns.Add("Id", idColumnBase);
-            var isCompleteColumnBase = new ColumnBase<ColumnMappingBase>("IsComplete", "INTEGER", todoTableBase);
-            todoTableBase.Columns.Add("IsComplete", isCompleteColumnBase);
-            var titleColumnBase = new ColumnBase<ColumnMappingBase>("Title", "TEXT", todoTableBase)
+            minimalAOTTodoTableBase.Columns.Add("DueBy", dueByColumnBase);
+            var idColumnBase = new ColumnBase<ColumnMappingBase>("Id", "INTEGER", minimalAOTTodoTableBase);
+            minimalAOTTodoTableBase.Columns.Add("Id", idColumnBase);
+            var isCompleteColumnBase = new ColumnBase<ColumnMappingBase>("IsComplete", "INTEGER", minimalAOTTodoTableBase);
+            minimalAOTTodoTableBase.Columns.Add("IsComplete", isCompleteColumnBase);
+            var titleColumnBase = new ColumnBase<ColumnMappingBase>("Title", "TEXT", minimalAOTTodoTableBase)
             {
                 IsNullable = true
             };
-            todoTableBase.Columns.Add("Title", titleColumnBase);
-            relationalModel.DefaultTables.Add("Todo", todoTableBase);
-            var todoMappingBase = new TableMappingBase<ColumnMappingBase>(todo, todoTableBase, true);
-            todoTableBase.AddTypeMapping(todoMappingBase, false);
-            defaultTableMappings.Add(todoMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)idColumnBase, todo.FindProperty("Id")!, todoMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dueByColumnBase, todo.FindProperty("DueBy")!, todoMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)isCompleteColumnBase, todo.FindProperty("IsComplete")!, todoMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)titleColumnBase, todo.FindProperty("Title")!, todoMappingBase);
+            minimalAOTTodoTableBase.Columns.Add("Title", titleColumnBase);
+            relationalModel.DefaultTables.Add("MinimalAOT.Todo", minimalAOTTodoTableBase);
+            var minimalAOTTodoMappingBase = new TableMappingBase<ColumnMappingBase>(todo, minimalAOTTodoTableBase, true);
+            minimalAOTTodoTableBase.AddTypeMapping(minimalAOTTodoMappingBase, false);
+            defaultTableMappings.Add(minimalAOTTodoMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)idColumnBase, todo.FindProperty("Id")!, minimalAOTTodoMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dueByColumnBase, todo.FindProperty("DueBy")!, minimalAOTTodoMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)isCompleteColumnBase, todo.FindProperty("IsComplete")!, minimalAOTTodoMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)titleColumnBase, todo.FindProperty("Title")!, minimalAOTTodoMappingBase);
 
             var tableMappings = new List<TableMapping>();
             todo.SetRuntimeAnnotation("Relational:TableMappings", tableMappings);
@@ -75,7 +75,7 @@ namespace YourProjectNamespace
             var pK_Todos = new UniqueConstraint("PK_Todos", todosTable, new[] { idColumn });
             todosTable.PrimaryKey = pK_Todos;
             var pK_TodosUc = RelationalModel.GetKey(this,
-                "Todo",
+                "MinimalAOT.Todo",
                 new[] { "Id" });
             pK_Todos.MappedKeys.Add(pK_TodosUc);
             RelationalModel.GetOrCreateUniqueConstraints(pK_TodosUc).Add(pK_Todos);

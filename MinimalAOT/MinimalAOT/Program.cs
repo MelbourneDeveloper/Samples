@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MinimalAOT;
+using MinimalAOT.Models;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 builder
@@ -12,7 +13,7 @@ builder
         options =>
             options
                 .UseSqlite("Data Source=mydatabase.db")
-                .UseModel(YourProjectNamespace.MyDbContextModel.Instance)
+                .UseModel(MyDbContextModel.Instance)
     );
 
 builder.Logging.AddConsole();
