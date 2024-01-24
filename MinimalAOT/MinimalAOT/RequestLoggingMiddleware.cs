@@ -1,3 +1,5 @@
+namespace MinimalAOT;
+
 public class RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
 {
     private readonly ILogger _logger = loggerFactory.CreateLogger<RequestLoggingMiddleware>();

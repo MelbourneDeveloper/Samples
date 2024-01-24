@@ -1,30 +1,28 @@
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using MinimalAOT;
 
 var builder = WebApplication.CreateSlimBuilder(args);
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
-});
+builder
+    .Services.ConfigureHttpJsonOptions(options =>
+    {
+        options.SerializerOptions.TypeInfoResolverChain.Insert(0, MinimalAOT.AppJsonSerializerContext.Default);
+    })
+    .AddLogging(b => b.AddConsole())
+    .AddDbContext<MyDbContext>(
+        options =>
+            options
+                .UseSqlite("Data Source=mydatabase.db")
+                .UseModel(YourProjectNamespace.MyDbContextModel.Instance)
+    );
 
-builder.Services.AddLogging(b => b.AddConsole());
 builder.Logging.AddConsole();
-builder.Services.AddProblemDetails();
-
-builder.Services.AddDbContext<MyDbContext>(
-    options =>
-        options
-            .UseSqlite("Data Source=mydatabase.db")
-            .UseModel(YourProjectNamespace.MyDbContextModel.Instance)
-);
 
 var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
-var todosApi = app.MapGroup("/todos");
-todosApi.MapGet("/", async (MyDbContext myDbContext) => await myDbContext.Todos.ToListAsync());
-
-todosApi.MapPost(
+var groupBuilder = app.MapGroup("/todos");
+groupBuilder.MapGet("/", async (MyDbContext myDbContext) =>  myDbContext.Todos.ToList());
+groupBuilder.MapPost(
     "/",
     async (Todo todo, MyDbContext myDbContext) =>
     {
@@ -41,9 +39,6 @@ todosApi.MapPost(
     }
 );
 
+
+
 app.Run();
-
-public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
-
-[JsonSerializable(typeof(Todo[]))]
-internal partial class AppJsonSerializerContext : JsonSerializerContext;

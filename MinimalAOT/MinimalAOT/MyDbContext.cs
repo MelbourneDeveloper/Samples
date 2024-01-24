@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using MinimalAOT;
+using YourProjectNamespace;
 
-class MyDbContext : DbContext
+public class MyDbContext : DbContext
 {
     public MyDbContext(DbContextOptions<MyDbContext> options)
-        : base(options) { }
+        : base(options)
+    {
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -11,9 +15,9 @@ class MyDbContext : DbContext
         {
             optionsBuilder
                 .UseSqlite("Data Source=mydatabase.db")
-                .UseModel(YourProjectNamespace.MyDbContextModel.Instance);
+                .UseModel(MyDbContextModel.Instance); // Use your compiled model here
         }
     }
 
-    public DbSet<Todo> Todos { get; }
+    public DbSet<Todo> Todos { get; set; }
 }
