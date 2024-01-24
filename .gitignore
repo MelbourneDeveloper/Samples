@@ -29,3 +29,9 @@ file_paths.xml
 .DS_Store
 
 simple_state_management/pubspec.lock
+
+MinimalAOT/MinimalAOT/mydatabase.db
+
+MinimalAOT/MinimalAOT/mydatabase.db-shm
+
+MinimalAOT/MinimalAOT/mydatabase.db-wal
