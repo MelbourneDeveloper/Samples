@@ -1,8 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsertUpdateGenerator", "InsertUpdateGenerator\InsertUpdateGenerator.csproj", "{25F2D42C-069F-4E18-AE00-C82187D15235}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalAOT", "MinimalAOT\MinimalAOT.csproj", "{50B178AD-BC49-478C-941B-A84C69BEAC38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsertGeneratorSample", "InsertGeneratorSample\InsertGeneratorSample.csproj", "{48F238B3-E051-491C-A234-01E3A3AF2D55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,5 +25,9 @@ Global
 		{50B178AD-BC49-478C-941B-A84C69BEAC38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50B178AD-BC49-478C-941B-A84C69BEAC38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50B178AD-BC49-478C-941B-A84C69BEAC38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48F238B3-E051-491C-A234-01E3A3AF2D55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48F238B3-E051-491C-A234-01E3A3AF2D55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48F238B3-E051-491C-A234-01E3A3AF2D55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48F238B3-E051-491C-A234-01E3A3AF2D55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

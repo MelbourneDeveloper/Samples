@@ -46,9 +46,9 @@ public class SqlInsertSourceGenerator : ISourceGenerator
         values.Length -= 2; // Remove last comma
 
         return $@"
-public static class {className}Extensions
+public partial class {className}
 {{
-    public static string GetInsertStatement()
+    public string GetInsertStatement()
     {{
         return ""INSERT INTO {className} ({columns}) VALUES ({values});"";
     }}
