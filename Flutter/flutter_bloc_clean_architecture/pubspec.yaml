@@ -1,0 +1,23 @@
+name: clean_architecture
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.6
+  http: ^1.2.2
+
+dev_dependencies:
+  austerity: ^1.2.0
+  bloc_test: ^9.1.7
+  flutter_lints: ^4.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
