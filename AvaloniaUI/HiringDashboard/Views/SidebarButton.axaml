@@ -1,0 +1,46 @@
+<Button xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:HiringDashboard.Controls"
+        x:Class="HiringDashboard.Controls.SidebarButton">
+    <Button.Styles>
+        <Style Selector="local|SidebarButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="24 0 24 0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="0 2"/>
+        </Style>
+        <Style Selector="local|SidebarButton:pointerover">
+            <Setter Property="Background" Value="{StaticResource Violet40Brush}"/>
+        </Style>
+        <Style Selector="local|SidebarButton:pressed">
+            <Setter Property="Background" Value="{StaticResource Violet30Brush}"/>
+        </Style>
+        <Style Selector="local|SidebarButton.Active">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{StaticResource BaseVioletBrush}"/>
+        </Style>
+    </Button.Styles>
+    <Button.Template>
+        <ControlTemplate>
+            <Border Background="{TemplateBinding Background}"
+                    CornerRadius="24 0 0 24"
+                    Padding="24 0 0 0"
+                    Margin="12 0 0 0">
+                <Grid ColumnDefinitions="Auto,*">
+                    <PathIcon Width="12" Height="12" Margin="0 0 16 0"
+                              Data="{TemplateBinding IconData}"
+                              Foreground="{TemplateBinding Foreground}"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{TemplateBinding ButtonText}"
+                               VerticalAlignment="Center"
+                               Foreground="{TemplateBinding Foreground}"/>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+    </Button.Template>
+</Button>

@@ -1,0 +1,31 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="HiringDashboard.App"
+             xmlns:local="using:HiringDashboard"
+             RequestedThemeVariant="Light">
+    <Application.Resources>
+        <Color x:Key="BaseViolet">#6F51FF</Color>
+        <Color x:Key="Violet40">#917AFF</Color>
+        <Color x:Key="Violet30">#B1A1FF</Color>
+        <SolidColorBrush x:Key="BaseVioletBrush" Color="{StaticResource BaseViolet}"/>
+        <SolidColorBrush x:Key="Violet40Brush" Color="{StaticResource Violet40}"/>
+        <SolidColorBrush x:Key="Violet30Brush" Color="{StaticResource Violet30}"/>
+    </Application.Resources>
+    <Application.Styles>
+        <FluentTheme />
+        <Style Selector="Button:disabled PathIcon">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+        <Style>
+            <Style.Resources>
+                <FontFamily x:Key="ReadexProFont">avares://HiringDashboard/Assets/Fonts#Readex Pro</FontFamily>
+            </Style.Resources>
+        </Style>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource ReadexProFont}"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="FontFamily" Value="{StaticResource ReadexProFont}"/>
+        </Style>
+    </Application.Styles>
+</Application>
