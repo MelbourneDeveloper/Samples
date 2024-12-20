@@ -1,21 +1,55 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="using:HiringDashboard.Converters"
              x:Class="HiringDashboard.App"
              xmlns:local="using:HiringDashboard"
+             xmlns:controls="using:HiringDashboard.Controls"
              RequestedThemeVariant="Light">
     <Application.Resources>
-        <Color x:Key="BaseViolet">#6F51FF</Color>
-        <Color x:Key="Violet40">#917AFF</Color>
-        <Color x:Key="Violet30">#B1A1FF</Color>
+        <!-- Primary Colors -->
+        <Color x:Key="BaseViolet">#4F46E5</Color>
+        <Color x:Key="Violet40">#6366F1</Color>
+        <Color x:Key="Violet30">#818CF8</Color>
+        <Color x:Key="Gray100">#111827</Color>
+        <Color x:Key="Gray90">#1F2937</Color>
+        <Color x:Key="Gray80">#374151</Color>
+        <Color x:Key="Gray70">#4B5563</Color>
+        <Color x:Key="Gray60">#6B7280</Color>
+        <Color x:Key="Gray50">#9CA3AF</Color>
+        <Color x:Key="Gray40">#D1D5DB</Color>
+        <Color x:Key="Gray30">#E5E7EB</Color>
+        <Color x:Key="Gray20">#F3F4F6</Color>
+        <Color x:Key="Gray10">#F9FAFB</Color>
+        <Color x:Key="Gray5">#FFFFFF</Color>
+        <!-- Status Colors -->
+        <Color x:Key="Success">#10B981</Color>
+        <Color x:Key="Warning">#F59E0B</Color>
+        <Color x:Key="Error">#EF4444</Color>
+        <Color x:Key="Info">#3B82F6</Color>
+        <!-- Brushes -->
         <SolidColorBrush x:Key="BaseVioletBrush" Color="{StaticResource BaseViolet}"/>
         <SolidColorBrush x:Key="Violet40Brush" Color="{StaticResource Violet40}"/>
         <SolidColorBrush x:Key="Violet30Brush" Color="{StaticResource Violet30}"/>
+        <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
+        <SolidColorBrush x:Key="Gray90Brush" Color="{StaticResource Gray90}"/>
+        <SolidColorBrush x:Key="Gray80Brush" Color="{StaticResource Gray80}"/>
+        <SolidColorBrush x:Key="Gray70Brush" Color="{StaticResource Gray70}"/>
+        <SolidColorBrush x:Key="Gray60Brush" Color="{StaticResource Gray60}"/>
+        <SolidColorBrush x:Key="Gray50Brush" Color="{StaticResource Gray50}"/>
+        <SolidColorBrush x:Key="Gray40Brush" Color="{StaticResource Gray40}"/>
+        <SolidColorBrush x:Key="Gray30Brush" Color="{StaticResource Gray30}"/>
+        <SolidColorBrush x:Key="Gray20Brush" Color="{StaticResource Gray20}"/>
+        <SolidColorBrush x:Key="Gray10Brush" Color="{StaticResource Gray10}"/>
+        <SolidColorBrush x:Key="Gray5Brush" Color="{StaticResource Gray5}"/>
+        <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}"/>
+        <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}"/>
+        <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}"/>
+        <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}"/>
+        <converters:StringEqualsConverter x:Key="StringEquals"/>
     </Application.Resources>
     <Application.Styles>
         <FluentTheme />
-        <Style Selector="Button:disabled PathIcon">
-            <Setter Property="Opacity" Value="0.4" />
-        </Style>
+        <!-- Global Typography -->
         <Style>
             <Style.Resources>
                 <FontFamily x:Key="ReadexProFont">avares://HiringDashboard/Assets/Fonts#Readex Pro</FontFamily>
@@ -23,9 +57,79 @@
         </Style>
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource ReadexProFont}"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray80Brush}"/>
         </Style>
         <Style Selector="TextBox">
             <Setter Property="FontFamily" Value="{StaticResource ReadexProFont}"/>
+            <Setter Property="Padding" Value="16 12"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <!-- Button Styles -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource BaseVioletBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20 12"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="{StaticResource Violet40Brush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <!-- ComboBox Styles -->
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray30Brush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="16 8"/>
+            <Setter Property="Margin" Value="0 0 12 0"/>
+        </Style>
+        <!-- ListBox Styles -->
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0 0 0 20"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="CornerRadius" Value="12"/>
+        </Style>
+        <!-- Profile Border Style -->
+        <Style Selector="Border.ProfileBorder">
+            <Setter Property="Background" Value="{StaticResource Gray10Brush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20 12"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray30Brush}"/>
+        </Style>
+        <!-- Card Style -->
+        <Style Selector="Border.Card">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BoxShadow" Value="0 2 4 0 #1A000000, 0 2 8 0 #1A000000"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray20Brush}"/>
+            <Setter Property="Padding" Value="24 20"/>
+        </Style>
+        <!-- Sidebar Button Styles -->
+        <Style Selector="controls|SidebarButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20 12"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="8 2"/>
+            <Setter Property="FontWeight" Value="Regular"/>
+        </Style>
+        <Style Selector="controls|SidebarButton:pointerover">
+            <Setter Property="Background" Value="{StaticResource Violet40Brush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="controls|SidebarButton[IsChecked=true]">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{StaticResource BaseVioletBrush}"/>
         </Style>
     </Application.Styles>
 </Application>

@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HiringDashboard.ViewModels"
+             x:Class="HiringDashboard.Views.DashboardView"
+             x:DataType="vm:MainViewModel"
+             Background="{StaticResource Gray10Brush}">
+    <Grid Margin="40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0 0 0 32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Filters -->
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <ComboBox Width="200" ItemsSource="{Binding DashboardViewModel.FilterOptions.Considerations}" SelectedIndex="0"/>
+                <ComboBox Width="200" ItemsSource="{Binding DashboardViewModel.FilterOptions.Stages}" SelectedIndex="0"/>
+                <ComboBox Width="200" ItemsSource="{Binding DashboardViewModel.FilterOptions.Positions}" SelectedIndex="0"/>
+            </StackPanel>
+            
+            <!-- User Profile and Add Button -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20">
+                <Border Classes="ProfileBorder">
+                    <TextBlock Text="{Binding CurrentUser}" 
+                             VerticalAlignment="Center"
+                             FontSize="16"/>
+                </Border>
+                <Button Classes="primary" Content="+ Add Applicant"/>
+            </StackPanel>
+        </Grid>
+        
+        <!-- Applicant List -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding DashboardViewModel.Applicants}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Classes="Card" 
+                                Margin="0 0 0 20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="1.5*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Applicant Info -->
+                                <Border Grid.Column="0"
+                                        Width="40" Height="40"
+                                        CornerRadius="20"
+                                        Background="{StaticResource Gray10Brush}"
+                                        BorderBrush="{StaticResource Gray30Brush}"
+                                        BorderThickness="1"
+                                        Margin="0 0 20 0">
+                                    <TextBlock Text="{Binding Name[0]}"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             FontWeight="Medium"
+                                             FontSize="16"
+                                             Foreground="{StaticResource BaseVioletBrush}"/>
+                                </Border>
+                                
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Text="{Binding Name}" 
+                                             FontWeight="Medium"
+                                             FontSize="14"
+                                             Foreground="{StaticResource Gray90Brush}"/>
+                                    <TextBlock Text="{Binding Position}" 
+                                             Foreground="{StaticResource Gray60Brush}"
+                                             FontSize="13"/>
+                                </StackPanel>
+                                
+                                <!-- Status Badge -->
+                                <Border Grid.Column="2" 
+                                        Background="{StaticResource Gray10Brush}"
+                                        BorderBrush="{StaticResource Gray30Brush}"
+                                        BorderThickness="1"
+                                        CornerRadius="16"
+                                        Padding="12 6"
+                                        Margin="0 0 24 0">
+                                    <TextBlock Text="{Binding Stage}" 
+                                             FontSize="13"
+                                             FontWeight="Regular"
+                                             Foreground="{StaticResource Gray80Brush}"/>
+                                </Border>
+                                
+                                <!-- Location and Contact -->
+                                <TextBlock Grid.Column="3" 
+                                         Text="{Binding Location}" 
+                                         Foreground="{StaticResource Gray70Brush}"
+                                         FontSize="13"/>
+                                <TextBlock Grid.Column="4" 
+                                         Text="{Binding Phone}" 
+                                         Foreground="{StaticResource Gray70Brush}"
+                                         FontSize="13"
+                                         Margin="24 0"/>
+                                <TextBlock Grid.Column="5" 
+                                         Text="{Binding ApplicationDate, StringFormat=\{0:dd MMM\, yyyy\}}" 
+                                         Foreground="{StaticResource Gray70Brush}"
+                                         FontSize="13"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl> 

@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <PublishTrimmed>false</PublishTrimmed>
+        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="ViewModels/ViewModelBase.fs" />
+        <Compile Include="ViewModels/Models.fs" />
+        <Compile Include="Converters/StringEquals.fs" />
+        <Compile Include="ViewModels/PostsViewModel.fs" />
+        <Compile Include="ViewModels/DashboardViewModel.fs" />
+        <Compile Include="ViewModels/SidebarViewModel.fs" />
+        <Compile Include="ViewModels/MainViewModel.fs" />
+        <Compile Include="Views/MainWindow.axaml.fs" />
+        <Compile Include="Views/SidebarView.axaml.fs" />
+        <Compile Include="Views/DashboardView.axaml.fs" />
+        <Compile Include="Views/PostsView.axaml.fs" />
+        <Compile Include="Views/SidebarButton.axaml.fs" />
+        <Compile Include="App.axaml.fs" />
+        <Compile Include="Program.fs" />
+        
+        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="Assets/Fonts/ReadexPro-Regular.ttf" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.2.3" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+        <PackageReference Include="Avalonia.Browser" Version="11.2.3" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.3" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
+    </ItemGroup>
+</Project> 

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HiringDashboard.ViewModels"
+             xmlns:local="clr-namespace:HiringDashboard.Controls"
+             x:Class="HiringDashboard.Views.SidebarView"
+             x:DataType="vm:MainViewModel">
+    <Border Background="{StaticResource BaseVioletBrush}" 
+            CornerRadius="0 24 24 0"
+            BoxShadow="4 0 16 0 #15000000">
+        <Grid RowDefinitions="Auto,*,Auto" Margin="0 0 0 16">
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="24 32 24 0">
+                <TextBlock Text="Hiring Console" 
+                         FontSize="28" 
+                         FontWeight="SemiBold" 
+                         Foreground="White"/>
+                <Rectangle Height="48"/>
+            </StackPanel>
+            
+            <!-- Navigation -->
+            <ScrollViewer Grid.Row="1" Margin="16 0">
+                <StackPanel>
+                    <TextBlock Text="MAIN" 
+                             Foreground="{StaticResource Violet30Brush}"
+                             FontSize="14"
+                             FontWeight="SemiBold"
+                             Margin="8 0 0 16"
+                             Opacity="0.8"/>
+                    
+                    <ItemsControl ItemsSource="{Binding SidebarViewModel.NavigationItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:SidebarButton IconData="{Binding IconData}" 
+                                                  ButtonText="{Binding DisplayText}"
+                                                  Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).NavigateCommand}"
+                                                  CommandParameter="{Binding DisplayText}"
+                                                  IsChecked="{Binding $parent[Window].((vm:MainViewModel)DataContext).SidebarViewModel.SelectedItem.DisplayText, Converter={StaticResource StringEquals}, ConverterParameter={Binding DisplayText}}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+            
+            <!-- Footer -->
+            <Button Grid.Row="2"
+                    Content="Log Out"
+                    Foreground="White"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="20 16"
+                    Margin="24 0"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    FontSize="16">
+                <Button.Styles>
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Background" Value="{StaticResource Violet40Brush}"/>
+                        <Setter Property="CornerRadius" Value="8"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+        </Grid>
+    </Border>
+</UserControl> 
