@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:HiringDashboard.ViewModels"
              xmlns:local="clr-namespace:HiringDashboard.Controls"
+             xmlns:views="clr-namespace:HiringDashboard.Views"
              x:Class="HiringDashboard.Views.SidebarView"
              x:DataType="vm:MainViewModel">
     <Border Background="{StaticResource BaseVioletBrush}" 
@@ -33,9 +34,9 @@
                             <DataTemplate>
                                 <local:SidebarButton IconData="{Binding IconData}" 
                                                   ButtonText="{Binding DisplayText}"
-                                                  Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).NavigateCommand}"
+                                                  Command="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).NavigateCommand}"
                                                   CommandParameter="{Binding DisplayText}"
-                                                  IsChecked="{Binding $parent[Window].((vm:MainViewModel)DataContext).SidebarViewModel.SelectedItem.DisplayText, Converter={StaticResource StringEquals}, ConverterParameter={Binding DisplayText}}"/>
+                                                  IsChecked="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).SidebarViewModel.SelectedItem.DisplayText, Converter={StaticResource StringEquals}, ConverterParameter={Binding DisplayText}}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
