@@ -27,6 +27,8 @@ type App() =
             let mainWindow = MainWindow(DataContext = _mainViewModel)
             desktop.MainWindow <- mainWindow
             desktop.ShutdownRequested.AddHandler(desktopOnShutdownRequested)
+        | :? ISingleViewApplicationLifetime as singleViewLifetime ->
+            singleViewLifetime.MainView <- MainView(DataContext = _mainViewModel)
         | _ -> ()
         
         base.OnFrameworkInitializationCompleted() 

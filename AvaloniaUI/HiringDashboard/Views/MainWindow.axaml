@@ -3,30 +3,12 @@
         xmlns:vm="using:HiringDashboard.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="using:HiringDashboard.Views"
+        xmlns:views="clr-namespace:HiringDashboard.Views"
         mc:Ignorable="d"
         Width="1200" Height="800"
         x:Class="HiringDashboard.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Hiring Console">
-    <Window.Styles>
-        <Style Selector="TextBlock.SectionTitle">
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="{StaticResource Violet40Brush}"/>
-            <Setter Property="Margin" Value="20 30 0 10"/>
-        </Style>
-    </Window.Styles>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="238"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <!-- Left Sidebar -->
-        <views:SidebarView Grid.Column="0"/>
-        <!-- Main Content -->
-        <views:DashboardView Grid.Column="1" IsVisible="{Binding ShowApplicants}"/>
-        <views:PostsView Grid.Column="1" IsVisible="{Binding ShowPosts}"/>
-    </Grid>
+        <views:MainView />
 </Window>

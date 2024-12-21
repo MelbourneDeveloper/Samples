@@ -1,0 +1,25 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="using:HiringDashboard.Views"
+             xmlns:vm="using:HiringDashboard.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="HiringDashboard.Views.MainView"
+             x:DataType="vm:MainViewModel">
+    <UserControl.Styles>
+        <Style Selector="TextBlock.SectionTitle">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource Violet40Brush}" />
+            <Setter Property="Margin" Value="20 30 0 10" />
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="238,*">
+        <!-- Left Sidebar -->
+        <views:SidebarView Grid.Column="0" />
+        <!-- Main Content -->
+        <views:DashboardView Grid.Column="1" IsVisible="{Binding ShowApplicants}" />
+        <views:PostsView Grid.Column="1" IsVisible="{Binding ShowPosts}" />
+    </Grid>
+</UserControl>
